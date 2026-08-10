@@ -1,0 +1,6 @@
+{
+  "name": "Urban Bachata Dance Classes",
+  "description": "Official mobile-friendly website for AI Urbano Bachata dance classes in Tampa, FL featuring liquid glass UI, schedule, drop-in pass booking, and cycle registration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
