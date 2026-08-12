@@ -3,6 +3,7 @@ import { X, Sparkles, CheckCircle2, Calendar, MapPin, Download, QrCode, Ticket, 
 import confetti from 'canvas-confetti';
 import { PASS_OPTIONS, SOCIAL_PASS_OPTION, BACHATA_INVASION_PASS_OPTION, SECRET_OPEN_HOUSE_PASS, STUDIO_INFO } from '../data/danceData';
 import { TicketPass } from '../types';
+import { StripeEmbeddedCheckoutBox } from './StripeEmbeddedCheckout';
 
 interface TicketModalProps {
   isOpen: boolean;
@@ -18,7 +19,6 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   onPassCreated
 }) => {
   const [selectedPassId, setSelectedPassId] = useState<string>(initialPassTypeId);
-  const [isSwitchingPass, setIsSwitchingPass] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -28,7 +28,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   useEffect(() => {
     if (initialPassTypeId) {
       setSelectedPassId(initialPassTypeId);
-      setIsSwitchingPass(false);
+      setGeneratedPass(null);
     }
   }, [initialPassTypeId]);
 
@@ -36,6 +36,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
 
   const allAvailablePasses = [BACHATA_INVASION_PASS_OPTION, SOCIAL_PASS_OPTION, SECRET_OPEN_HOUSE_PASS, ...PASS_OPTIONS];
   const currentPassOption = allAvailablePasses.find(p => p.id === selectedPassId) || PASS_OPTIONS[0];
+  const isPaidPass = currentPassOption.price > 0;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +45,6 @@ export const TicketModal: React.FC<TicketModalProps> = ({
     setIsSubmitting(true);
 
     setTimeout(() => {
-      // Fire confetti
       confetti({
         particleCount: 100,
         spread: 70,
@@ -52,7 +52,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
       });
 
       const ticketId = `UB-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-      
+
       const newPass: TicketPass = {
         ticketId,
         userName: name,
@@ -61,23 +61,9 @@ export const TicketModal: React.FC<TicketModalProps> = ({
         passName: currentPassOption.name,
         passType: currentPassOption.type,
         price: currentPassOption.price,
-        classesIncluded: currentPassOption.id === 'social-invasion-10'
-          ? '8-9 PM Class + Full Social (8PM - 1AM)'
-          : currentPassOption.id === 'social-presale' 
-          ? 'Presocial Class + Full Social' 
-          : `${currentPassOption.classesCount} Class Session(s)`,
-        eventDate: currentPassOption.id === 'social-invasion-10'
-          ? 'Every 2nd Friday (8:00 PM - 1:00 AM)'
-          : currentPassOption.id === 'social-presale'
-          ? 'Sunday, August 16th (4:00 PM - 9:00 PM)'
-          : currentPassOption.id === 'free-open-house' 
-          ? 'Wednesday, August 5th (7:00 PM - 10:00 PM)'
-          : currentPassOption.type === 'cycle_4week'
-          ? '4-Week Course (Wednesdays @ Dance Factory)'
-          : 'Upcoming Wednesday Night (7:00 PM)',
-        location: currentPassOption.id === 'social-presale'
-          ? 'Yuengling Draft Haus (11109 N 30th St, Tampa, FL)'
-          : 'Dance Factory - WestShore Plaza Mall, Tampa, FL',
+        classesIncluded: `${currentPassOption.classesCount} Class Session(s)`,
+        eventDate: 'Wednesday, August 5th (7:00 PM - 10:00 PM)',
+        location: 'Dance Factory - WestShore Plaza Mall, Tampa, FL',
         purchaseTimestamp: Date.now(),
         status: 'CONFIRMED',
         qrCodeSeed: ticketId
@@ -93,10 +79,9 @@ export const TicketModal: React.FC<TicketModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
-      
+
       <div className="relative w-full max-w-lg liquid-glass-panel rounded-3xl p-6 sm:p-8 border border-white/20 shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
-        
-        {/* Close Button */}
+
         <button
           onClick={onClose}
           className="absolute top-4 right-4 p-2 rounded-full bg-white/10 text-slate-300 hover:text-white hover:bg-white/20 transition-colors z-10"
@@ -105,22 +90,18 @@ export const TicketModal: React.FC<TicketModalProps> = ({
         </button>
 
         {!generatedPass ? (
-          /* Step 1: Pass Checkout Form */
           <div className="space-y-6">
             <div className="text-center space-y-2">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-badge border border-red-500/30 text-xs font-bold text-red-400 uppercase">
                 <Sparkles className="w-3.5 h-3.5 text-yellow-300 animate-pulse" />
-                DIGITAL CLASS TICKET
+                {isPaidPass ? 'SECURE CHECKOUT' : 'DIGITAL CLASS TICKET'}
               </div>
               <h3 className="text-2xl font-black text-white uppercase font-sans">
-                CLAIM YOUR DANCE TICKET
+                {isPaidPass ? 'COMPLETE YOUR BOOKING' : 'CLAIM YOUR DANCE TICKET'}
               </h3>
-              <p className="text-xs text-slate-300">
-                Generate an instant mobile digital ticket for check-in at Dance Factory Tampa.
-              </p>
             </div>
 
-            {/* Selected Dedicated Pass Summary Card */}
+            {/* Selected Pass Summary Card */}
             <div className="bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 rounded-2xl p-4 sm:p-5 border border-red-500/40 shadow-xl space-y-3">
               <div className="flex items-start justify-between gap-3 border-b border-white/10 pb-3">
                 <div>
@@ -138,106 +119,93 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                   <div className="text-xl sm:text-2xl font-mono font-black text-red-400">
                     {currentPassOption.price === 0 ? 'FREE' : `$${currentPassOption.price}`}
                   </div>
-                  {currentPassOption.originalPrice && (
-                    <div className="text-[10px] text-slate-400 line-through">
-                      ${currentPassOption.originalPrice}
-                    </div>
-                  )}
-                  {currentPassOption.savings && (
-                    <div className="text-[9px] font-bold text-emerald-400">
-                      {currentPassOption.savings}
-                    </div>
-                  )}
                 </div>
               </div>
-
-              {/* Pass Features Bullet Points */}
-              {currentPassOption.features && currentPassOption.features.length > 0 && (
-                <div className="space-y-1.5 pt-1">
-                  {currentPassOption.features.slice(0, 4).map((feature, idx) => (
-                    <div key={idx} className="flex items-start gap-2 text-xs text-slate-300">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-red-400 shrink-0 mt-0.5" />
-                      <span>{feature}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
 
-            {/* Form Details */}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold uppercase text-slate-300 mb-1">
-                  Full Name *
-                </label>
-                <div className="relative">
-                  <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Alex Rivera"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none focus:border-red-500 transition-colors"
-                  />
+            {isPaidPass ? (
+              /* Real Stripe embedded payment box — handles card, Apple Pay, Google Pay */
+              <StripeEmbeddedCheckoutBox
+                passName={currentPassOption.name}
+                priceInDollars={currentPassOption.price}
+              />
+            ) : (
+              /* Free pass keeps the simple name/email form, no payment needed */
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-300 mb-1">
+                    Full Name *
+                  </label>
+                  <div className="relative">
+                    <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Alex Rivera"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none focus:border-red-500 transition-colors"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-xs font-bold uppercase text-slate-300 mb-1">
-                  Email Address *
-                </label>
-                <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
-                  <input
-                    type="email"
-                    required
-                    placeholder="e.g. alex@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none focus:border-red-500 transition-colors"
-                  />
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-300 mb-1">
+                    Email Address *
+                  </label>
+                  <div className="relative">
+                    <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                    <input
+                      type="email"
+                      required
+                      placeholder="e.g. alex@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none focus:border-red-500 transition-colors"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-xs font-bold uppercase text-slate-300 mb-1">
-                  Phone Number (Optional for SMS pass updates)
-                </label>
-                <div className="relative">
-                  <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
-                  <input
-                    type="tel"
-                    placeholder="e.g. (813) 555-0199"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none focus:border-red-500 transition-colors"
-                  />
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-300 mb-1">
+                    Phone Number (Optional)
+                  </label>
+                  <div className="relative">
+                    <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                    <input
+                      type="tel"
+                      placeholder="e.g. (813) 555-0199"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none focus:border-red-500 transition-colors"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div className="pt-2">
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="liquid-glass-btn liquid-btn-primary w-full py-4 rounded-2xl text-xs font-black text-white uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl shadow-red-600/40"
-                >
-                  {isSubmitting ? (
-                    <span className="animate-pulse">Generating Pass...</span>
-                  ) : (
-                    <>
-                      <Sparkles className="w-4 h-4 text-yellow-300" />
-                      <span>Get Ticket Pass ({currentPassOption.price === 0 ? '$0 FREE' : `$${currentPassOption.price}`})</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="liquid-glass-btn liquid-btn-primary w-full py-4 rounded-2xl text-xs font-black text-white uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl shadow-red-600/40"
+                  >
+                    {isSubmitting ? (
+                      <span className="animate-pulse">Generating Pass...</span>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4 text-yellow-300" />
+                        <span>Get Free Ticket Pass</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         ) : (
-          /* Step 2: Generated Digital Pass Ticket Display */
+          /* Confirmation screen — only used for FREE passes now.
+             Paid passes are confirmed by Stripe's own checkout flow. */
           <div className="space-y-6 text-center">
-            
+
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center mb-2">
                 <CheckCircle2 className="w-7 h-7" />
@@ -250,10 +218,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
               </h3>
             </div>
 
-            {/* Digital Pass Ticket Card */}
             <div className="liquid-glass-card rounded-3xl p-6 border border-red-500/40 text-left space-y-4 relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 shadow-2xl">
-              
-              {/* Header */}
               <div className="flex justify-between items-start border-b border-white/10 pb-3">
                 <div>
                   <span className="text-[10px] font-mono font-bold text-red-400 uppercase block">
@@ -271,7 +236,6 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                 </div>
               </div>
 
-              {/* Ticket Details */}
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div>
                   <span className="text-[10px] text-slate-400 uppercase block">Pass Holder</span>
@@ -283,17 +247,8 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                     {generatedPass.price === 0 ? '$0 FREE' : `$${generatedPass.price}`}
                   </span>
                 </div>
-                <div className="col-span-2">
-                  <span className="text-[10px] text-slate-400 uppercase block">Event & Time</span>
-                  <span className="font-bold text-slate-200">{generatedPass.eventDate}</span>
-                </div>
-                <div className="col-span-2">
-                  <span className="text-[10px] text-slate-400 uppercase block">Location</span>
-                  <span className="font-semibold text-slate-300">{generatedPass.location}</span>
-                </div>
               </div>
 
-              {/* QR Code Visualizer */}
               <div className="pt-3 border-t border-white/10 flex flex-col items-center justify-center space-y-2">
                 <div className="p-3 bg-white rounded-2xl shadow-inner flex items-center justify-center">
                   <QrCode className="w-24 h-24 text-slate-950" />
@@ -302,10 +257,8 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                   Scan at studio entrance for fast check-in
                 </span>
               </div>
-
             </div>
 
-            {/* Action Buttons */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
               <a
                 href={calendarUrl}
@@ -324,12 +277,9 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                 Close & View Pass
               </button>
             </div>
-
           </div>
         )}
-
       </div>
-
     </div>
   );
 };
