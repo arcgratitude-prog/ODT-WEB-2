@@ -10,18 +10,27 @@ export const BackgroundVinylPlayer: React.FC<BackgroundVinylPlayerProps> = ({
   videoId = "kE1-O0tU-UU"
 }) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [isMuted, setIsMuted] = useState<boolean>(false);
+  // IMPORTANT: Must start MUTED. Apple (iOS/Safari) blocks autoplay-with-sound
+  // 100% of the time, no exceptions. Starting muted lets autoplay succeed on
+  // every device. We then unmute automatically the instant the visitor taps
+  // or clicks anywhere on the page (a real user gesture), which Apple allows.
+  const [isMuted, setIsMuted] = useState<boolean>(true);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // Unlock audio on iOS Safari on initial touch gesture
+  // Unlock + unmute audio on the visitor's first tap/click anywhere on the page
   useEffect(() => {
     const unlockAudio = () => {
       if (iframeRef.current && isPlaying) {
         try {
           iframeRef.current.contentWindow?.postMessage(
+            JSON.stringify({ event: 'command', func: 'unMute', args: [] }),
+            '*'
+          );
+          iframeRef.current.contentWindow?.postMessage(
             JSON.stringify({ event: 'command', func: 'playVideo', args: [] }),
             '*'
           );
+          setIsMuted(false);
         } catch {
           // Ignore
         }
@@ -142,5 +151,3 @@ export const BackgroundVinylPlayer: React.FC<BackgroundVinylPlayerProps> = ({
     </>
   );
 };
-
-
