@@ -25,7 +25,7 @@ export default async function handler(req, res) {
     const origin = req.headers.origin || `https://${req.headers.host}`;
 
     const session = await stripe.checkout.sessions.create({
-      ui_mode: 'embedded',
+      ui_mode: 'embedded_page',
       mode: 'payment',
       payment_method_types: ['card'], // Apple Pay & Google Pay show automatically
                                         // on supported devices without extra config
