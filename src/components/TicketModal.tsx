@@ -3,7 +3,7 @@ import { X, Sparkles, CheckCircle2, Calendar, MapPin, Download, QrCode, Ticket, 
 import confetti from 'canvas-confetti';
 import { PASS_OPTIONS, SOCIAL_PASS_OPTION, BACHATA_INVASION_PASS_OPTION, SECRET_OPEN_HOUSE_PASS, STUDIO_INFO } from '../data/danceData';
 import { TicketPass } from '../types';
-import { StripeEmbeddedCheckoutBox } from './StripeEmbeddedCheckout';
+import { CustomStripeCheckout } from './CustomStripeCheckout';
 
 interface TicketModalProps {
   isOpen: boolean;
@@ -75,6 +75,35 @@ export const TicketModal: React.FC<TicketModalProps> = ({
     }, 600);
   };
 
+  const handlePaymentSuccess = () => {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+
+    const ticketId = `UB-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+
+    const newPass: TicketPass = {
+      ticketId,
+      userName: 'Valued Dancer',
+      userEmail: 'N/A',
+      userPhone: 'N/A',
+      passName: currentPassOption.name,
+      passType: currentPassOption.type,
+      price: currentPassOption.price,
+      classesIncluded: `${currentPassOption.classesCount} Class Session(s)`,
+      eventDate: 'Wednesday, August 5th (7:00 PM - 10:00 PM)',
+      location: 'Dance Factory - WestShore Plaza Mall, Tampa, FL',
+      purchaseTimestamp: Date.now(),
+      status: 'CONFIRMED',
+      qrCodeSeed: ticketId
+    };
+
+    setGeneratedPass(newPass);
+    onPassCreated(newPass);
+  };
+
   const calendarUrl = generatedPass ? `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('Urban Bachata Class @ Dance Factory')}&details=${encodeURIComponent(`Pass ID: ${generatedPass.ticketId}\nPass: ${generatedPass.passName}`)}&location=${encodeURIComponent(STUDIO_INFO.fullAddress)}` : '#';
 
   return (
@@ -124,10 +153,11 @@ export const TicketModal: React.FC<TicketModalProps> = ({
             </div>
 
             {isPaidPass ? (
-              /* Real Stripe embedded payment box — handles card, Apple Pay, Google Pay */
-              <StripeEmbeddedCheckoutBox
+              /* Custom minimal payment UI — handles card, Apple Pay, Google Pay */
+              <CustomStripeCheckout
                 passName={currentPassOption.name}
                 priceInDollars={currentPassOption.price}
+                onSuccess={handlePaymentSuccess}
               />
             ) : (
               /* Free pass keeps the simple name/email form, no payment needed */
