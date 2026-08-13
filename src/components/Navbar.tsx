@@ -177,14 +177,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             )}
 
-            {/* Desktop Only: Free Pass Button */}
+            {/* Desktop Only: Book a Class Button */}
             <button
-              onClick={() => onOpenBooking('free-open-house')}
+              onClick={() => onOpenBooking('dropin-1')}
               id="header-free-pass-btn"
               className="hidden md:flex liquid-glass-btn liquid-btn-primary px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold text-white tracking-wide items-center gap-1.5 shadow-lg shadow-red-600/30 shrink-0"
             >
               <Sparkles className="w-3.5 h-3.5 text-yellow-300 animate-pulse" />
-              <span>Free Open House</span>
+              <span>Join a Class</span>
             </button>
 
             {/* Mobile Menu Toggle */}
@@ -203,21 +203,18 @@ export const Navbar: React.FC<NavbarProps> = ({
         {mobileMenuOpen && (
           <div className="md:hidden mt-2 liquid-glass-panel rounded-2xl p-3.5 flex flex-col gap-2 border border-white/20 shadow-2xl animate-in fade-in slide-in-from-top-4 duration-200">
             
-            {/* 1. Free Open House CTA */}
+            {/* 1. Join a Class CTA */}
             <button
               onClick={() => {
                 setMobileMenuOpen(false);
-                onOpenBooking('free-open-house');
+                onOpenBooking('dropin-1');
               }}
               className="w-full py-3 px-4 rounded-xl text-xs font-black text-white bg-gradient-to-r from-red-600 via-rose-600 to-red-700 border border-red-400 flex items-center justify-between shadow-lg shadow-red-600/30 uppercase tracking-wider"
             >
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-yellow-300" />
-                <span>Claim Free Open House Pass</span>
+                <span>Join a Class</span>
               </div>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-white text-black font-extrabold">
-                $0 PASS
-              </span>
             </button>
 
             {/* 2. Member Login / Account Portal */}
@@ -313,9 +310,9 @@ export const Navbar: React.FC<NavbarProps> = ({
           )}
 
           <button
-            onClick={() => onOpenBooking('free-open-house')}
+            onClick={() => onOpenBooking('dropin-1')}
             className="p-2 rounded-full bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-lg shadow-red-500/40 flex flex-col items-center gap-0.5 scale-105 font-bold"
-            title="Free Pass"
+            title="Join a Class"
           >
             <Sparkles className="w-4 h-4 text-yellow-300 animate-spin" style={{ animationDuration: '4s' }} />
             <span className="text-[9px] tracking-tight">Free</span>

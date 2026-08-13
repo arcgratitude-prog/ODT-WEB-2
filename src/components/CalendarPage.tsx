@@ -53,21 +53,7 @@ export const CalendarPage: React.FC<CalendarPageProps> = ({ onOpenBooking, onNav
       isFeatured: true
     });
 
-    // 2. Free Open House: Wednesday, August 5, 2026
-    events.push({
-      id: 'open-house-aug5',
-      title: 'Free Open House & Intro Class',
-      date: new Date(2026, 7, 5),
-      timeStr: '7:00 PM – 10:00 PM',
-      category: 'open-house',
-      location: 'Dance Factory - WestShore Plaza Mall, Tampa, FL',
-      passTypeId: 'free-open-house',
-      description: 'Free community night! Experience our Urban Bachata classes with zero commitment.',
-      badge: 'FREE PASS',
-      color: 'from-emerald-500 to-teal-600 text-white'
-    });
-
-    // 3. Wednesday Classes (every Wednesday in Aug & Sept)
+    // 2. Wednesday Classes (every Wednesday in Aug & Sept)
     const wednesdayDatesInAug = [5, 12, 19, 26];
     const wednesdayDatesInSept = [2, 9, 16, 23, 30];
 
@@ -193,7 +179,6 @@ export const CalendarPage: React.FC<CalendarPageProps> = ({ onOpenBooking, onNav
               { id: 'ALL', label: 'All Events' },
               { id: 'social', label: 'Socials', icon: Flame },
               { id: 'class', label: 'Wednesday Classes', icon: Ticket },
-              { id: 'open-house', label: 'Free Open House', icon: Sparkles },
             ].map((cat) => {
               const Icon = cat.icon;
               return (

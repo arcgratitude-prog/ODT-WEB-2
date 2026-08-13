@@ -133,22 +133,6 @@ export const SECRET_OPEN_HOUSE_PASS: PassOption = {
 
 export const PASS_OPTIONS: PassOption[] = [
   {
-    id: 'free-open-house',
-    name: 'Free Open House Class',
-    price: 0,
-    originalPrice: 50,
-    tagline: 'Experience all classes for FREE on August 5th!',
-    classesCount: 3,
-    popular: false,
-    features: [
-      'Full access to August 5th Open House',
-      'Try all Wednesday classes for $0',
-      'Social dance session & meet instructors',
-      'Exclusive 4-Week Track member options'
-    ],
-    type: 'free_open_house'
-  },
-  {
     id: 'track-foundations',
     name: 'Tier 1: Foundations Track',
     price: 80,
@@ -217,17 +201,6 @@ export const PASS_OPTIONS: PassOption[] = [
 
 export const SPECIAL_EVENTS: SpecialEvent[] = [
   {
-    id: 'open-house',
-    title: 'FREE URBAN BACHATA OPEN HOUSE',
-    badge: 'SPECIAL EVENT',
-    dateString: 'Wednesday, August 5th | 7:00 PM - 10:00 PM',
-    isoDate: '2026-08-05T19:00:00',
-    description: 'Join us for a 100% FREE night of Urban Bachata! Sample our Foundations, Skills & Drills, and Urban Flow classes with zero obligation. Meet the instructors, dance with fellow students, and enjoy social vibes.',
-    highlightText: 'Free Entry for All • No Partner Needed • Beginner Friendly',
-    isFree: true,
-    ctaText: 'Claim Free Open House Pass'
-  },
-  {
     id: 'cycle-1',
     title: '4-WEEK URBAN BACHATA TRACKS',
     badge: 'PROGRESSIVE COURSES',
@@ -275,11 +248,6 @@ export const FAQ_DATA: FAQItem[] = [
     question: 'Where is Dance Factory located inside WestShore Plaza Mall?',
     answer: 'Dance Factory is located inside WestShore Plaza Mall at suite A10 (334 Westshore Plaza A10, Tampa, FL 33609). Park in the main mall lot near the Dance Factory exterior entrance or mall wing for easy access.',
     category: 'Location'
-  },
-  {
-    question: 'What is the August 5th Free Open House?',
-    answer: 'On Wednesday, August 5th, we are holding a completely FREE Open House night! You can take all 3 classes for free, meet our instructors, experience our teaching style, and hang out with the Tampa Urban Bachata community.',
-    category: 'General'
   }
 ];
 

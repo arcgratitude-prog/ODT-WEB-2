@@ -236,7 +236,6 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({ onOpenBooking }) => {
                 <option value="8 PM Sensual Skills & Body Isolation">Wednesday 8 PM - Sensual Skills & Body Isolation</option>
                 <option value="9 PM Urban Flow & Partnerwork">Wednesday 9 PM - Urban Flow & Syncopated Partnerwork</option>
                 <option value="Wednesday Full Night Immersion">Wednesday Full Night Immersion (All 3 Classes)</option>
-                <option value="Open House Event">Free Open House Event</option>
               </select>
             </div>
 

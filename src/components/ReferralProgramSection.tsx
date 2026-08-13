@@ -169,7 +169,7 @@ export const ReferralProgramSection: React.FC<ReferralProgramSectionProps> = ({ 
 
             {onOpenBooking && (
               <button
-                onClick={() => onOpenBooking('free-open-house')}
+                onClick={() => onOpenBooking('dropin-1')}
                 className="px-4 py-1.5 rounded-full bg-red-600 hover:bg-red-500 text-white font-bold text-xs flex items-center gap-1.5 self-start sm:self-auto transition-all shadow-md"
               >
                 <span>Claim Rewards at Check-in</span>

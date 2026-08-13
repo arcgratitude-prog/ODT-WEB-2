@@ -55,7 +55,7 @@ export const SavedPassesDrawer: React.FC<SavedPassesDrawerProps> = ({
                 No saved classes on this device yet.
               </p>
               <p className="text-xs text-slate-400">
-                Claim your Free Open House or Drop-in class ticket to see your digital ticket here!
+                Claim a class pass to see your digital ticket here!
               </p>
             </div>
           ) : (

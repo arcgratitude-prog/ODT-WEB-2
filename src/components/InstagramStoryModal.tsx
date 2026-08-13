@@ -80,9 +80,9 @@ export const InstagramStoryModal: React.FC<InstagramStoryModalProps> = ({
       subtitle: '7 PM Foundations • 8 PM Skills & Drills • 9 PM Urban Flow • Dance Factory Westshore Mall',
       location: 'Westshore Plaza Mall Unit A10',
       timeAgo: '6h ago',
-      badge: 'FREE OPEN HOUSE',
-      ctaText: 'Reserve Free Open House',
-      passId: 'free-open-house'
+      badge: 'WEEKLY CLASSES',
+      ctaText: 'Book a Class',
+      passId: 'dropin-1'
     }
   ];
 

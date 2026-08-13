@@ -203,22 +203,18 @@ export const Hero: React.FC<HeroProps> = ({
             {/* Primary Action Buttons (Liquid Glass) */}
             <div className="flex flex-wrap items-center gap-3 pt-2 w-full sm:w-auto">
               <button
-                onClick={() => onOpenBooking('free-open-house')}
-                id="hero-free-pass-btn"
+                onClick={() => {
+                  const el = document.getElementById('passes');
+                  if (el) {
+                    el.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
+                id="hero-join-class-btn"
                 className="liquid-glass-btn liquid-btn-primary px-6 py-3.5 rounded-2xl text-sm font-extrabold text-white flex items-center justify-center gap-2.5 shadow-xl shadow-red-600/40 w-full sm:w-auto"
-              >
-                <Sparkles className="w-4 h-4 text-yellow-300" />
-                <span>CLAIM FREE OPEN HOUSE TICKET</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-
-              <button
-                onClick={() => onOpenBooking('dropin-1')}
-                id="hero-dropin-pass-btn"
-                className="liquid-glass-btn liquid-btn-secondary px-5 py-3.5 rounded-2xl text-sm font-bold text-slate-100 hover:text-white flex items-center justify-center gap-2 w-full sm:w-auto"
               >
                 <Calendar className="w-4 h-4 text-red-400" />
                 <span>Join a Class</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
 
               <button

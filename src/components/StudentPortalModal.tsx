@@ -415,7 +415,7 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                   <button
                     onClick={() => {
                       onClose();
-                      onOpenBooking('free-open-house');
+                      onOpenBooking('dropin-1');
                     }}
                     className="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md transition-all"
                   >
@@ -578,11 +578,11 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                       <button
                         onClick={() => {
                           onClose();
-                          onOpenBooking('free-open-house');
+                          onOpenBooking('dropin-1');
                         }}
                         className="px-4 py-2.5 rounded-xl bg-red-600 text-white text-xs font-bold"
                       >
-                        Claim Free Wednesday Pass
+                        Browse Class Passes
                       </button>
                     </div>
                   ) : (

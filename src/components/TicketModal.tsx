@@ -15,7 +15,7 @@ interface TicketModalProps {
 export const TicketModal: React.FC<TicketModalProps> = ({
   isOpen,
   onClose,
-  initialPassTypeId = 'free-open-house',
+  initialPassTypeId = 'dropin-1',
   onPassCreated
 }) => {
   const [selectedPassId, setSelectedPassId] = useState<string>(initialPassTypeId);
