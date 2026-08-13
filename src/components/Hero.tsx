@@ -107,7 +107,7 @@ export const Hero: React.FC<HeroProps> = ({
           <div className="lg:col-span-7 flex flex-col items-start text-left space-y-6">
             
             {/* Badges Header Row */}
-            {/* Desktop Version: Full text pill badges */}
+            {/* Desktop Version: Instagram badge */}
             <div className="hidden sm:flex flex-wrap items-center gap-2">
               <a 
                 href={STUDIO_INFO.instagramUrl} 
@@ -120,54 +120,10 @@ export const Hero: React.FC<HeroProps> = ({
                 <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
                 {STUDIO_INFO.instagram}
               </a>
-
-              <a 
-                href={STUDIO_INFO.whatsappLink} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="glass-badge px-4 py-1.5 rounded-full text-xs font-bold text-emerald-400 hover:text-emerald-300 hover:bg-emerald-600/30 uppercase flex items-center gap-2 border border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all"
-                title="Join Urban Bachata WhatsApp Group"
-              >
-                <MessageCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                WhatsApp Community
-              </a>
-
-              <a 
-                href={STUDIO_INFO.googleMapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="glass-badge px-4 py-1.5 rounded-full text-xs font-medium text-white/80 hover:text-white flex items-center gap-1.5"
-                title="Dance Factory Location"
-              >
-                <MapPin className="w-3.5 h-3.5 text-red-400 shrink-0" />
-                Dance Factory • WestShore Plaza
-              </a>
             </div>
 
-            {/* Mobile Version: Single Line with 3 Circular Icon Buttons */}
+            {/* Mobile Version: Single Instagram Icon Button */}
             <div className="flex sm:hidden items-center gap-3 py-1">
-              {/* Dance Factory Location Circle */}
-              <a 
-                href={STUDIO_INFO.googleMapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-11 h-11 rounded-full bg-slate-900/95 hover:bg-slate-800 border border-white/30 shadow-lg flex items-center justify-center text-red-400 transition-transform active:scale-95"
-                title="Dance Factory Location (Google Maps)"
-              >
-                <MapPin className="w-5 h-5 text-red-400" />
-              </a>
-
-              {/* WhatsApp Community Circle */}
-              <a 
-                href={STUDIO_INFO.whatsappLink} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="w-11 h-11 rounded-full bg-emerald-950/95 hover:bg-emerald-900 border border-emerald-500/60 shadow-[0_0_15px_rgba(16,185,129,0.4)] flex items-center justify-center text-emerald-400 transition-transform active:scale-95"
-                title="Join Urban Bachata WhatsApp Community"
-              >
-                <MessageCircle className="w-5 h-5 text-emerald-400" />
-              </a>
-
               {/* Instagram Circle */}
               <a 
                 href={STUDIO_INFO.instagramUrl} 
@@ -195,8 +151,12 @@ export const Hero: React.FC<HeroProps> = ({
                 </h1>
               </div>
 
+              <p className="text-sm sm:text-base font-bold uppercase tracking-[0.15em] text-white/90 pt-2">
+                Learn. Connect. Dance.
+              </p>
+
               <p className="text-base sm:text-lg text-white/80 max-w-xl font-light leading-relaxed pt-1">
-                Learn Bachata in Tampa, FL with directors Albina & Isaac! Top-rated beginner Bachata classes, progressive 4-week tracks, and Urban Sensual Bachata flow at Dance Factory in WestShore Plaza. No partner needed!
+                Weekly Bachata classes in Tampa led by Albina & Isaac. Beginner-friendly, progressive, and open to everyone. No partner needed.
               </p>
             </div>
 
@@ -399,31 +359,6 @@ export const Hero: React.FC<HeroProps> = ({
 
               </div>
             )}
-
-            {/* 3. BOTTOM: WhatsApp Community & Dance Factory Location Buttons BELOW the Pictures & Videos (Desktop Only - Mobile uses circular icons above) */}
-            <div className="hidden sm:flex flex-row items-center justify-center gap-2.5 w-full">
-              <a 
-                href={STUDIO_INFO.whatsappLink} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="px-4 py-3 rounded-2xl text-xs font-bold text-emerald-300 hover:text-white bg-emerald-950/90 hover:bg-emerald-900 border border-emerald-500/50 shadow-lg shadow-emerald-950/50 uppercase flex items-center justify-center gap-2 transition-all"
-                title="Join Urban Bachata WhatsApp Group"
-              >
-                <MessageCircle className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>AI Urbano WhatsApp Community</span>
-              </a>
-
-              <a 
-                href={STUDIO_INFO.googleMapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-4 py-3 rounded-2xl text-xs font-semibold text-white/90 bg-slate-900/90 hover:bg-slate-800 border border-white/20 uppercase flex items-center justify-center gap-2 transition-all shadow-md"
-                title="View Dance Factory on Google Maps"
-              >
-                <MapPin className="w-4 h-4 text-red-400 shrink-0" />
-                <span>Dance Factory Location</span>
-              </a>
-            </div>
 
             {/* Decorative Outer Ambient Glow */}
             <div className="absolute w-[420px] h-[420px] rounded-full bg-gradient-to-r from-red-600/10 to-rose-600/10 blur-3xl pointer-events-none -z-10" />
