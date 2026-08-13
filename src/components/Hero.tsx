@@ -184,7 +184,7 @@ export const Hero: React.FC<HeroProps> = ({
             <div className="space-y-3 relative w-full">
               <div>
                 <span className="text-red-500 font-bold tracking-[0.3em] uppercase text-xs block">
-                  WEDNESDAY NIGHTS IN TAMPA • NEW SEASON
+                  EVERY WEDNESDAY
                 </span>
 
                 <h1 className="text-4xl sm:text-6xl xl:text-7xl font-black tracking-tighter text-white uppercase font-sans leading-[0.95]">
@@ -195,163 +195,9 @@ export const Hero: React.FC<HeroProps> = ({
                 </h1>
               </div>
 
-              {/* EXCLUSIVELY MOBILE VERSION: 2 Auto-Playing Videos placed directly under bold title and above description */}
-              {!isDesktopScreen && (
-                <div className="block lg:hidden my-4 w-full">
-                  <div className="grid grid-cols-2 gap-3 w-full">
-                    
-                    {/* Video 1: CLASS */}
-                    <div className="relative aspect-[9/14] rounded-[22px] overflow-hidden border border-amber-500/40 shadow-xl bg-black">
-                      {/* Top Center Badge */}
-                      <div className="absolute top-2 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
-                        <span className="px-2.5 py-0.5 rounded-full text-[8px] font-mono font-extrabold text-black bg-amber-400 flex items-center gap-1 shadow-md uppercase tracking-wider whitespace-nowrap">
-                          <Users className="w-2.5 h-2.5 text-black" />
-                          <span>CLASS</span>
-                        </span>
-                      </div>
-
-                      {/* Top Right Controls */}
-                      <div className="absolute top-2 right-2 z-30 pointer-events-auto">
-                        <button
-                          onClick={toggleClassMute}
-                          className="p-1 rounded-full bg-black/80 text-white hover:bg-amber-500 transition-colors border border-white/20"
-                          title={isClassMuted ? "Unmute Class Sound" : "Mute Class Sound"}
-                        >
-                          {isClassMuted ? (
-                            <VolumeX className="w-3 h-3 text-amber-300" />
-                          ) : (
-                            <Volume2 className="w-3 h-3 text-emerald-400 animate-pulse" />
-                          )}
-                        </button>
-                      </div>
-
-                      {/* Auto-playing Class Video */}
-                      <div className="absolute inset-0 w-full h-full bg-black">
-                        <AutoPlayVideo
-                          src="/videos/urbano_wednesday_class.mp4"
-                          isMuted={isClassMuted}
-                          className="w-full h-full object-cover object-center"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none z-10" />
-                      </div>
-
-                      {/* Bottom Caption Overlay */}
-                      <div className="absolute bottom-2 left-2 right-2 z-20 pointer-events-none">
-                        <span className="text-[8px] font-mono font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1">
-                          <Sparkles className="w-2.5 h-2.5 text-amber-300" />
-                          Live Vibe
-                        </span>
-                        <p className="text-[10px] font-bold text-white truncate">Wednesday Socials</p>
-                      </div>
-                    </div>
-
-                    {/* Video 2: AI.URBANO */}
-                    <div className="relative aspect-[9/14] rounded-[22px] overflow-hidden border border-rose-500/50 shadow-xl bg-black">
-                      {/* Top Center Badge */}
-                      <div className="absolute top-2 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
-                        <span className="px-2.5 py-0.5 rounded-full text-[8px] font-mono font-extrabold text-white bg-gradient-to-r from-pink-600 via-rose-600 to-red-600 flex items-center gap-1 shadow-md uppercase tracking-wider whitespace-nowrap">
-                          <Flame className="w-2.5 h-2.5 text-yellow-300 animate-pulse" />
-                          <span>AI.URBANO</span>
-                        </span>
-                      </div>
-
-                      {/* Top Right Controls */}
-                      <div className="absolute top-2 right-2 z-30 flex items-center gap-1 pointer-events-auto">
-                        <button
-                          onClick={toggleDancingMute}
-                          className="p-1 rounded-full bg-black/80 text-white hover:bg-pink-600 transition-colors border border-white/20"
-                          title={isDancingMuted ? "Unmute Dancing Sound" : "Mute Dancing Sound"}
-                        >
-                          {isDancingMuted ? (
-                            <VolumeX className="w-3 h-3 text-rose-300" />
-                          ) : (
-                            <Volume2 className="w-3 h-3 text-emerald-400 animate-pulse" />
-                          )}
-                        </button>
-
-                        <a
-                          href="https://www.instagram.com/reel/DaYnhyGJtQ_/"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-1 rounded-full bg-black/80 text-white hover:bg-pink-600 transition-colors border border-white/20"
-                          title="Open on Instagram"
-                        >
-                          <Instagram className="w-3 h-3" />
-                        </a>
-                      </div>
-
-                      {/* Auto-playing Dancing Video */}
-                      <div className="absolute inset-0 w-full h-full bg-black">
-                        <AutoPlayVideo
-                          src="/videos/albina_isaac_partner_flow.mp4"
-                          isMuted={isDancingMuted}
-                          className="w-full h-full object-cover object-center"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none z-10" />
-                      </div>
-
-                      {/* Bottom Caption Overlay */}
-                      <a
-                        href="https://www.instagram.com/reel/DaYnhyGJtQ_/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="absolute bottom-2 left-2 right-2 z-20 flex items-center justify-between text-white text-xs pointer-events-auto"
-                      >
-                        <div>
-                          <span className="text-[8px] font-mono font-bold text-pink-300 uppercase tracking-wider block">
-                            Urban Flow
-                          </span>
-                          <p className="text-[10px] font-bold text-white truncate">Albina & Isaac Demo</p>
-                        </div>
-                        <ExternalLink className="w-3 h-3 text-pink-400 shrink-0" />
-                      </a>
-                    </div>
-
-                  </div>
-                </div>
-              )}
-
               <p className="text-base sm:text-lg text-white/80 max-w-xl font-light leading-relaxed pt-1">
                 Learn Bachata in Tampa, FL with directors Albina & Isaac! Top-rated beginner Bachata classes, progressive 4-week tracks, and Urban Sensual Bachata flow at Dance Factory in WestShore Plaza. No partner needed!
               </p>
-            </div>
-
-            {/* Open House Countdown Card (Liquid Glass) */}
-            <div className="w-full max-w-lg liquid-glass-panel rounded-2xl p-4 border border-red-500/30 shadow-xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 px-3 py-1 bg-gradient-to-l from-red-600 to-rose-600 text-white text-[10px] font-bold uppercase rounded-bl-xl tracking-wider">
-                Special Highlight
-              </div>
-              
-              <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="w-4 h-4 text-yellow-300 animate-spin" style={{ animationDuration: '6s' }} />
-                <span className="text-xs font-bold uppercase tracking-wider text-red-400">
-                  FREE OPEN HOUSE • AUGUST 5TH
-                </span>
-              </div>
-
-              <p className="text-xs text-slate-300 mb-3">
-                Try all 3 Wednesday classes for <strong>$0</strong> on August 5th! Reserve your digital class ticket now.
-              </p>
-
-              {/* Countdown Grid */}
-              <div className="grid grid-cols-4 gap-2 text-center">
-                <div className="bg-white/5 rounded-lg p-2 border border-white/10">
-                  <span className="block text-lg font-mono font-bold text-white">{timeLeft.days}</span>
-                  <span className="text-[10px] text-slate-400 uppercase">Days</span>
-                </div>
-                <div className="bg-white/5 rounded-lg p-2 border border-white/10">
-                  <span className="block text-lg font-mono font-bold text-white">{timeLeft.hours}</span>
-                  <span className="text-[10px] text-slate-400 uppercase">Hours</span>
-                </div>
-                <div className="bg-white/5 rounded-lg p-2 border border-white/10">
-                  <span className="block text-lg font-mono font-bold text-white">{timeLeft.minutes}</span>
-                  <span className="text-[10px] text-slate-400 uppercase">Mins</span>
-                </div>
-                <div className="bg-white/5 rounded-lg p-2 border border-white/10">
-                  <span className="block text-lg font-mono font-bold text-red-400">{timeLeft.seconds}</span>
-                  <span className="text-[10px] text-slate-400 uppercase">Secs</span>
-                </div>
-              </div>
             </div>
 
             {/* Primary Action Buttons (Liquid Glass) */}
@@ -372,7 +218,7 @@ export const Hero: React.FC<HeroProps> = ({
                 className="liquid-glass-btn liquid-btn-secondary px-5 py-3.5 rounded-2xl text-sm font-bold text-slate-100 hover:text-white flex items-center justify-center gap-2 w-full sm:w-auto"
               >
                 <Calendar className="w-4 h-4 text-red-400" />
-                <span>Wednesday Drop-Ins ($20)</span>
+                <span>Join a Class</span>
               </button>
 
               <button
@@ -444,9 +290,9 @@ export const Hero: React.FC<HeroProps> = ({
               </div>
             </div>
 
-            {/* 2. MIDDLE: Two Auto-Playing Video Reels BELOW the Instructor Photo (Desktop Only) */}
-            {isDesktopScreen && (
-              <div className="hidden lg:grid grid-cols-2 gap-3 sm:gap-4 w-full">
+            {/* 2. MIDDLE: Two Auto-Playing Video Reels BELOW the Instructor Photo (all screen sizes) */}
+            {(
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full">
                 
                 {/* Video 1: CLASS */}
                 <div className="relative aspect-[9/14] rounded-[24px] overflow-hidden border border-amber-500/40 shadow-xl bg-black group hover:scale-[1.03] transition-transform duration-300 z-20">

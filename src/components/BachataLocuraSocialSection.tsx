@@ -31,32 +31,11 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
   return (
     <section id="social" className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 relative max-w-7xl mx-auto">
       
-      {/* Top Navigation Bar */}
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-        {onNavigateToHome && (
-          <button
-            onClick={onNavigateToHome}
-            className="px-4 py-2 rounded-full bg-slate-900/90 hover:bg-slate-800 text-slate-200 hover:text-white border border-slate-700 text-xs font-bold flex items-center gap-2 transition-all shadow-md group"
-          >
-            <span className="text-red-400 group-hover:-translate-x-1 transition-transform">←</span>
-            <span>Back to Wednesday Classes & Studio Schedule</span>
-          </button>
-        )}
-
-        <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-          <Radio className="w-3.5 h-3.5 text-pink-500 animate-pulse" />
-          <span>TAMPA BAY BACHATA SOCIAL DANCE NIGHTS</span>
-        </span>
-      </div>
-
       {/* Social Event Switcher Header */}
       <div className="text-center space-y-3 mb-8">
         <h1 className="text-3xl sm:text-5xl font-black text-white uppercase font-sans tracking-tight">
           ODT <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-rose-400">SOCIALS</span>
         </h1>
-        <p className="text-slate-300 text-xs sm:text-sm max-w-2xl mx-auto">
-          We host 2 iconic social dance events in Tampa Bay! Join our monthly 2nd Friday night party at Dance Factory or our specialty Sunday socials.
-        </p>
 
         {/* Dual Social Selector Tabs - 2 Tabs Side-by-Side */}
         <div className="grid grid-cols-2 gap-2 p-2 rounded-2xl bg-slate-900/90 border border-slate-700 shadow-2xl max-w-lg mx-auto w-full mt-2">
