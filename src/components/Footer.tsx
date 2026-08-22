@@ -15,14 +15,6 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateToSecret }) => {
       <div className="max-w-7xl mx-auto pb-8 mb-8 border-b border-white/10 flex flex-wrap justify-between items-center gap-6">
         <div className="flex flex-wrap gap-8 sm:gap-12">
           <div>
-            <p className="text-2xl sm:text-3xl font-black text-white font-mono">500+</p>
-            <p className="text-[10px] tracking-[0.25em] uppercase text-white/50 font-bold">Active Dancers</p>
-          </div>
-          <div>
-            <p className="text-2xl sm:text-3xl font-black text-white font-mono">3</p>
-            <p className="text-[10px] tracking-[0.25em] uppercase text-white/50 font-bold">Wednesday Classes</p>
-          </div>
-          <div>
             <p className="text-2xl sm:text-3xl font-black text-white font-mono">100%</p>
             <p className="text-[10px] tracking-[0.25em] uppercase text-white/50 font-bold">Urban Vibe Rating</p>
           </div>
@@ -70,7 +62,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateToSecret }) => {
             Top-rated Bachata classes in Tampa, FL. Learn beginner Bachata lessons, progressive 4-week tracks, and Urban Bachata flow at Dance Factory inside WestShore Plaza Mall.
           </p>
           <div className="text-[11px] text-slate-400 font-mono leading-tight pt-1">
-            <span className="text-white font-bold">Serving Tampa Bay:</span> South Tampa • Ybor City • Downtown Tampa • Brandon • Riverview • St. Petersburg • Clearwater • Carrollwood • Wesley Chapel
+            <span className="text-white font-bold">Serving Tampa Bay:</span> South Tampa - Ybor City - Downtown Tampa - Brandon - Riverview - St. Petersburg - Clearwater - Carrollwood - Wesley Chapel
           </div>
         </div>
 
@@ -107,7 +99,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateToSecret }) => {
 
         {/* Copyright */}
         <div className="md:col-span-3 text-left md:text-right text-xs text-slate-400 space-y-1">
-          <div>© {new Date().getFullYear()} Urban Bachata Tampa</div>
+          <div>&copy; {new Date().getFullYear()} Urban Bachata Tampa</div>
           <div className="flex items-center md:justify-end gap-1 text-[11px] text-slate-400">
             <span>Crafted for Urban Bachata Dancers</span>
             <Heart className="w-3 h-3 text-red-500 fill-red-500" />
@@ -119,7 +111,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateToSecret }) => {
                 className="text-[10px] text-slate-400 hover:text-red-400 font-mono transition-colors opacity-70 hover:opacity-100 flex items-center md:justify-end gap-1"
                 title="Organizer / On-Site Open House Secret Page"
               >
-                <span>🔑 Open House Secret Scan ($120)</span>
+                <span>Open House Secret Scan ($120)</span>
               </button>
             </div>
           )}
