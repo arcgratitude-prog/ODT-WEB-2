@@ -100,7 +100,7 @@ export const SOCIAL_PASS_OPTION: PassOption = {
   price: 15,
   originalPrice: 20,
   savings: 'Save $5 Pre-Sale',
-  tagline: 'Sunday, August 16th @ Yuengling Draft Haus (Presocial Class + Social)',
+  tagline: 'Sunday, September 13th @ Yuengling Draft Haus (Presocial Class + Social)',
   classesCount: 1,
   popular: true,
   features: [
