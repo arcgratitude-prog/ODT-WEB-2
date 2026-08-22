@@ -45,7 +45,7 @@ export const ScheduleSection: React.FC<ScheduleSectionProps> = ({ onOpenBooking 
           AUTO-UPDATING LIVE SCHEDULE
         </div>
 
-        <h2 className="text-3xl sm:text-5xl font-black text-white uppercase font-sans tracking-tight">
+        <h2 className="text-2xl sm:text-5xl font-black text-white uppercase font-sans tracking-tight whitespace-nowrap">
           EVERY WEDNESDAY • <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-rose-300 to-red-600 urban-text-glow">7:00 PM – 10:00 PM</span>
         </h2>
 
