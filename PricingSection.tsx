@@ -1,0 +1,119 @@
+import React, { useState } from 'react';
+import { Ticket, Sparkles, Check, ChevronDown, ChevronUp } from 'lucide-react';
+import { PASS_OPTIONS } from '../data/danceData';
+
+interface PricingSectionProps {
+  onOpenBooking: (passTypeId?: string) => void;
+}
+
+export const PricingSection: React.FC<PricingSectionProps> = ({ onOpenBooking }) => {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const toggleExpanded = (id: string) => {
+    setExpandedId(expandedId === id ? null : id);
+  };
+
+  return (
+    <section id="passes" className="py-16 sm:py-20 lg:py-28 px-4 sm:px-6 lg:px-8 relative max-w-5xl mx-auto">
+
+      {/* Section Header */}
+      <div className="text-center space-y-4 mb-10 sm:mb-12">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-badge border border-red-500/40 text-xs font-bold text-red-400 uppercase tracking-[0.25em]">
+          <Ticket className="w-3.5 h-3.5" />
+          CLASS TRACKS & PASSES
+        </div>
+
+        <h2 className="text-3xl sm:text-5xl font-black text-white uppercase font-sans tracking-tight">
+          FIND YOUR <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-rose-300 to-red-600 urban-text-glow">TRACK</span>
+        </h2>
+
+        <p className="text-slate-300 text-sm sm:text-base max-w-xl mx-auto">
+          Tap a track to see what's included, or just pick one and go.
+        </p>
+      </div>
+
+      {/* Minimal Expandable Pricing List */}
+      <div className="space-y-3">
+        {PASS_OPTIONS.map((pass) => {
+          const isExpanded = expandedId === pass.id;
+
+          return (
+            <div
+              key={pass.id}
+              className={`rounded-2xl border overflow-hidden transition-all duration-200 ${
+                pass.popular
+                  ? 'border-red-600/70 shadow-[0_0_25px_rgba(220,38,38,0.2)] bg-gradient-to-r from-[#1a060a] via-[#120508] to-[#0a0a0c]'
+                  : 'border-white/12 bg-white/[0.03]'
+              }`}
+            >
+              {/* Collapsed row — always visible */}
+              <button
+                onClick={() => toggleExpanded(pass.id)}
+                className="w-full flex items-center justify-between gap-4 p-4 sm:p-5 text-left"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  {pass.popular && (
+                    <span className="hidden sm:inline-flex px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-red-600 text-white shrink-0">
+                      Popular
+                    </span>
+                  )}
+                  <div className="min-w-0">
+                    <h3 className="text-sm sm:text-base font-black text-white uppercase tracking-tight truncate">
+                      {pass.name}
+                    </h3>
+                    <p className="text-[11px] sm:text-xs text-slate-400 truncate">
+                      {pass.tagline}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 shrink-0">
+                  <div className="text-right">
+                    <span className={`text-xl sm:text-2xl font-black font-mono ${pass.popular ? 'text-red-400' : 'text-white'}`}>
+                      ${pass.price}
+                    </span>
+                    {pass.originalPrice && (
+                      <span className="text-[10px] font-bold text-slate-500 line-through ml-1.5">
+                        ${pass.originalPrice}
+                      </span>
+                    )}
+                  </div>
+                  <div className="p-1.5 rounded-full bg-white/10 text-slate-300">
+                    {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  </div>
+                </div>
+              </button>
+
+              {/* Expanded details — only when opened */}
+              {isExpanded && (
+                <div className="px-4 sm:px-5 pb-5 pt-1 border-t border-white/10 animate-in fade-in duration-200">
+                  <div className="space-y-2 mb-4 mt-3">
+                    {pass.features.map((feature, idx) => (
+                      <div key={idx} className="flex items-start gap-2 text-xs text-slate-200">
+                        <Check className={`w-3.5 h-3.5 shrink-0 mt-0.5 ${pass.popular ? 'text-red-500' : 'text-red-400'}`} />
+                        <span>{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => onOpenBooking(pass.id)}
+                    className={`w-full py-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all active:scale-95 ${
+                      pass.popular
+                        ? 'bg-gradient-to-r from-red-600 via-red-700 to-black hover:from-red-500 hover:to-zinc-900 text-white shadow-lg shadow-red-600/40'
+                        : 'liquid-glass-btn liquid-btn-secondary text-slate-100 hover:text-white'
+                    }`}
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
+                    <span>Book This Track — ${pass.price}</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+    </section>
+  );
+};
