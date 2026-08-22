@@ -196,6 +196,36 @@ export const PASS_OPTIONS: PassOption[] = [
       'Digital Ticket on your phone'
     ],
     type: 'drop_in_1'
+  },
+  {
+    id: 'dropin-2',
+    name: '2 Class Drop-In',
+    price: 35,
+    tagline: 'Attend any 2 Wednesday class sessions',
+    classesCount: 2,
+    popular: false,
+    features: [
+      'Valid for 2 classes of your choice',
+      'Mix & match any 7PM, 8PM, or 9PM sessions',
+      'Flexible drop-in attendance',
+      'Digital Ticket on your phone'
+    ],
+    type: 'drop_in_2'
+  },
+  {
+    id: 'dropin-3',
+    name: '3 Class Drop-In',
+    price: 50,
+    tagline: 'Full night — all 3 Wednesday class sessions',
+    classesCount: 3,
+    popular: false,
+    features: [
+      'Valid for all 3 Wednesday classes',
+      '7PM Foundations + 8PM Skills & Drills + 9PM Urban Flow',
+      'Best drop-in value for the full night',
+      'Digital Ticket on your phone'
+    ],
+    type: 'drop_in_3'
   }
 ];
 
