@@ -38,7 +38,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const moreLinks = [
     { page: 'schedule' as const, label: 'Schedule', icon: Calendar },
-    { page: 'review' as const, label: 'Review ($10 Off)', icon: Star },
+    { page: 'review' as const, label: 'Leave a Review', icon: Star },
     { page: 'referral' as const, label: 'Referrals', icon: Gift },
   ];
 
@@ -216,7 +216,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Mobile Dropdown Panel (Everything Else in Dropdown) */}
         {mobileMenuOpen && (
-          <div className="md:hidden mt-2 liquid-glass-panel rounded-2xl p-3.5 flex flex-col gap-2 border border-white/20 shadow-2xl animate-in fade-in slide-in-from-top-4 duration-200">
+          <div className="md:hidden mt-2 liquid-glass-panel-dark rounded-2xl p-3.5 flex flex-col gap-2 border border-white/20 shadow-2xl animate-in fade-in slide-in-from-top-4 duration-200">
             
             {/* 1. Join a Class CTA */}
             <button
