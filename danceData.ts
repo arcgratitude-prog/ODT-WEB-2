@@ -9,6 +9,7 @@ export const STUDIO_INFO: StudioInfo = {
   parkingInfo: 'Free Mall Parking right outside the main mall entrance near Dance Factory studio (A10 suite).',
   instagram: '@AI.URBANO',
   instagramUrl: 'https://www.instagram.com/ai.urbano/',
+  instagramStoriesUrl: 'https://www.instagram.com/stories/ai.urbano/',
   whatsappLink: 'https://chat.whatsapp.com/IyKDtYQCAf44qtuYW7etiU?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAcGRvZgJleHRuA2FlbQIxMQBzcnRjBmFwcF9pZA85MzY2MTk3NDMzOTI0NTkAAacPtCM2gsXFFtGsj4gUK0hrWwuA_MFJPWCxeCOuxeZF6nSUSbKq_hm3nAOE0w_aem_e0SV09i_86LWoQO9SP46Tw',
   googleMapsUrl: 'https://www.google.com/maps/place/AI+Urbano/@27.9464832,-82.5272046,17z/data=!4m18!1m9!3m8!1s0x88c2c34d346e81f9:0xb7e00c082c6ea9c6!2sAI+Urbano!8m2!3d27.9464832!4d-82.5272046!9m1!1b1!16s%2Fg%2F11z9n2wb01!3m7!1s0x88c2c34d346e81f9:0xb7e00c082c6ea9c6!8m2!3d27.9464832!4d-82.5272046!9m1!1b1!16s%2Fg%2F11z9n2wb01?entry=ttu&g_ep=EgoyMDI2MDcyMS4wIKXMDSoASAFQAw%3D%3D',
   googleReviewUrl: 'https://www.google.com/maps/place/AI+Urbano/@27.9464832,-82.5272046,17z/data=!4m18!1m9!3m8!1s0x88c2c34d346e81f9:0xb7e00c082c6ea9c6!2sAI+Urbano!8m2!3d27.9464832!4d-82.5272046!9m1!1b1!16s%2Fg%2F11z9n2wb01!3m7!1s0x88c2c34d346e81f9:0xb7e00c082c6ea9c6!8m2!3d27.9464832!4d-82.5272046!9m1!1b1!16s%2Fg%2F11z9n2wb01?entry=ttu&g_ep=EgoyMDI2MDcyMS4wIKXMDSoASAFQAw%3D%3D',

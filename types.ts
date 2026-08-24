@@ -67,6 +67,7 @@ export interface StudioInfo {
   parkingInfo: string;
   instagram: string;
   instagramUrl?: string;
+  instagramStoriesUrl?: string;
   whatsappLink?: string;
   googleMapsUrl?: string;
   googleReviewUrl?: string;
