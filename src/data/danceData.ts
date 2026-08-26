@@ -140,7 +140,7 @@ export const PASS_OPTIONS: PassOption[] = [
     classesCount: 4,
     popular: false,
     features: [
-      '4 weeks of Bachata Foundations classes (7:00-8:00 PM)',
+      '4 weeks — pick 1 class hour to attend weekly',
       'Access to our monthly Lab Night Practice Social',
       '20% off ODT socials',
       '10% off private lessons'
@@ -156,8 +156,7 @@ export const PASS_OPTIONS: PassOption[] = [
     classesCount: 8,
     popular: true,
     features: [
-      '4 weeks of Bachata Foundations classes (7:00-8:00 PM)',
-      '4 weeks of Skills & Drills classes (8:00-9:00 PM)',
+      '4 weeks — pick 2 class hours to attend weekly',
       'Access to our monthly Lab Night Practice Social',
       '20% off ODT socials',
       '10% off private lessons'

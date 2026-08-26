@@ -9,11 +9,21 @@ interface PricingSectionProps {
 
 const DROP_IN_IDS = ['dropin-1', 'dropin-2', 'dropin-full'];
 
+// How many of the 3 weekly class hours a customer picks for each tier track.
+// Foundations = pick 1 of the 3 hourly classes to attend each Wednesday.
+// Progression = pick 2 of the 3 hourly classes to attend each Wednesday.
+// Unlimited = all 3, always (no picking needed).
+const TRACK_PICK_COUNTS: Record<string, number> = {
+  'track-foundations': 1,
+  'track-progression': 2
+};
+
 export const PricingSection: React.FC<PricingSectionProps> = ({ onOpenBooking, onOpenDropInBooking }) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [selectedDropInId, setSelectedDropInId] = useState<string>('dropin-1');
-  // Which specific class hour(s) the customer picked within the selected tier.
-  const [selectedClassIds, setSelectedClassIds] = useState<string[]>([]);
+  // Which specific class hour(s) the customer picked, keyed by pass id —
+  // works for both the Drop-Ins quantity picker and the tier tracks below.
+  const [selectedClassIdsByPass, setSelectedClassIdsByPass] = useState<Record<string, string[]>>({});
 
   const toggleExpanded = (id: string) => {
     setExpandedId(expandedId === id ? null : id);
@@ -23,34 +33,45 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onOpenBooking, o
   const otherPasses = PASS_OPTIONS.filter(p => !DROP_IN_IDS.includes(p.id));
   const selectedDropIn = dropInPasses.find(p => p.id === selectedDropInId) || dropInPasses[0];
 
-  const handleSelectTier = (passId: string) => {
+  const handleSelectDropInQuantity = (passId: string) => {
     setSelectedDropInId(passId);
-    setSelectedClassIds([]);
+    setSelectedClassIdsByPass(prev => ({ ...prev, [passId]: [] }));
   };
 
-  const toggleClassSelection = (classId: string, maxAllowed: number) => {
-    setSelectedClassIds(prev => {
-      if (prev.includes(classId)) {
-        return prev.filter(id => id !== classId);
-      }
-      if (prev.length >= maxAllowed) {
+  const toggleClassSelection = (passId: string, classId: string, maxAllowed: number) => {
+    setSelectedClassIdsByPass(prev => {
+      const current = prev[passId] || [];
+      let next: string[];
+      if (current.includes(classId)) {
+        next = current.filter(id => id !== classId);
+      } else if (current.length >= maxAllowed) {
         // Swap out the earliest pick so it's always clear which are selected
-        return [...prev.slice(1), classId];
+        next = [...current.slice(1), classId];
+      } else {
+        next = [...current, classId];
       }
-      return [...prev, classId];
+      return { ...prev, [passId]: next };
     });
   };
 
-  const selectedClassTimes = selectedClassIds
+  const getClassTimes = (classIds: string[]) => classIds
     .map(id => CLASSES_DATA.find(c => c.id === id))
     .filter((c): c is typeof CLASSES_DATA[number] => Boolean(c))
     .map(c => `${c.time} (${c.title})`);
 
+  const selectedDropInClassIds = selectedClassIdsByPass[selectedDropInId] || [];
+  const selectedClassTimes = getClassTimes(selectedDropInClassIds);
+
   const needsClassSelection = selectedDropIn?.classesCount === 1 || selectedDropIn?.classesCount === 2;
-  const hasPickedEnoughClasses = !needsClassSelection || selectedClassIds.length === selectedDropIn.classesCount;
+  const hasPickedEnoughClasses = !needsClassSelection || selectedDropInClassIds.length === selectedDropIn.classesCount;
 
   const handleBookDropIn = () => {
     onOpenDropInBooking(selectedDropIn.id, selectedClassTimes);
+  };
+
+  const handleBookTrack = (passId: string) => {
+    const classIds = selectedClassIdsByPass[passId] || [];
+    onOpenDropInBooking(passId, getClassTimes(classIds));
   };
 
   return (
@@ -117,37 +138,37 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onOpenBooking, o
               {/* Expanded details — only when opened */}
               {isExpanded && (
                 <div className="px-4 sm:px-5 pb-5 pt-1 border-t border-white/10 animate-in fade-in duration-200">
-                  {/* Tier Tabs */}
+                  {/* Quantity Tabs */}
                   <div className="flex items-center gap-2 mt-3 mb-4">
-                    {dropInPasses.map((pass, idx) => (
+                    {dropInPasses.map((pass) => (
                       <button
                         key={pass.id}
-                        onClick={() => handleSelectTier(pass.id)}
+                        onClick={() => handleSelectDropInQuantity(pass.id)}
                         className={`flex-1 py-2.5 rounded-xl text-xs font-black uppercase tracking-wide transition-all ${
                           selectedDropInId === pass.id
                             ? 'bg-red-600 text-white shadow-lg shadow-red-600/30'
                             : 'bg-white/5 text-slate-300 border border-white/10 hover:bg-white/10'
                         }`}
                       >
-                        Tier {idx + 1}
+                        {pass.classesCount} Class{pass.classesCount > 1 ? 'es' : ''}
                         <span className="block font-mono text-[11px] opacity-80">${pass.price}</span>
                       </button>
                     ))}
                   </div>
 
-                  {/* Class Hour Sub-Selection — only for Tier 1 (1 class) & Tier 2 (2 classes) */}
+                  {/* Class Hour Sub-Selection — only when picking 1 or 2 classes */}
                   {needsClassSelection && (
                     <div className="mb-4">
                       <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
-                        Choose {selectedDropIn.classesCount} class{selectedDropIn.classesCount > 1 ? 'es' : ''} ({selectedClassIds.length}/{selectedDropIn.classesCount} selected)
+                        Choose {selectedDropIn.classesCount} class{selectedDropIn.classesCount > 1 ? 'es' : ''} ({selectedDropInClassIds.length}/{selectedDropIn.classesCount} selected)
                       </p>
                       <div className="space-y-2">
                         {CLASSES_DATA.map((classItem) => {
-                          const isSelected = selectedClassIds.includes(classItem.id);
+                          const isSelected = selectedDropInClassIds.includes(classItem.id);
                           return (
                             <button
                               key={classItem.id}
-                              onClick={() => toggleClassSelection(classItem.id, selectedDropIn.classesCount)}
+                              onClick={() => toggleClassSelection(selectedDropInId, classItem.id, selectedDropIn.classesCount)}
                               className={`w-full flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl text-left transition-all border ${
                                 isSelected
                                   ? 'bg-red-600/20 border-red-500/60 text-white'
@@ -244,30 +265,73 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onOpenBooking, o
               </button>
 
               {/* Expanded details — only when opened */}
-              {isExpanded && (
-                <div className="px-4 sm:px-5 pb-5 pt-1 border-t border-white/10 animate-in fade-in duration-200">
-                  <div className="space-y-2 mb-4 mt-3">
-                    {pass.features.map((feature, idx) => (
-                      <div key={idx} className="flex items-start gap-2 text-xs text-slate-200">
-                        <Check className={`w-3.5 h-3.5 shrink-0 mt-0.5 ${pass.popular ? 'text-red-500' : 'text-red-400'}`} />
-                        <span>{feature}</span>
-                      </div>
-                    ))}
-                  </div>
+              {isExpanded && (() => {
+                const pickCount = TRACK_PICK_COUNTS[pass.id];
+                const trackClassIds = selectedClassIdsByPass[pass.id] || [];
+                const trackNeedsSelection = Boolean(pickCount);
+                const trackHasPickedEnough = !trackNeedsSelection || trackClassIds.length === pickCount;
 
-                  <button
-                    onClick={() => onOpenBooking(pass.id)}
-                    className={`w-full py-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all active:scale-95 ${
-                      pass.popular
-                        ? 'bg-gradient-to-r from-red-600 via-red-700 to-black hover:from-red-500 hover:to-zinc-900 text-white shadow-lg shadow-red-600/40'
-                        : 'liquid-glass-btn liquid-btn-secondary text-slate-100 hover:text-white'
-                    }`}
-                  >
-                    <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
-                    <span>Book This Track — ${pass.price}</span>
-                  </button>
-                </div>
-              )}
+                return (
+                  <div className="px-4 sm:px-5 pb-5 pt-1 border-t border-white/10 animate-in fade-in duration-200">
+                    <div className="space-y-2 mb-4 mt-3">
+                      {pass.features.map((feature, idx) => (
+                        <div key={idx} className="flex items-start gap-2 text-xs text-slate-200">
+                          <Check className={`w-3.5 h-3.5 shrink-0 mt-0.5 ${pass.popular ? 'text-red-500' : 'text-red-400'}`} />
+                          <span>{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Class Hour Sub-Selection — only for tracks that require picking (Progression) */}
+                    {trackNeedsSelection && (
+                      <div className="mb-4">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+                          Choose {pickCount} classes to attend weekly ({trackClassIds.length}/{pickCount} selected)
+                        </p>
+                        <div className="space-y-2">
+                          {CLASSES_DATA.map((classItem) => {
+                            const isSelected = trackClassIds.includes(classItem.id);
+                            return (
+                              <button
+                                key={classItem.id}
+                                onClick={() => toggleClassSelection(pass.id, classItem.id, pickCount)}
+                                className={`w-full flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl text-left transition-all border ${
+                                  isSelected
+                                    ? 'bg-red-600/20 border-red-500/60 text-white'
+                                    : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                                }`}
+                              >
+                                <div className="min-w-0">
+                                  <span className="text-xs font-bold block truncate">{classItem.title}</span>
+                                  <span className="text-[10px] font-mono text-slate-400">{classItem.time}</span>
+                                </div>
+                                {isSelected && <Check className="w-4 h-4 text-red-400 shrink-0" />}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    <button
+                      onClick={() => handleBookTrack(pass.id)}
+                      disabled={!trackHasPickedEnough}
+                      className={`w-full py-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed ${
+                        pass.popular
+                          ? 'bg-gradient-to-r from-red-600 via-red-700 to-black hover:from-red-500 hover:to-zinc-900 text-white shadow-lg shadow-red-600/40'
+                          : 'liquid-glass-btn liquid-btn-secondary text-slate-100 hover:text-white'
+                      }`}
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
+                      <span>
+                        {trackHasPickedEnough
+                          ? `Book This Track — $${pass.price}`
+                          : `Select ${pickCount} Classes to Continue`}
+                      </span>
+                    </button>
+                  </div>
+                );
+              })()}
             </div>
           );
         })}
