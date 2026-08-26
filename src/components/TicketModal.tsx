@@ -9,6 +9,7 @@ interface TicketModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialPassTypeId?: string;
+  initialClassTimes?: string[];
   onPassCreated: (pass: TicketPass) => void;
 }
 
@@ -16,6 +17,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   isOpen,
   onClose,
   initialPassTypeId = 'dropin-1',
+  initialClassTimes = [],
   onPassCreated
 }) => {
   const [selectedPassId, setSelectedPassId] = useState<string>(initialPassTypeId);
@@ -61,7 +63,9 @@ export const TicketModal: React.FC<TicketModalProps> = ({
         passName: currentPassOption.name,
         passType: currentPassOption.type,
         price: currentPassOption.price,
-        classesIncluded: `${currentPassOption.classesCount} Class Session(s)`,
+        classesIncluded: initialClassTimes.length > 0
+          ? initialClassTimes.join(', ')
+          : `${currentPassOption.classesCount} Class Session(s)`,
         eventDate: 'Wednesday, August 5th (7:00 PM - 10:00 PM)',
         location: 'Dance Factory - WestShore Plaza Mall, Tampa, FL',
         purchaseTimestamp: Date.now(),
@@ -92,7 +96,9 @@ export const TicketModal: React.FC<TicketModalProps> = ({
       passName: currentPassOption.name,
       passType: currentPassOption.type,
       price: currentPassOption.price,
-      classesIncluded: `${currentPassOption.classesCount} Class Session(s)`,
+      classesIncluded: initialClassTimes.length > 0
+        ? initialClassTimes.join(', ')
+        : `${currentPassOption.classesCount} Class Session(s)`,
       eventDate: 'Wednesday, August 5th (7:00 PM - 10:00 PM)',
       location: 'Dance Factory - WestShore Plaza Mall, Tampa, FL',
       purchaseTimestamp: Date.now(),
@@ -104,7 +110,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
     onPassCreated(newPass);
   };
 
-  const calendarUrl = generatedPass ? `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('Urban Bachata Class @ Dance Factory')}&details=${encodeURIComponent(`Pass ID: ${generatedPass.ticketId}\nPass: ${generatedPass.passName}`)}&location=${encodeURIComponent(STUDIO_INFO.fullAddress)}` : '#';
+  const calendarUrl = generatedPass ? `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('Urban Bachata Class @ Dance Factory')}&details=${encodeURIComponent(`Pass ID: ${generatedPass.ticketId}\nPass: ${generatedPass.passName}\nClasses: ${generatedPass.classesIncluded}`)}&location=${encodeURIComponent(STUDIO_INFO.fullAddress)}` : '#';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
@@ -150,6 +156,19 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                   </div>
                 </div>
               </div>
+
+              {initialClassTimes.length > 0 && (
+                <div className="pt-1">
+                  <span className="text-[10px] text-slate-400 uppercase font-bold block mb-1">
+                    Class{initialClassTimes.length > 1 ? 'es' : ''} Selected
+                  </span>
+                  <div className="space-y-1">
+                    {initialClassTimes.map((t, idx) => (
+                      <p key={idx} className="text-xs font-bold text-white">{t}</p>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {isPaidPass ? (
@@ -276,6 +295,10 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                   <span className="font-mono font-bold text-emerald-400">
                     {generatedPass.price === 0 ? '$0 FREE' : `$${generatedPass.price}`}
                   </span>
+                </div>
+                <div className="col-span-2">
+                  <span className="text-[10px] text-slate-400 uppercase block">Class{generatedPass.classesIncluded.includes(',') ? 'es' : ''} Selected</span>
+                  <span className="font-bold text-white">{generatedPass.classesIncluded}</span>
                 </div>
               </div>
 

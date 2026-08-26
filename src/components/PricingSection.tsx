@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
 import { Ticket, Sparkles, Check, ChevronDown, ChevronUp } from 'lucide-react';
-import { PASS_OPTIONS } from '../data/danceData';
+import { PASS_OPTIONS, CLASSES_DATA } from '../data/danceData';
 
 interface PricingSectionProps {
   onOpenBooking: (passTypeId?: string) => void;
+  onOpenDropInBooking: (passTypeId: string, classTimes: string[]) => void;
 }
 
 const DROP_IN_IDS = ['dropin-1', 'dropin-2', 'dropin-full'];
 
-export const PricingSection: React.FC<PricingSectionProps> = ({ onOpenBooking }) => {
+export const PricingSection: React.FC<PricingSectionProps> = ({ onOpenBooking, onOpenDropInBooking }) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [selectedDropInId, setSelectedDropInId] = useState<string>('dropin-1');
+  // Which specific class hour(s) the customer picked within the selected tier.
+  const [selectedClassIds, setSelectedClassIds] = useState<string[]>([]);
 
   const toggleExpanded = (id: string) => {
     setExpandedId(expandedId === id ? null : id);
@@ -19,6 +22,36 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onOpenBooking })
   const dropInPasses = PASS_OPTIONS.filter(p => DROP_IN_IDS.includes(p.id));
   const otherPasses = PASS_OPTIONS.filter(p => !DROP_IN_IDS.includes(p.id));
   const selectedDropIn = dropInPasses.find(p => p.id === selectedDropInId) || dropInPasses[0];
+
+  const handleSelectTier = (passId: string) => {
+    setSelectedDropInId(passId);
+    setSelectedClassIds([]);
+  };
+
+  const toggleClassSelection = (classId: string, maxAllowed: number) => {
+    setSelectedClassIds(prev => {
+      if (prev.includes(classId)) {
+        return prev.filter(id => id !== classId);
+      }
+      if (prev.length >= maxAllowed) {
+        // Swap out the earliest pick so it's always clear which are selected
+        return [...prev.slice(1), classId];
+      }
+      return [...prev, classId];
+    });
+  };
+
+  const selectedClassTimes = selectedClassIds
+    .map(id => CLASSES_DATA.find(c => c.id === id))
+    .filter((c): c is typeof CLASSES_DATA[number] => Boolean(c))
+    .map(c => `${c.time} (${c.title})`);
+
+  const needsClassSelection = selectedDropIn?.classesCount === 1 || selectedDropIn?.classesCount === 2;
+  const hasPickedEnoughClasses = !needsClassSelection || selectedClassIds.length === selectedDropIn.classesCount;
+
+  const handleBookDropIn = () => {
+    onOpenDropInBooking(selectedDropIn.id, selectedClassTimes);
+  };
 
   return (
     <section id="passes" className="py-16 sm:py-20 lg:py-28 px-4 sm:px-6 lg:px-8 relative max-w-5xl mx-auto">
@@ -61,7 +94,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onOpenBooking })
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="min-w-0">
                     <h3 className="text-sm sm:text-base font-black text-white uppercase tracking-tight truncate">
-                      Class Drop-In
+                      Class Drop-Ins
                     </h3>
                     <p className="text-[11px] sm:text-xs text-slate-400 truncate">
                       {selectedDropIn.tagline}
@@ -84,23 +117,54 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onOpenBooking })
               {/* Expanded details — only when opened */}
               {isExpanded && (
                 <div className="px-4 sm:px-5 pb-5 pt-1 border-t border-white/10 animate-in fade-in duration-200">
-                  {/* Quantity Tabs */}
+                  {/* Tier Tabs */}
                   <div className="flex items-center gap-2 mt-3 mb-4">
-                    {dropInPasses.map((pass) => (
+                    {dropInPasses.map((pass, idx) => (
                       <button
                         key={pass.id}
-                        onClick={() => setSelectedDropInId(pass.id)}
+                        onClick={() => handleSelectTier(pass.id)}
                         className={`flex-1 py-2.5 rounded-xl text-xs font-black uppercase tracking-wide transition-all ${
                           selectedDropInId === pass.id
                             ? 'bg-red-600 text-white shadow-lg shadow-red-600/30'
                             : 'bg-white/5 text-slate-300 border border-white/10 hover:bg-white/10'
                         }`}
                       >
-                        {pass.classesCount} Class{pass.classesCount > 1 ? 'es' : ''}
+                        Tier {idx + 1}
                         <span className="block font-mono text-[11px] opacity-80">${pass.price}</span>
                       </button>
                     ))}
                   </div>
+
+                  {/* Class Hour Sub-Selection — only for Tier 1 (1 class) & Tier 2 (2 classes) */}
+                  {needsClassSelection && (
+                    <div className="mb-4">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+                        Choose {selectedDropIn.classesCount} class{selectedDropIn.classesCount > 1 ? 'es' : ''} ({selectedClassIds.length}/{selectedDropIn.classesCount} selected)
+                      </p>
+                      <div className="space-y-2">
+                        {CLASSES_DATA.map((classItem) => {
+                          const isSelected = selectedClassIds.includes(classItem.id);
+                          return (
+                            <button
+                              key={classItem.id}
+                              onClick={() => toggleClassSelection(classItem.id, selectedDropIn.classesCount)}
+                              className={`w-full flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl text-left transition-all border ${
+                                isSelected
+                                  ? 'bg-red-600/20 border-red-500/60 text-white'
+                                  : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                              }`}
+                            >
+                              <div className="min-w-0">
+                                <span className="text-xs font-bold block truncate">{classItem.title}</span>
+                                <span className="text-[10px] font-mono text-slate-400">{classItem.time}</span>
+                              </div>
+                              {isSelected && <Check className="w-4 h-4 text-red-400 shrink-0" />}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
 
                   <div className="space-y-2 mb-4">
                     {selectedDropIn.features.map((feature, idx) => (
@@ -112,11 +176,16 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onOpenBooking })
                   </div>
 
                   <button
-                    onClick={() => onOpenBooking(selectedDropIn.id)}
-                    className="w-full py-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all active:scale-95 liquid-glass-btn liquid-btn-secondary text-slate-100 hover:text-white"
+                    onClick={handleBookDropIn}
+                    disabled={!hasPickedEnoughClasses}
+                    className="w-full py-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all active:scale-95 liquid-glass-btn liquid-btn-secondary text-slate-100 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
-                    <span>Book This Track — ${selectedDropIn.price}</span>
+                    <span>
+                      {hasPickedEnoughClasses
+                        ? `Book This Track — $${selectedDropIn.price}`
+                        : `Select ${selectedDropIn.classesCount} Class${selectedDropIn.classesCount > 1 ? 'es' : ''} to Continue`}
+                    </span>
                   </button>
                 </div>
               )}

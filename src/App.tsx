@@ -23,6 +23,7 @@ export default function App() {
   const [savedPasses, setSavedPasses] = useState<TicketPass[]>([]);
   const [isBookingOpen, setIsBookingOpen] = useState<boolean>(false);
   const [bookingPassTypeId, setBookingPassTypeId] = useState<string>('social-presale');
+  const [bookingClassTimes, setBookingClassTimes] = useState<string[]>([]);
   const [isSavedPassesOpen, setIsSavedPassesOpen] = useState<boolean>(false);
   const [isStudentPortalOpen, setIsStudentPortalOpen] = useState<boolean>(false);
   const [isStoryModalOpen, setIsStoryModalOpen] = useState<boolean>(false);
@@ -98,6 +99,15 @@ export default function App() {
 
   const handleOpenBooking = (passTypeId: string = 'dropin-1') => {
     setBookingPassTypeId(passTypeId);
+    setBookingClassTimes([]);
+    setIsBookingOpen(true);
+  };
+
+  // Used by the Drop-Ins tier picker, which also captures which specific
+  // class hour(s) the customer selected (e.g. ["7:00 PM - 8:00 PM"]).
+  const handleOpenDropInBooking = (passTypeId: string, classTimes: string[]) => {
+    setBookingPassTypeId(passTypeId);
+    setBookingClassTimes(classTimes);
     setIsBookingOpen(true);
   };
 
@@ -199,6 +209,7 @@ export default function App() {
             {/* Drop-In Passes & Calculator Section */}
             <PricingSection
               onOpenBooking={handleOpenBooking}
+              onOpenDropInBooking={handleOpenDropInBooking}
             />
 
             {/* Location & Studio Section */}
@@ -218,6 +229,7 @@ export default function App() {
         isOpen={isBookingOpen}
         onClose={() => setIsBookingOpen(false)}
         initialPassTypeId={bookingPassTypeId}
+        initialClassTimes={bookingClassTimes}
         onPassCreated={handlePassCreated}
       />
 
