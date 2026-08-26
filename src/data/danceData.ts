@@ -134,9 +134,9 @@ export const SECRET_OPEN_HOUSE_PASS: PassOption = {
 export const PASS_OPTIONS: PassOption[] = [
   {
     id: 'track-foundations',
-    name: 'Tier 1: Foundations Track',
+    name: 'Light Work',
     price: 80,
-    tagline: 'Perfect for students building a strong foundation in bachata.',
+    tagline: 'One class a week, your pick. Ease in on your own terms.',
     classesCount: 4,
     popular: false,
     features: [
@@ -149,10 +149,10 @@ export const PASS_OPTIONS: PassOption[] = [
   },
   {
     id: 'track-progression',
-    name: 'Tier 2: Progression Track',
+    name: 'Grindin’',
     price: 105,
     savings: 'MOST POPULAR TRACK',
-    tagline: 'Designed for dancers who want to strengthen technique & continue developing.',
+    tagline: 'Two classes a week. You’re building real momentum now.',
     classesCount: 8,
     popular: true,
     features: [
@@ -165,10 +165,10 @@ export const PASS_OPTIONS: PassOption[] = [
   },
   {
     id: 'track-unlimited',
-    name: 'Tier 3: Unlimited Track',
+    name: 'Locked In',
     price: 125,
     savings: 'FULL IMMERSION • BEST VALUE',
-    tagline: 'Our most comprehensive membership for dancers wanting the full training experience.',
+    tagline: 'All 3 classes, every Wednesday. No half-stepping.',
     classesCount: 12,
     popular: false,
     features: [
@@ -250,7 +250,7 @@ export const FAQ_DATA: FAQItem[] = [
   },
   {
     question: 'How much do bachata classes cost in Tampa?',
-    answer: 'At AI Urbano in Tampa, single drop-in Bachata classes cost $20 per session. For maximum value, structured 4-week membership tracks start at $80 for Foundations Track, $105 for Progression Track, and $125 for Unlimited Track. All membership tracks include monthly practice social access, social admission discounts, and private lesson perks.',
+    answer: 'At AI Urbano in Tampa, single drop-in Bachata classes cost $20 per session. For maximum value, structured 4-week membership tracks start at $80 for Light Work (1 class/week), $105 for Grindin’ (2 classes/week), and $125 for Locked In (all 3 classes/week). All membership tracks include monthly practice social access, social admission discounts, and private lesson perks.',
     category: 'Pricing'
   },
   {

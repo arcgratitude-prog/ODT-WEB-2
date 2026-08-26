@@ -38,7 +38,7 @@ const DEFAULT_DEMO_MEMBER: MemberUser = {
   enrolledCycles: [
     {
       id: 'track-progression-enrolled',
-      title: 'Tier 2: Progression Track (4-Week Course)',
+      title: 'Grindin’ (4-Week Course)',
       schedule: 'Wednesdays @ 7:00 PM - 9:00 PM',
       location: 'Dance Factory Tampa',
       startDate: 'August 5, 2026',
