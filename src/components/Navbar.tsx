@@ -48,11 +48,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           
           {/* Brand Logo with Instagram Story Ring */}
           <div className="flex items-center gap-2 shrink-0">
-            <button 
-              onClick={currentPage === 'social' && onOpenStoryModal ? onOpenStoryModal : () => window.open(STUDIO_INFO.instagramUrl, '_blank', 'noopener,noreferrer')}
+            <button
+              onClick={() => handleNavClick('home')}
               className="relative flex items-center gap-1.5 group text-left"
               id="brand-logo-link"
-              title={currentPage === 'social' ? "Click to view ODT Instagram Story" : "Visit @ai.urbano on Instagram"}
+              title="Back to Home"
             >
               {/* Instagram Gradient Story Ring */}
               <div className={`w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-gradient-to-tr ${

@@ -245,37 +245,37 @@ export const SPECIAL_EVENTS: SpecialEvent[] = [
 export const FAQ_DATA: FAQItem[] = [
   {
     question: 'Where can I learn bachata in Tampa?',
-    answer: 'You can learn Bachata in Tampa at AI Urbano, located inside Dance Factory at WestShore Plaza Mall (334 Westshore Plaza A10, Tampa, FL 33609). Conveniently serving South Tampa, Ybor City, Brandon, Riverview, and St. Pete, AI Urbano offers weekly Wednesday evening classes for absolute beginners through advanced dancers with free mall parking.',
+    answer: 'AI Urbano, inside Dance Factory at WestShore Plaza Mall (334 Westshore Plaza A10, Tampa, FL 33609) — free parking, every Wednesday.',
     category: 'Location'
   },
   {
     question: 'How much do bachata classes cost in Tampa?',
-    answer: 'At AI Urbano in Tampa, single drop-in Bachata classes cost $20 per session. For maximum value, structured 4-week membership tracks start at $80 for Light Work (1 class/week), $105 for Grindin’ (2 classes/week), and $125 for Locked In (all 3 classes/week). All membership tracks include monthly practice social access, social admission discounts, and private lesson perks.',
+    answer: 'Drop-ins start at $20/class. Monthly tracks run $80–$125 depending on how many classes per week.',
     category: 'Pricing'
   },
   {
     question: 'Do I need a partner to take bachata classes?',
-    answer: 'No partner is needed to attend Bachata classes in Tampa at AI Urbano. Students systematically rotate partners throughout class, allowing everyone to practice leading and following with multiple dancers in a welcoming social environment. If you attend with a partner and prefer not to rotate, simply inform the instructor.',
+    answer: 'No — we rotate partners all class so everyone gets to practice leading and following.',
     category: 'Classes'
   },
   {
     question: 'Is bachata hard to learn for beginners?',
-    answer: 'Bachata is one of the most accessible and fun Latin dances for beginners to learn! Built on a clear 8-count rhythm and simple step pattern, complete beginners can master fundamental timing, frame, and turns within their first few classes under structured instruction with instructors Albina & Isaac in Tampa.',
+    answer: 'Not at all. It runs on a simple 8-count rhythm, so most beginners pick up the basics within their first couple classes.',
     category: 'Classes'
   },
   {
     question: 'What should I wear to a bachata class?',
-    answer: 'Wear comfortable, breathable athletic apparel or casual streetwear that allows easy movement. Smooth-soled sneakers, jazz shoes, or leather-bottom dance shoes are recommended for effortless pivots on hardwood floors. Avoid heavy boots, rubber-soled shoes with excessive grip, or restrictively tight clothing.',
+    answer: 'Comfortable athletic wear and smooth-soled shoes for easy pivots. Skip heavy boots or high-grip sneakers.',
     category: 'General'
   },
   {
     question: 'How long does it take to learn bachata?',
-    answer: 'Most beginners learn basic Bachata timing and core lead/follow connections within 1 to 2 classes. Completing a structured 4-week progressive track develops strong social dancing confidence, body isolations, and partner turns, while 2 to 3 months of consistent practice yields smooth, creative flow on the social dance floor.',
+    answer: 'Basic timing and connection click within 1–2 classes; smooth, confident flow usually takes 2–3 months of consistent practice.',
     category: 'General'
   },
   {
     question: 'Where is Dance Factory located inside WestShore Plaza Mall?',
-    answer: 'Dance Factory is located inside WestShore Plaza Mall at suite A10 (334 Westshore Plaza A10, Tampa, FL 33609). Park in the main mall lot near the Dance Factory exterior entrance or mall wing for easy access.',
+    answer: 'Suite A10 (334 Westshore Plaza A10, Tampa, FL 33609) — park in the main mall lot near the exterior entrance.',
     category: 'Location'
   }
 ];
