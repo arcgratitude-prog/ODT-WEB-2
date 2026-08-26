@@ -3,7 +3,7 @@ import { Sparkles, Calendar, MapPin, ArrowRight, Music, Clock, Users, Play, Shie
 import { STUDIO_INFO } from '../data/danceData';
 import { AiUrbanoLogo } from './AiUrbanoLogo';
 import { AutoPlayVideo } from './AutoPlayVideo';
-import coupleImg from '../../albina_isaac_directors.jpg';
+import coupleImg from '../assets/images/albina_isaac_directors.jpg';
 import studioHeroImg from '../assets/images/urban_studio_hero_1784906979054.jpg';
 
 interface HeroProps {

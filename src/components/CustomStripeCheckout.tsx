@@ -5,7 +5,7 @@ import {
   useStripe,
   useElements,
 } from '@stripe/react-stripe-js';
-import { loadStripe, PaymentRequest } from '@stripe/stripe-js';
+import { loadStripe, PaymentRequest, type StripeCardElement } from '@stripe/stripe-js';
 import { Check, CreditCard, Loader2, CheckCircle2, ShieldCheck } from 'lucide-react';
 
 const stripePromise = loadStripe(
@@ -152,7 +152,9 @@ const InnerCheckoutForm: React.FC<{
       return;
     }
 
-    const cardElement = elements.getElement(CardElement);
+    // getElement(CardElement) returns the card element at runtime; the installed
+    // Stripe typings infer a broader element union, so we narrow it explicitly.
+    const cardElement = elements.getElement(CardElement) as unknown as StripeCardElement | null;
     if (!cardElement) return;
 
     setIsProcessing(true);

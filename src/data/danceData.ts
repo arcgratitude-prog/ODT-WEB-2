@@ -213,7 +213,7 @@ export const PASS_OPTIONS: PassOption[] = [
     type: 'drop_in_2'
   },
   {
-    id: 'dropin-3',
+    id: 'dropin-full',
     name: '3 Class Drop-In',
     price: 50,
     tagline: 'Full night — all 3 Wednesday class sessions',
@@ -225,7 +225,7 @@ export const PASS_OPTIONS: PassOption[] = [
       'Best drop-in value for the full night',
       'Digital Ticket on your phone'
     ],
-    type: 'drop_in_3'
+    type: 'drop_in_full'
   }
 ];
 
