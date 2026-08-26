@@ -30,12 +30,12 @@ export const CLASSES_DATA: ClassItem[] = [
     title: 'Bachata Foundation',
     level: 'Beginner',
     tag: 'Essential Tech',
-    description: 'Master core 8-count footwork, fundamental frame, body alignment, timing, basic turns, and smooth leading & following connection.',
+    description: 'A progressive series to establish strong fundamentals, technical proficiency, and partner connection — building your confidence for social dancing.',
     focus: [
-      'Basic 8-count step variations',
-      'Frame & weight transfer mechanics',
-      'Gentle lead & follow connection',
-      'Timing, hip motion & rhythm'
+      'Clean, comfortable technique',
+      'Proper technical skill building',
+      'Timing & musical interpretation',
+      'Partner connection basics'
     ],
     recommendedFor: 'Complete beginners, dancers new to Urban Bachata, or experienced dancers refining basic technique.',
     instructorNote: 'No partner or prior experience required! We rotate partners during class so everyone gets to practice.',
@@ -47,12 +47,12 @@ export const CLASSES_DATA: ClassItem[] = [
     title: 'Skills and Drills',
     level: 'Open Level',
     tag: 'Technique & Styling',
-    description: 'Level up your dance with body isolations, footwork syncopations (pasitos), head rolls, arms styling, and speed/control exercises.',
+    description: 'An all-levels training hour focused on solo movement, refining lead & follow technique, and footwork that translates directly to the social dance floor.',
     focus: [
-      'Ribcage & upper body isolations',
+      'Solo movement & body control',
+      'Lead & follow technique refinement',
       'Urban footwork & syncopated pasitos',
-      'Head roll safety & neck alignment',
-      'Arm styling & leader/follower flair'
+      'Practical social-floor skills'
     ],
     recommendedFor: 'All levels wanting to improve body movement, control, confidence, and musicality.',
     instructorNote: 'High energy drills session that translates directly into social dancing smoothness.',
@@ -64,12 +64,12 @@ export const CLASSES_DATA: ClassItem[] = [
     title: 'Urban Flow',
     level: 'Intermediate',
     tag: 'Sensual & Combinations',
-    description: 'Combine sensual body waves, urban dip transitions, musicality accents, and complex turn patterns into effortless social flow.',
+    description: 'A progressive intermediate course blending traditional and modern bachata — refining technique, musical creativity, and footwork into effortless flow.',
     focus: [
-      'Sensual waves & body rolls',
+      'Musicality & creative interpretation',
       'Urban flow turn combinations',
       'Dip safety & weight support',
-      'Musical accents & breaks'
+      'Footwork & flow on the floor'
     ],
     recommendedFor: 'Dancers comfortable with basics ready for intermediate combos and sensual urban dynamics.',
     instructorNote: 'Must have basic timing and turns down. We focus heavily on musicality and smooth flow!',
