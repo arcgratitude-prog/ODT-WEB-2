@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, Calendar, MapPin, ArrowRight, Music, Clock, Users, Play, ShieldCheck, MessageCircle, Instagram, Flame, ExternalLink, Volume2, VolumeX } from 'lucide-react';
+import { Sparkles, Calendar, MapPin, ArrowRight, Clock, Users, Play, ShieldCheck, MessageCircle, Instagram, Flame, ExternalLink, Volume2, VolumeX } from 'lucide-react';
 import { STUDIO_INFO } from '../data/danceData';
 import { AiUrbanoLogo } from './AiUrbanoLogo';
 import { AutoPlayVideo } from './AutoPlayVideo';
@@ -8,14 +8,10 @@ import studioHeroImg from '../assets/images/urban_studio_hero_1784906979054.jpg'
 
 interface HeroProps {
   onOpenBooking: (passTypeId?: string) => void;
-  onToggleMusic: () => void;
-  isPlayingMusic: boolean;
 }
 
 export const Hero: React.FC<HeroProps> = ({
-  onOpenBooking,
-  onToggleMusic,
-  isPlayingMusic
+  onOpenBooking
 }) => {
   const [isClassMuted, setIsClassMuted] = useState(true);
   const [isDancingMuted, setIsDancingMuted] = useState(true);
@@ -175,20 +171,6 @@ export const Hero: React.FC<HeroProps> = ({
                 <Calendar className="w-4 h-4 text-red-400" />
                 <span>Join a Class</span>
                 <ArrowRight className="w-4 h-4" />
-              </button>
-
-              <button
-                onClick={onToggleMusic}
-                id="hero-audio-vibe-btn"
-                className={`p-3.5 rounded-2xl border transition-all flex items-center justify-center gap-2 text-xs font-semibold ${
-                  isPlayingMusic 
-                    ? 'bg-red-600/30 text-red-300 border-red-500/50 shadow-lg shadow-red-500/30' 
-                    : 'bg-white/5 text-slate-300 border-white/15 hover:bg-white/10'
-                }`}
-                title="Play Urban Bachata Beat"
-              >
-                <Music className={`w-4 h-4 ${isPlayingMusic ? 'animate-bounce text-red-400' : ''}`} />
-                <span className="hidden sm:inline">{isPlayingMusic ? 'Beat Playing...' : 'Play Vibe'}</span>
               </button>
             </div>
 

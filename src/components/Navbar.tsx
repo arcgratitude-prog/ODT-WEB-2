@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Calendar, Ticket, MapPin, Music, Crown, Menu, X, CheckCircle2, MessageCircle, Instagram, Flame, Star, Gift, User, ChevronDown } from 'lucide-react';
+import { Sparkles, Calendar, Ticket, MapPin, Crown, Menu, X, CheckCircle2, MessageCircle, Instagram, Flame, Star, Gift, User, ChevronDown } from 'lucide-react';
 import { STUDIO_INFO } from '../data/danceData';
 import { AiUrbanoLogo } from './AiUrbanoLogo';
 
@@ -12,7 +12,6 @@ interface NavbarProps {
   activeSection: string;
   onOpenStoryModal?: () => void;
   onOpenStudentPortal?: () => void;
-  onOpenPlaylist?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -23,8 +22,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onNavigate,
   activeSection,
   onOpenStoryModal,
-  onOpenStudentPortal,
-  onOpenPlaylist
+  onOpenStudentPortal
 }) => {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -41,12 +39,6 @@ export const Navbar: React.FC<NavbarProps> = ({
     { page: 'review' as const, label: 'Leave a Review', icon: Star },
     { page: 'referral' as const, label: 'Referrals', icon: Gift },
   ];
-
-  const handlePlaylistClick = () => {
-    setMoreDropdownOpen(false);
-    setMobileMenuOpen(false);
-    if (onOpenPlaylist) onOpenPlaylist();
-  };
 
   return (
     <>
@@ -159,13 +151,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                       </button>
                     );
                   })}
-                  <button
-                    onClick={handlePlaylistClick}
-                    className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2.5 transition-colors text-slate-300 hover:bg-white/10 hover:text-white"
-                  >
-                    <Music className="w-3.5 h-3.5 text-rose-400" />
-                    <span>AI Playlist</span>
-                  </button>
                 </div>
               )}
             </div>
@@ -271,17 +256,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </button>
               );
             })}
-
-            {/* AI Playlist */}
-            <button
-              onClick={handlePlaylistClick}
-              className="w-full text-left px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-white flex items-center gap-3 transition-colors"
-            >
-              <div className="p-1.5 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20">
-                <Music className="w-4 h-4" />
-              </div>
-              <span>AI Playlist</span>
-            </button>
 
             {/* 4. WhatsApp Group Link */}
             <div className="pt-2 border-t border-white/10 flex flex-col gap-2">

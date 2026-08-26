@@ -6,12 +6,19 @@ interface PricingSectionProps {
   onOpenBooking: (passTypeId?: string) => void;
 }
 
+const DROP_IN_IDS = ['dropin-1', 'dropin-2', 'dropin-full'];
+
 export const PricingSection: React.FC<PricingSectionProps> = ({ onOpenBooking }) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [selectedDropInId, setSelectedDropInId] = useState<string>('dropin-1');
 
   const toggleExpanded = (id: string) => {
     setExpandedId(expandedId === id ? null : id);
   };
+
+  const dropInPasses = PASS_OPTIONS.filter(p => DROP_IN_IDS.includes(p.id));
+  const otherPasses = PASS_OPTIONS.filter(p => !DROP_IN_IDS.includes(p.id));
+  const selectedDropIn = dropInPasses.find(p => p.id === selectedDropInId) || dropInPasses[0];
 
   return (
     <section id="passes" className="py-16 sm:py-20 lg:py-28 px-4 sm:px-6 lg:px-8 relative max-w-5xl mx-auto">
@@ -34,7 +41,90 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onOpenBooking })
 
       {/* Minimal Expandable Pricing List */}
       <div className="space-y-3">
-        {PASS_OPTIONS.map((pass) => {
+        {/* Merged Drop-In Track — pick 1, 2, or 3 classes inside */}
+        {selectedDropIn && (() => {
+          const isExpanded = expandedId === 'dropin';
+
+          return (
+            <div
+              className={`rounded-2xl border overflow-hidden transition-all duration-200 ${
+                selectedDropIn.popular
+                  ? 'border-red-600/70 shadow-[0_0_25px_rgba(220,38,38,0.2)] bg-gradient-to-r from-[#1a060a] via-[#120508] to-[#0a0a0c]'
+                  : 'border-white/12 bg-white/[0.03]'
+              }`}
+            >
+              {/* Collapsed row — always visible */}
+              <button
+                onClick={() => toggleExpanded('dropin')}
+                className="w-full flex items-center justify-between gap-4 p-4 sm:p-5 text-left"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="min-w-0">
+                    <h3 className="text-sm sm:text-base font-black text-white uppercase tracking-tight truncate">
+                      Class Drop-In
+                    </h3>
+                    <p className="text-[11px] sm:text-xs text-slate-400 truncate">
+                      {selectedDropIn.tagline}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 shrink-0">
+                  <div className="text-right">
+                    <span className="text-xl sm:text-2xl font-black font-mono text-white">
+                      ${selectedDropIn.price}
+                    </span>
+                  </div>
+                  <div className="p-1.5 rounded-full bg-white/10 text-slate-300">
+                    {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  </div>
+                </div>
+              </button>
+
+              {/* Expanded details — only when opened */}
+              {isExpanded && (
+                <div className="px-4 sm:px-5 pb-5 pt-1 border-t border-white/10 animate-in fade-in duration-200">
+                  {/* Quantity Tabs */}
+                  <div className="flex items-center gap-2 mt-3 mb-4">
+                    {dropInPasses.map((pass) => (
+                      <button
+                        key={pass.id}
+                        onClick={() => setSelectedDropInId(pass.id)}
+                        className={`flex-1 py-2.5 rounded-xl text-xs font-black uppercase tracking-wide transition-all ${
+                          selectedDropInId === pass.id
+                            ? 'bg-red-600 text-white shadow-lg shadow-red-600/30'
+                            : 'bg-white/5 text-slate-300 border border-white/10 hover:bg-white/10'
+                        }`}
+                      >
+                        {pass.classesCount} Class{pass.classesCount > 1 ? 'es' : ''}
+                        <span className="block font-mono text-[11px] opacity-80">${pass.price}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="space-y-2 mb-4">
+                    {selectedDropIn.features.map((feature, idx) => (
+                      <div key={idx} className="flex items-start gap-2 text-xs text-slate-200">
+                        <Check className="w-3.5 h-3.5 shrink-0 mt-0.5 text-red-400" />
+                        <span>{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => onOpenBooking(selectedDropIn.id)}
+                    className="w-full py-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all active:scale-95 liquid-glass-btn liquid-btn-secondary text-slate-100 hover:text-white"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
+                    <span>Book This Track — ${selectedDropIn.price}</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        })()}
+
+        {otherPasses.map((pass) => {
           const isExpanded = expandedId === pass.id;
 
           return (

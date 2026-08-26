@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, Footprints, Zap, Flame, CheckCircle, Sparkles, ChevronDown, ChevronUp, UserCheck, Radio } from 'lucide-react';
+import { Clock, Footprints, Zap, Flame, CheckCircle, Sparkles, ChevronDown, ChevronUp, UserCheck } from 'lucide-react';
 import { CLASSES_DATA } from '../data/danceData';
 
 interface ScheduleSectionProps {
@@ -40,13 +40,9 @@ export const ScheduleSection: React.FC<ScheduleSectionProps> = ({ onOpenBooking 
 
       {/* Section Header */}
       <div className="text-center space-y-4 mb-10 sm:mb-12">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-badge border border-red-500/40 text-xs font-bold text-red-400 uppercase tracking-[0.25em]">
-          <Radio className="w-3.5 h-3.5 text-red-400 animate-pulse" />
-          AUTO-UPDATING LIVE SCHEDULE
-        </div>
-
-        <h2 className="text-2xl sm:text-5xl font-black text-white uppercase font-sans tracking-tight whitespace-nowrap">
-          EVERY WEDNESDAY • <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-rose-300 to-red-600 urban-text-glow">7:00 PM – 10:00 PM</span>
+        <h2 className="text-2xl sm:text-5xl font-black text-white uppercase font-sans tracking-tight">
+          <span className="block">EVERY WEDNESDAY</span>
+          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-rose-300 to-red-600 urban-text-glow">7:00 PM – 10:00 PM</span>
         </h2>
 
         <p className="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto">

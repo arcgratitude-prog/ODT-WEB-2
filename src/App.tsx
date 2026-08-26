@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { BachataLocuraSocialSection } from './components/BachataLocuraSocialSection';
 import { SpecialEventsSection } from './components/SpecialEventsSection';
 import { ScheduleSection } from './components/ScheduleSection';
 import { PricingSection } from './components/PricingSection';
-import { AudioVibePlayer } from './components/AudioVibePlayer';
 import { LocationSection } from './components/LocationSection';
 import { FAQSection } from './components/FAQSection';
 import { Footer } from './components/Footer';
@@ -16,7 +14,6 @@ import { CalendarPage } from './components/CalendarPage';
 import { SecretSpecialPage } from './components/SecretSpecialPage';
 import { ReviewPage } from './components/ReviewPage';
 import { ReferralProgramSection } from './components/ReferralProgramSection';
-import { BackgroundVinylPlayer } from './components/BackgroundVinylPlayer';
 import { InstagramStoryModal } from './components/InstagramStoryModal';
 import { StudentPortalModal } from './components/StudentPortalModal';
 import { TicketPass } from './types';
@@ -28,9 +25,7 @@ export default function App() {
   const [bookingPassTypeId, setBookingPassTypeId] = useState<string>('social-presale');
   const [isSavedPassesOpen, setIsSavedPassesOpen] = useState<boolean>(false);
   const [isStudentPortalOpen, setIsStudentPortalOpen] = useState<boolean>(false);
-  const [isPlayingMusic, setIsPlayingMusic] = useState<boolean>(false);
   const [isStoryModalOpen, setIsStoryModalOpen] = useState<boolean>(false);
-  const [isPlaylistOpen, setIsPlaylistOpen] = useState<boolean>(false);
   const [activeSection, setActiveSection] = useState<string>('schedule');
 
 
@@ -61,7 +56,7 @@ export default function App() {
     if (currentPage !== 'home') return;
 
     const handleScroll = () => {
-      const sections = ['events', 'schedule', 'passes', 'vibe', 'location'];
+      const sections = ['events', 'schedule', 'passes', 'location'];
       const scrollPos = window.scrollY + 200;
 
       for (const sectionId of sections) {
@@ -126,18 +121,6 @@ export default function App() {
     }
   };
 
-  const handleToggleMusic = () => {
-    if (currentPage !== 'home') {
-      handleNavigate('home', 'vibe');
-    } else {
-      const el = document.getElementById('vibe');
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-    setIsPlayingMusic(prev => !prev);
-  };
-
   return (
     <div className="min-h-screen bg-[#0a0a0c] text-slate-100 relative selection:bg-red-600 selection:text-white overflow-x-hidden pb-24 md:pb-0">
       
@@ -149,9 +132,6 @@ export default function App() {
       </div>
 
       <div className="relative z-10">
-        {/* Floating Top-Right Spinning Vinyl Player Widget */}
-        <BackgroundVinylPlayer videoId="kE1-O0tU-UU" />
-
         {/* Floating Navbar */}
         <Navbar
           onOpenBooking={handleOpenBooking}
@@ -162,7 +142,6 @@ export default function App() {
           activeSection={activeSection}
           onOpenStoryModal={() => setIsStoryModalOpen(true)}
           onOpenStudentPortal={() => setIsStudentPortalOpen(true)}
-          onOpenPlaylist={() => setIsPlaylistOpen(true)}
         />
 
 
@@ -210,8 +189,6 @@ export default function App() {
             {/* Hero Section */}
             <Hero
               onOpenBooking={handleOpenBooking}
-              onToggleMusic={handleToggleMusic}
-              isPlayingMusic={isPlayingMusic}
             />
 
             {/* Class Schedule Section */}
@@ -266,25 +243,6 @@ export default function App() {
         savedPasses={savedPasses}
         onOpenBooking={handleOpenBooking}
       />
-
-      {/* AI Playlist Modal */}
-      {isPlaylistOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-            <button
-              onClick={() => setIsPlaylistOpen(false)}
-              className="absolute top-2 right-2 z-10 p-2 rounded-full bg-white/10 text-slate-300 hover:text-white hover:bg-white/20 transition-colors"
-              aria-label="Close AI Playlist"
-            >
-              <X className="w-5 h-5" />
-            </button>
-            <AudioVibePlayer
-              isPlaying={isPlayingMusic}
-              onTogglePlay={handleToggleMusic}
-            />
-          </div>
-        </div>
-      )}
 
     </div>
   );
