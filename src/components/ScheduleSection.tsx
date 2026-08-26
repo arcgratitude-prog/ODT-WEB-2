@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, Footprints, Zap, Flame, CheckCircle, Sparkles, ChevronDown, ChevronUp, UserCheck } from 'lucide-react';
+import { Clock, Footprints, Zap, Flame, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { CLASSES_DATA } from '../data/danceData';
 
 interface ScheduleSectionProps {
@@ -112,31 +112,6 @@ export const ScheduleSection: React.FC<ScheduleSectionProps> = ({ onOpenBooking 
             </div>
           );
         })}
-      </div>
-
-      {/* Single Join Our Class CTA */}
-      <div className="mt-6 liquid-glass-panel rounded-3xl p-6 border border-white/15 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-red-600/20 border border-red-500/40 text-red-400 flex items-center justify-center shrink-0">
-            <UserCheck className="w-6 h-6" />
-          </div>
-          <div>
-            <h4 className="text-base font-extrabold text-white uppercase">
-              No Partner or Experience Required!
-            </h4>
-            <p className="text-xs text-slate-300">
-              We rotate partners in every class so everyone gets to practice.
-            </p>
-          </div>
-        </div>
-
-        <button
-          onClick={() => onOpenBooking('dropin-1')}
-          className="liquid-glass-btn liquid-btn-primary px-6 py-3 rounded-2xl text-xs font-black text-white shrink-0 uppercase tracking-wider flex items-center justify-center gap-2"
-        >
-          <Sparkles className="w-4 h-4 text-yellow-300" />
-          <span>Join Our Class</span>
-        </button>
       </div>
 
     </section>
