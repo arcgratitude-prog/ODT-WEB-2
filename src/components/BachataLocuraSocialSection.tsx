@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Calendar, Clock, MapPin, Ticket, ExternalLink, ShieldCheck, Flame, Music, Users, ArrowRight, Copy, Check, Zap, Radio } from 'lucide-react';
+import { Sparkles, Calendar, Clock, MapPin, Ticket, ExternalLink, Flame, ArrowRight, Copy, Check } from 'lucide-react';
 import { STUDIO_INFO } from '../data/danceData';
 // BachataLocuraSocialSection component
 
@@ -93,127 +93,56 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
           {/* Neon Purple & Fuchsia Glow BG */}
           <div className="absolute inset-0 bg-gradient-to-r from-fuchsia-900/40 via-purple-900/30 to-indigo-900/40 rounded-3xl blur-2xl pointer-events-none -z-10" />
 
-          <div className="rounded-3xl p-4 sm:p-8 lg:p-10 border border-fuchsia-500/40 bg-gradient-to-br from-[#180924] via-[#11061a] to-[#0a0310] shadow-[0_0_60px_rgba(217,70,239,0.2)] relative overflow-hidden">
-            
-            {/* Top Badge Banner */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-8 pb-6 border-b border-fuchsia-500/20">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="px-3 py-1 rounded-full text-[10px] sm:text-xs font-mono font-bold tracking-widest text-fuchsia-200 bg-fuchsia-950/80 border border-fuchsia-500/40 uppercase max-w-full">
-                  MONTHLY SOCIAL • EVERY 2ND FRIDAY
-                </span>
-                <span className="px-3 py-1 rounded-full text-[10px] sm:text-xs font-mono font-bold tracking-widest text-pink-300 bg-pink-950/60 border border-pink-500/40 uppercase flex items-center gap-1.5 max-w-full">
-                  <Flame className="w-3.5 h-3.5 text-pink-400" />
-                  <span>90% BACHATA / 10% SALSA</span>
-                </span>
-              </div>
+          <div className="rounded-3xl p-6 sm:p-8 lg:p-10 border border-fuchsia-500/40 bg-gradient-to-br from-[#180924] via-[#11061a] to-[#0a0310] shadow-[0_0_60px_rgba(217,70,239,0.2)] relative overflow-hidden">
 
-              <div className="px-3.5 py-1.5 rounded-full text-[10px] sm:text-xs font-black tracking-widest text-white bg-gradient-to-r from-purple-600 to-pink-600 border border-purple-400/40 shadow-lg shadow-purple-600/30 uppercase flex items-center gap-1.5 self-start sm:self-auto max-w-full">
-                <Zap className="w-3.5 h-3.5 text-yellow-300 shrink-0" />
-                <span>FRIDAY AT DANCE FACTORY</span>
+            {/* Title — centered, nothing above it */}
+            <div className="text-center max-w-2xl mx-auto mb-8">
+              <h2 className="text-4xl sm:text-6xl font-black uppercase font-sans tracking-tight leading-none text-white">
+                BACHATA <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-fuchsia-400 to-purple-400 drop-shadow-[0_0_25px_rgba(236,72,153,0.5)]">
+                  INVASION
+                </span>
+              </h2>
+
+              <p className="text-sm sm:text-base text-purple-100 leading-relaxed mt-4">
+                Tampa’s highest energy monthly Friday night Bachata social! Kick off the night with an 8 PM workshop led by <strong className="text-white">Albina & Isaac</strong>, then dance all night with <strong className="text-white">DJ JR</strong>.
+              </p>
+
+              {/* Tabs moved here, under the description */}
+              <div className="flex flex-wrap items-center justify-center gap-2 mt-5">
+                <span className="px-3 py-1 rounded-full text-[10px] sm:text-xs font-mono font-bold tracking-widest text-fuchsia-200 bg-fuchsia-950/80 border border-fuchsia-500/40 uppercase">
+                  Every 2nd Friday • 8PM–1AM
+                </span>
+                <span className="px-3 py-1 rounded-full text-[10px] sm:text-xs font-mono font-bold tracking-widest text-pink-300 bg-pink-950/60 border border-pink-500/40 uppercase">
+                  Dance Factory
+                </span>
               </div>
             </div>
 
-            {/* Header Content */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-10">
-              
-              <div className="lg:col-span-7 space-y-4 text-left">
-                <div className="inline-flex items-center gap-2 text-xs font-mono font-bold tracking-widest text-pink-300 uppercase bg-pink-950/50 px-3 py-1 rounded-lg border border-pink-500/30">
-                  <Calendar className="w-4 h-4 text-pink-400" />
-                  EVERY 2ND FRIDAY OF THE MONTH • 8:00 PM - 1:00 AM
-                </div>
-
-                <h2 className="text-4xl sm:text-6xl font-black uppercase font-sans tracking-tight leading-none text-white">
-                  BACHATA <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-fuchsia-400 to-purple-400 drop-shadow-[0_0_25px_rgba(236,72,153,0.5)]">
-                    INVASION
-                  </span>
-                </h2>
-
-                <p className="text-sm sm:text-base text-purple-100 leading-relaxed max-w-xl">
-                  Tampa’s highest energy monthly Friday night Bachata social! Kick off the night with an 8 PM workshop led by <strong className="text-white">Albina & Isaac (AI Urbano / ODT)</strong>, then dance all night to fire tracks with <strong className="text-white">DJ JR</strong>!
-                </p>
-
-                {/* Artists & DJs Highlights */}
-                <div className="pt-2 flex flex-wrap gap-2 text-xs font-mono">
-                  <span className="px-3 py-1 rounded-xl bg-purple-900/60 border border-purple-500/40 text-purple-200">
-                    🎧 DJ JR on Decks
-                  </span>
-                  <span className="px-3 py-1 rounded-xl bg-purple-900/60 border border-purple-500/40 text-purple-200">
-                    💃 Class by Albina & Isaac (AI Urbano / ODT)
-                  </span>
-                  <span className="px-3 py-1 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-300">
-                    🚗 FREE Mall Parking
-                  </span>
-                </div>
+            {/* Essentials — schedule + price in one row */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 max-w-2xl mx-auto">
+              <div className="p-4 rounded-2xl bg-black/40 border border-fuchsia-500/20 text-center">
+                <span className="text-[10px] text-pink-300 font-mono uppercase tracking-widest block mb-1">8–9 PM</span>
+                <span className="text-sm text-white font-bold">Class</span>
               </div>
-
-              {/* Schedule Box */}
-              <div className="lg:col-span-5 bg-gradient-to-br from-purple-950/80 via-fuchsia-950/60 to-black p-6 rounded-2xl border border-fuchsia-500/40 shadow-2xl space-y-4">
-                <div className="text-xs font-bold text-pink-300 uppercase tracking-wider flex items-center justify-between">
-                  <span className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-pink-400" />
-                    INVASION SCHEDULE
-                  </span>
-                  <span className="px-2.5 py-0.5 rounded-md bg-pink-500 text-black font-black text-[10px]">
-                    ONLY $12
-                  </span>
-                </div>
-
-                <div className="space-y-3 divide-y divide-fuchsia-500/20">
-                  <div className="pt-1 flex justify-between items-center text-xs sm:text-sm">
-                    <div>
-                      <span className="text-purple-200 font-medium block">8:00 PM - 9:00 PM</span>
-                      <span className="text-white font-bold">Urban Bachata Class by Albina & Isaac</span>
-                    </div>
-                    <span className="font-mono text-pink-300 bg-purple-900/80 px-2.5 py-1 rounded-lg text-xs font-bold">
-                      Class
-                    </span>
-                  </div>
-
-                  <div className="pt-3 flex justify-between items-center text-xs sm:text-sm">
-                    <div>
-                      <span className="text-purple-200 font-medium block">9:00 PM - 1:00 AM</span>
-                      <span className="text-white font-bold">Social Dancing with DJ JR</span>
-                    </div>
-                    <span className="font-mono text-pink-300 bg-purple-900/80 px-2.5 py-1 rounded-lg text-xs font-bold">
-                      Social
-                    </span>
-                  </div>
-
-                  <div className="pt-3 flex justify-between items-center text-xs sm:text-sm">
-                    <div>
-                      <span className="text-purple-200 font-medium block">Location</span>
-                      <span className="text-white font-bold">Dance Factory (Westshore Plaza Mall)</span>
-                    </div>
-                    <span className="font-mono text-emerald-400 text-xs">
-                      Free Parking
-                    </span>
-                  </div>
-                </div>
+              <div className="p-4 rounded-2xl bg-black/40 border border-fuchsia-500/20 text-center">
+                <span className="text-[10px] text-pink-300 font-mono uppercase tracking-widest block mb-1">9 PM–1 AM</span>
+                <span className="text-sm text-white font-bold">Social Dancing</span>
               </div>
-
+              <div className="p-4 rounded-2xl bg-pink-500/10 border border-pink-500/40 text-center">
+                <span className="text-[10px] text-pink-300 font-mono uppercase tracking-widest block mb-1">Full Night</span>
+                <span className="text-sm text-white font-bold">$12</span>
+              </div>
             </div>
 
-            {/* Admission Pricing Card */}
-            <div className="mb-8 p-6 rounded-2xl bg-gradient-to-r from-purple-900/60 via-fuchsia-900/40 to-purple-950/80 border border-fuchsia-500/40 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="space-y-1 text-center md:text-left">
-                <span className="text-xs font-mono font-bold text-pink-300 uppercase tracking-widest block">
-                  ALL-INCLUSIVE ADMISSION PASS
-                </span>
-                <h3 className="text-2xl font-black text-white uppercase font-sans">
-                  $12 FULL NIGHT PASS
-                </h3>
-                <p className="text-xs text-purple-200">
-                  Includes 8:00 PM Class + Full 9:00 PM - 1:00 AM Social Dancing Session!
-                </p>
-              </div>
-
+            {/* Get Pass CTA */}
+            <div className="flex justify-center mb-8">
               <button
                 onClick={() => onOpenBooking('social-invasion-10')}
-                className="w-full md:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-pink-500 via-fuchsia-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 text-white font-black text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl shadow-fuchsia-600/40 transition-all transform hover:scale-[1.03] border border-pink-300/40"
+                className="px-8 py-4 rounded-2xl bg-gradient-to-r from-pink-500 via-fuchsia-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 text-white font-black text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl shadow-fuchsia-600/40 transition-all transform hover:scale-[1.03] border border-pink-300/40"
               >
                 <Ticket className="w-4 h-4 text-white" />
-                <span>GET $12 BACHATA INVASION PASS</span>
+                <span>Get $12 Pass</span>
                 <ArrowRight className="w-4 h-4 text-white" />
               </button>
             </div>
@@ -225,11 +154,8 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                   <MapPin className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-xs font-mono font-bold text-purple-300 uppercase block">
-                    VENUE LOCATION
-                  </span>
                   <h5 className="text-sm font-bold text-white">
-                    Dance Factory (Inside Westshore Plaza Mall)
+                    Dance Factory (Westshore Plaza Mall)
                   </h5>
                   <p className="text-xs text-purple-200 font-mono">
                     334 Westshore Plaza, Unit A10, Tampa, FL 33609
