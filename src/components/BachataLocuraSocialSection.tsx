@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Calendar, Clock, MapPin, Ticket, ExternalLink, Flame, ArrowRight, Copy, Check } from 'lucide-react';
+import { Sparkles, Calendar, MapPin, Ticket, ExternalLink, Flame, ArrowRight, Copy, Check } from 'lucide-react';
 import { STUDIO_INFO } from '../data/danceData';
 // BachataLocuraSocialSection component
 
@@ -123,11 +123,13 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 max-w-2xl mx-auto">
               <div className="p-4 rounded-2xl bg-black/40 border border-fuchsia-500/20 text-center">
                 <span className="text-[10px] text-pink-300 font-mono uppercase tracking-widest block mb-1">8–9 PM</span>
-                <span className="text-sm text-white font-bold">Class</span>
+                <span className="text-sm text-white font-bold block">Class</span>
+                <span className="text-xs text-purple-200 mt-0.5 block">Albina & Isaac</span>
               </div>
               <div className="p-4 rounded-2xl bg-black/40 border border-fuchsia-500/20 text-center">
                 <span className="text-[10px] text-pink-300 font-mono uppercase tracking-widest block mb-1">9 PM–1 AM</span>
-                <span className="text-sm text-white font-bold">Social Dancing</span>
+                <span className="text-sm text-white font-bold block">Social Dancing</span>
+                <span className="text-xs text-purple-200 mt-0.5 block">DJ JR</span>
               </div>
               <div className="p-4 rounded-2xl bg-pink-500/10 border border-pink-500/40 text-center">
                 <span className="text-[10px] text-pink-300 font-mono uppercase tracking-widest block mb-1">Full Night</span>
@@ -135,14 +137,14 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
               </div>
             </div>
 
-            {/* Get Pass CTA */}
+            {/* Get Ticket CTA */}
             <div className="flex justify-center mb-8">
               <button
                 onClick={() => onOpenBooking('social-invasion-10')}
                 className="px-8 py-4 rounded-2xl bg-gradient-to-r from-pink-500 via-fuchsia-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 text-white font-black text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl shadow-fuchsia-600/40 transition-all transform hover:scale-[1.03] border border-pink-300/40"
               >
                 <Ticket className="w-4 h-4 text-white" />
-                <span>Get $12 Pass</span>
+                <span>Get $12 Ticket</span>
                 <ArrowRight className="w-4 h-4 text-white" />
               </button>
             </div>
@@ -195,102 +197,56 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
           <div className="absolute inset-0 bg-gradient-to-r from-slate-900/60 via-zinc-800/20 to-slate-900/60 rounded-3xl blur-2xl pointer-events-none -z-10" />
 
           <div className="rounded-3xl p-6 sm:p-10 border border-slate-300/40 bg-gradient-to-br from-[#121318] via-[#0d0e12] to-[#08080a] shadow-[0_0_50px_rgba(255,255,255,0.08)] relative overflow-hidden">
-            
-            {/* Top Metallic Banner */}
-            <div className="flex flex-wrap items-center justify-between gap-3 mb-8 pb-6 border-b border-white/10">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="px-3.5 py-1 rounded-full text-xs font-mono font-bold tracking-widest text-slate-200 bg-slate-800/80 border border-slate-400/40 uppercase shadow-inner">
-                  RELPRO X URBAN BACHATA PRESENTS
-                </span>
-                <span className="px-3.5 py-1 rounded-full text-xs font-mono font-bold tracking-widest text-emerald-400 bg-emerald-950/60 border border-emerald-500/40 uppercase animate-pulse">
-                  ★ SPECIALTY EDITION SOCIAL
-                </span>
-              </div>
 
-              <div className="px-4 py-1.5 rounded-full text-xs font-black tracking-widest text-slate-100 bg-gradient-to-r from-slate-700 via-slate-500 to-slate-800 border border-slate-200/50 shadow-lg shadow-white/10 uppercase flex items-center gap-2">
-                <Sparkles className="w-3.5 h-3.5 text-slate-200" />
-                <span>DRESS THEME: SILVER & BLACK</span>
+            {/* Title — centered, nothing above it */}
+            <div className="text-center max-w-2xl mx-auto mb-8">
+              <h2 className="text-4xl sm:text-6xl font-black uppercase font-sans tracking-tight leading-none text-white">
+                BACHATA <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-100 via-slate-300 to-slate-500 drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                  LOCURA
+                </span>
+              </h2>
+
+              <p className="text-sm sm:text-base text-slate-300 leading-relaxed mt-4">
+                Tampa’s premier Sunday Bachata social experience! High-vibe social dancing, sleek aesthetics, presocial class with <strong className="text-white">Albina & Isaac</strong>, and a fire set by <strong className="text-white">DJ JR</strong>.
+              </p>
+
+              {/* Tabs moved here, under the description */}
+              <div className="flex flex-wrap items-center justify-center gap-2 mt-5">
+                <span className="px-3.5 py-1 rounded-full text-[10px] sm:text-xs font-mono font-bold tracking-widest text-emerald-400 bg-emerald-950/60 border border-emerald-500/40 uppercase">
+                  ★ Specialty Edition Social
+                </span>
+                <span className="px-3 py-1 rounded-full text-[10px] sm:text-xs font-mono font-bold tracking-widest text-slate-200 bg-slate-800/80 border border-slate-400/40 uppercase">
+                  Sunday, Aug 16 • Dress: Silver & Black
+                </span>
               </div>
             </div>
 
-            {/* Header Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-10">
-              
-              <div className="lg:col-span-7 space-y-4 text-left">
-                <div className="inline-flex items-center gap-2 text-xs font-mono font-bold tracking-widest text-slate-300 uppercase">
-                  <Calendar className="w-4 h-4 text-slate-300" />
-                  SUNDAY, AUGUST 16TH • TAMPA, FL
-                </div>
-
-                <h2 className="text-4xl sm:text-6xl font-black uppercase font-sans tracking-tight leading-none text-white">
-                  BACHATA <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-100 via-slate-300 to-slate-500 drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-                    LOCURA
-                  </span>
-                </h2>
-
-                <div className="inline-block px-3 py-1 rounded-lg bg-zinc-800/90 border border-slate-400/30 text-xs font-mono font-bold text-slate-200 uppercase tracking-widest">
-                  SPECIALTY EVENT EDITION
-                </div>
-
-                <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-xl">
-                  Get ready for Tampa’s premier Sunday Bachata social experience! Fusing high-vibe social dancing, sleek aesthetics, special guest presocial class with <strong className="text-white">Albina & Isaac</strong>, and fire music set by <strong className="text-white">DJ JR</strong>.
-                </p>
+            {/* Essentials — schedule in one row */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 max-w-2xl mx-auto">
+              <div className="p-4 rounded-2xl bg-black/40 border border-white/10 text-center">
+                <span className="text-[10px] text-slate-400 font-mono uppercase tracking-widest block mb-1">4 PM</span>
+                <span className="text-sm text-white font-bold block">Presocial Class</span>
+                <span className="text-xs text-slate-400 mt-0.5 block">Albina & Isaac</span>
               </div>
-
-              {/* Quick Highlight Metrics Box */}
-              <div className="lg:col-span-5 bg-gradient-to-br from-zinc-900 via-slate-900/90 to-black p-6 rounded-2xl border border-slate-400/30 shadow-2xl space-y-4">
-                <div className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-slate-300" />
-                  EVENT SCHEDULE & ARTISTS
-                </div>
-
-                <div className="space-y-3 divide-y divide-white/10">
-                  <div className="pt-1 flex justify-between items-center text-xs sm:text-sm">
-                    <div>
-                      <span className="text-slate-300 font-medium block">Presocial Class</span>
-                      <span className="text-slate-100 font-bold">Albina & Isaac</span>
-                    </div>
-                    <span className="font-mono text-slate-300 bg-slate-800 px-2.5 py-1 rounded-lg text-xs font-bold">
-                      4:00 PM
-                    </span>
-                  </div>
-
-                  <div className="pt-3 flex justify-between items-center text-xs sm:text-sm">
-                    <div>
-                      <span className="text-slate-300 font-medium block">Social Dance Session</span>
-                      <span className="text-slate-100 font-bold">DJ JR on the Decks</span>
-                    </div>
-                    <span className="font-mono text-slate-300 bg-slate-800 px-2.5 py-1 rounded-lg text-xs font-bold">
-                      5:00 PM - 9:00 PM
-                    </span>
-                  </div>
-
-                  <div className="pt-3 flex justify-between items-center text-xs sm:text-sm">
-                    <div>
-                      <span className="text-slate-300 font-medium block">Venue</span>
-                      <span className="text-slate-100 font-bold">Yuengling Draft Haus</span>
-                    </div>
-                    <span className="font-mono text-slate-400 text-xs">
-                      Tampa, FL
-                    </span>
-                  </div>
-                </div>
+              <div className="p-4 rounded-2xl bg-black/40 border border-white/10 text-center">
+                <span className="text-[10px] text-slate-400 font-mono uppercase tracking-widest block mb-1">5–9 PM</span>
+                <span className="text-sm text-white font-bold block">Social Dancing</span>
+                <span className="text-xs text-slate-400 mt-0.5 block">DJ JR</span>
               </div>
-
+              <div className="p-4 rounded-2xl bg-white/5 border border-slate-300/30 text-center">
+                <span className="text-[10px] text-slate-400 font-mono uppercase tracking-widest block mb-1">Venue</span>
+                <span className="text-sm text-white font-bold block">Yuengling Draft Haus</span>
+                <span className="text-xs text-slate-400 mt-0.5 block">Tampa, FL</span>
+              </div>
             </div>
 
-            {/* Pricing & Ticket Tier Cards */}
-            <div className="mb-10">
-              <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                <Ticket className="w-4 h-4 text-slate-300" />
-                TICKET PASS OPTIONS
-              </div>
-
+            {/* Ticket Options */}
+            <div className="mb-8">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                
+
                 {/* Tier 1: Pre-Sale */}
-                <div 
+                <div
                   onClick={() => onOpenBooking('social-presale')}
                   className="p-5 rounded-2xl bg-gradient-to-b from-slate-800/80 to-zinc-900 border border-slate-300/50 shadow-xl relative overflow-hidden flex flex-col justify-between group hover:border-slate-200 transition-all cursor-pointer"
                 >
@@ -299,78 +255,60 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                   </div>
 
                   <div>
-                    <span className="text-[10px] text-slate-400 font-mono font-bold uppercase block mb-1">
-                      LIMITED TIME PRE-SALE
-                    </span>
                     <h4 className="text-lg font-black text-white uppercase font-sans">
-                      PRE-SALE TICKET
+                      Pre-Sale
                     </h4>
                     <p className="text-xs text-slate-300 mt-1">
-                      Full entry including presocial class & social dancing. Ends Aug 14th!
+                      Ends Aug 14th
                     </p>
                   </div>
 
                   <div className="mt-4 pt-3 border-t border-white/10 flex items-baseline justify-between">
-                    <div>
-                      <span className="text-2xl font-black text-white font-mono">$15</span>
-                      <span className="text-[10px] text-slate-400 block">*Ends 8/14</span>
-                    </div>
-                    <span className="text-[11px] font-bold text-slate-300 group-hover:text-white transition-colors flex items-center gap-1">
-                      Get Pass →
+                    <span className="text-2xl font-black text-white font-mono">$15</span>
+                    <span className="text-[11px] font-bold text-slate-300 group-hover:text-white transition-colors">
+                      Get Ticket →
                     </span>
                   </div>
                 </div>
 
                 {/* Tier 2: College Students */}
-                <div 
+                <div
                   onClick={() => onOpenBooking('social-presale')}
                   className="p-5 rounded-2xl bg-gradient-to-b from-zinc-900 to-black border border-white/10 shadow-lg flex flex-col justify-between hover:border-slate-400/40 transition-all cursor-pointer group"
                 >
                   <div>
-                    <span className="text-[10px] text-emerald-400 font-mono font-bold uppercase block mb-1">
-                      STUDENT DISCOUNT
-                    </span>
                     <h4 className="text-lg font-black text-white uppercase font-sans">
-                      COLLEGE STUDENTS
+                      Students
                     </h4>
                     <p className="text-xs text-slate-300 mt-1">
-                      Special rate for active college students with valid student ID.
+                      Valid student ID
                     </p>
                   </div>
 
                   <div className="mt-4 pt-3 border-t border-white/10 flex items-baseline justify-between">
-                    <div>
-                      <span className="text-2xl font-black text-emerald-400 font-mono">$12</span>
-                      <span className="text-[10px] text-slate-400 block">Valid Student ID</span>
-                    </div>
+                    <span className="text-2xl font-black text-emerald-400 font-mono">$12</span>
                     <span className="text-[11px] font-bold text-slate-400 group-hover:text-emerald-300 transition-colors">
-                      Reserve →
+                      Get Ticket →
                     </span>
                   </div>
                 </div>
 
                 {/* Tier 3: At the Door */}
-                <div 
+                <div
                   onClick={() => onOpenBooking('social-presale')}
                   className="p-5 rounded-2xl bg-gradient-to-b from-zinc-900 to-black border border-white/10 shadow-lg flex flex-col justify-between hover:border-slate-400/40 transition-all cursor-pointer group"
                 >
                   <div>
-                    <span className="text-[10px] text-slate-400 font-mono font-bold uppercase block mb-1">
-                      DAY OF EVENT
-                    </span>
                     <h4 className="text-lg font-black text-white uppercase font-sans">
-                      AT THE DOOR
+                      At the Door
                     </h4>
                     <p className="text-xs text-slate-300 mt-1">
-                      Standard door admission available on Sunday, August 16th.
+                      Day of event
                     </p>
                   </div>
 
                   <div className="mt-4 pt-3 border-t border-white/10 flex items-baseline justify-between">
-                    <div>
-                      <span className="text-2xl font-black text-slate-200 font-mono">$20</span>
-                      <span className="text-[10px] text-slate-400 block">At Venue</span>
-                    </div>
+                    <span className="text-2xl font-black text-slate-200 font-mono">$20</span>
                     <span className="text-[11px] font-bold text-slate-400 group-hover:text-slate-200 transition-colors">
                       Info →
                     </span>
@@ -380,16 +318,13 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
               </div>
             </div>
 
-            {/* Location & Directions Card */}
-            <div className="p-5 rounded-2xl bg-black/60 border border-white/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
+            {/* Location & Directions */}
+            <div className="p-5 rounded-2xl bg-black/60 border border-white/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div className="flex items-start gap-3">
                 <div className="p-3 rounded-xl bg-slate-800 text-slate-200 border border-slate-600 shrink-0 mt-0.5">
                   <MapPin className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-xs font-mono font-bold text-slate-400 uppercase block">
-                    VENUE LOCATION
-                  </span>
                   <h5 className="text-sm font-bold text-white">
                     Yuengling Draft Haus
                   </h5>
@@ -418,28 +353,6 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                   <span>Get Directions</span>
                 </a>
               </div>
-            </div>
-
-            {/* Primary Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 border-t border-white/10">
-              <button
-                onClick={() => onOpenBooking('social-presale')}
-                className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-slate-200 via-slate-100 to-slate-300 hover:from-white hover:to-slate-200 text-black text-xs sm:text-sm font-black uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl shadow-white/10 transition-all transform hover:scale-[1.02]"
-              >
-                <Ticket className="w-4 h-4 text-black" />
-                <span>GET PRE-SALE SOCIAL PASS ($15)</span>
-                <ArrowRight className="w-4 h-4 text-black" />
-              </button>
-
-              <a
-                href={STUDIO_INFO.whatsappLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto px-6 py-4 rounded-2xl bg-emerald-950/60 hover:bg-emerald-900/80 text-emerald-300 border border-emerald-500/40 text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all"
-              >
-                <span>Join WhatsApp Social Group</span>
-                <ArrowRight className="w-4 h-4 text-emerald-400" />
-              </a>
             </div>
 
           </div>
