@@ -86,6 +86,18 @@ const InnerCheckoutForm: React.FC<{
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const successFired = useRef(false);
 
+  // Always let the async wallet callback read the *latest* PaymentIntent secret,
+  // not the one captured the moment the handler was first attached. Otherwise a
+  // price change (which mints a new intent) leaves the wallet confirming the old
+  // one — the card path would charge correctly while Apple/Google Pay lags behind.
+  const clientSecretRef = useRef(clientSecret);
+  useEffect(() => {
+    clientSecretRef.current = clientSecret;
+  }, [clientSecret]);
+
+  // Hold the live PaymentRequest so a separate effect can keep its amount in sync.
+  const paymentRequestRef = useRef<PaymentRequest | null>(null);
+
   useEffect(() => {
     if (!stripe) return;
 
@@ -96,8 +108,11 @@ const InnerCheckoutForm: React.FC<{
       requestPayerName: false,
       requestPayerEmail: false,
     });
+    paymentRequestRef.current = pr;
 
+    let active = true;
     pr.canMakePayment().then((result) => {
+      if (!active) return;
       if (result) {
         setWalletLabel(result.applePay ? 'Apple Pay' : 'Google Pay');
         setSelected('wallet');
@@ -107,8 +122,11 @@ const InnerCheckoutForm: React.FC<{
 
     pr.on('paymentmethod', async (ev) => {
       setIsProcessing(true);
+      // Read the current secret at confirm time so the amount shown in the wallet
+      // sheet and the amount actually charged both come from the same live intent.
+      const secret = clientSecretRef.current;
       const { error, paymentIntent } = await stripe.confirmCardPayment(
-        clientSecret,
+        secret,
         { payment_method: ev.paymentMethod.id },
         { handleActions: false }
       );
@@ -123,7 +141,7 @@ const InnerCheckoutForm: React.FC<{
       ev.complete('success');
 
       if (paymentIntent?.status === 'requires_action') {
-        const { error: actionError } = await stripe.confirmCardPayment(clientSecret);
+        const { error: actionError } = await stripe.confirmCardPayment(secret);
         if (actionError) {
           setErrorMsg(actionError.message || 'Payment failed.');
           setIsProcessing(false);
@@ -133,8 +151,22 @@ const InnerCheckoutForm: React.FC<{
 
       handleSuccess();
     });
+
+    return () => {
+      active = false;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stripe]);
+
+  // Keep the Apple Pay / Google Pay sheet showing the CURRENT price + label.
+  // Without this the wallet total stays frozen at whatever it was when the
+  // PaymentRequest was first created, even though the charge uses the live intent.
+  useEffect(() => {
+    if (!paymentRequestRef.current) return;
+    paymentRequestRef.current.update({
+      total: { label: passName, amount: Math.round(priceInDollars * 100) },
+    });
+  }, [passName, priceInDollars]);
 
   const handleSuccess = useCallback(() => {
     if (successFired.current) return;
@@ -313,6 +345,12 @@ export const CustomStripeCheckout: React.FC<CustomStripeCheckoutProps> = ({
 
   useEffect(() => {
     let cancelled = false;
+
+    // Drop the previous intent immediately so the form falls back to its loader
+    // instead of briefly showing the new price against the old PaymentIntent
+    // (which is locked to the old amount server-side).
+    setClientSecret(null);
+    setLoadError(null);
 
     fetch('/api/create-payment-intent', {
       method: 'POST',

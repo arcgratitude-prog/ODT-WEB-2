@@ -72,13 +72,18 @@ export const SpecialEventsSection: React.FC<SpecialEventsSectionProps> = ({ onOp
             <div className="text-left shrink-0">
               <span className="text-[10px] text-red-300 uppercase block font-bold">12 Classes Bundle</span>
               <div className="flex items-baseline gap-2">
+                {/* NOTE: this $140 is display copy only — it doesn't match any real
+                    PassOption. The CTA below now books 'track-unlimited', which is
+                    priced at $125 (see danceData.ts). Either update this number to
+                    $125 or add a real $140 pass — right now the modal will show $125
+                    after the customer clicks through, not the $140 advertised here. */}
                 <span className="text-3xl font-black text-red-400 font-mono">$140</span>
                 <span className="text-xs font-bold text-slate-400 line-through">$200</span>
               </div>
             </div>
 
             <button
-              onClick={() => onOpenBooking('cycle-pass')}
+              onClick={() => onOpenBooking('track-unlimited')}
               className="bg-gradient-to-r from-red-600 via-red-700 to-black hover:from-red-500 hover:to-zinc-900 text-white border border-red-500/50 shadow-lg shadow-red-600/40 w-full py-4 rounded-2xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2"
             >
               <Sparkles className="w-4 h-4 text-yellow-300" />
