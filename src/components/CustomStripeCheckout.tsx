@@ -99,8 +99,8 @@ const InnerCheckoutForm: React.FC<{
       country: 'US',
       currency: 'usd',
       total: { label: passName, amount: Math.round(priceInDollars * 100) },
-      requestPayerName: false,
-      requestPayerEmail: false,
+      requestPayerName: true,
+      requestPayerEmail: true,
     });
     paymentRequestRef.current = pr;
 
