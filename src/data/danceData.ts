@@ -134,7 +134,7 @@ export const SECRET_OPEN_HOUSE_PASS: PassOption = {
 export const PASS_OPTIONS: PassOption[] = [
   {
     id: 'track-foundations',
-    name: 'Light Work',
+    name: 'Tier 1: Solo Sesh',
     price: 80,
     tagline: 'One class a week, your pick. Ease in on your own terms.',
     classesCount: 4,
@@ -149,7 +149,7 @@ export const PASS_OPTIONS: PassOption[] = [
   },
   {
     id: 'track-progression',
-    name: 'Grindin’',
+    name: 'Tier 2: Grindin’',
     price: 105,
     savings: 'MOST POPULAR TRACK',
     tagline: 'Two classes a week. You’re building real momentum now.',
@@ -165,7 +165,7 @@ export const PASS_OPTIONS: PassOption[] = [
   },
   {
     id: 'track-unlimited',
-    name: 'Locked In',
+    name: 'Tier 3: Locked In',
     price: 125,
     savings: 'FULL IMMERSION • BEST VALUE',
     tagline: 'All 3 classes, every Wednesday. No half-stepping.',
