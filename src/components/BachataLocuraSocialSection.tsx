@@ -112,6 +112,20 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
               </div>
             </div>
 
+            {/* Readable summary — same info as the flyer, spelled out so no
+                one has to zoom in to read it */}
+            <div className="max-w-sm mx-auto mb-8 text-center space-y-1">
+              <h2 className="text-2xl sm:text-3xl font-black uppercase font-sans tracking-tight text-white">
+                Bachata <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-fuchsia-400 to-purple-400">Invasion</span>
+              </h2>
+              <p className="text-sm text-purple-100">
+                Every 2nd Friday · 8 PM–1 AM · <span className="font-bold text-white">$12</span>
+              </p>
+              <p className="text-xs text-purple-300">
+                8–9 PM Class with <span className="text-white font-semibold">Albina & Isaac</span> · Social Dancing with <span className="text-white font-semibold">DJ JR</span>
+              </p>
+            </div>
+
             {/* Get Ticket CTA */}
             <div className="flex justify-center mb-8">
               <button
@@ -188,6 +202,23 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
               </div>
             </div>
 
+            {/* Readable summary — same info as the flyer, spelled out so no
+                one has to zoom in to read it */}
+            <div className="max-w-sm mx-auto mb-8 text-center space-y-1">
+              <h2 className="text-2xl sm:text-3xl font-black uppercase font-sans tracking-tight text-white">
+                Bachata <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-100 via-slate-300 to-slate-500">Locura</span>
+              </h2>
+              <p className="text-sm text-slate-300">
+                Sunday, September 13th · 4–9 PM · Dress: Pink & Purple
+              </p>
+              <p className="text-xs text-slate-400">
+                4 PM Presocial Class with <span className="text-white font-semibold">Albina & Isaac</span> · Social Dancing with <span className="text-white font-semibold">DJ JR</span>
+              </p>
+              <p className="text-xs text-slate-500">
+                Yuengling Draft Haus · 11109 N 30th St, Tampa, FL 33612
+              </p>
+            </div>
+
             {/* Ticket Options */}
             <div className="mb-8">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -206,7 +237,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                       Pre-Sale
                     </h4>
                     <p className="text-xs text-slate-300 mt-1">
-                      Ends Aug 14th
+                      Ends 10/11
                     </p>
                   </div>
 
