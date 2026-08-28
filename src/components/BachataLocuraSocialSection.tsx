@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Sparkles, Calendar, MapPin, Ticket, ExternalLink, Flame, ArrowRight, Copy, Check } from 'lucide-react';
 import { STUDIO_INFO } from '../data/danceData';
+import invasionFlyer from '../assets/images/bachata_invasion_flyer.jpg';
+import locuraFlyer from '../assets/images/bachata_locura_flyer.jpg';
 // BachataLocuraSocialSection component
 
 interface BachataLocuraSocialSectionProps {
@@ -95,45 +97,18 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
 
           <div className="rounded-3xl p-6 sm:p-8 lg:p-10 border border-fuchsia-500/40 bg-gradient-to-br from-[#180924] via-[#11061a] to-[#0a0310] shadow-[0_0_60px_rgba(217,70,239,0.2)] relative overflow-hidden">
 
-            {/* Title — centered, nothing above it */}
-            <div className="text-center max-w-2xl mx-auto mb-8">
-              <h2 className="text-4xl sm:text-6xl font-black uppercase font-sans tracking-tight leading-none text-white">
-                BACHATA <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-fuchsia-400 to-purple-400 drop-shadow-[0_0_25px_rgba(236,72,153,0.5)]">
-                  INVASION
-                </span>
-              </h2>
-
-              <p className="text-sm sm:text-base text-purple-100 leading-relaxed mt-4">
-                Tampa’s highest energy monthly Friday night Bachata social! Kick off the night with an 8 PM workshop led by <strong className="text-white">Albina & Isaac</strong>, then dance all night with <strong className="text-white">DJ JR</strong>.
-              </p>
-
-              {/* Tabs moved here, under the description */}
-              <div className="flex flex-wrap items-center justify-center gap-2 mt-5">
-                <span className="px-3 py-1 rounded-full text-[10px] sm:text-xs font-mono font-bold tracking-widest text-fuchsia-200 bg-fuchsia-950/80 border border-fuchsia-500/40 uppercase">
-                  Every 2nd Friday • 8PM–1AM
-                </span>
-                <span className="px-3 py-1 rounded-full text-[10px] sm:text-xs font-mono font-bold tracking-widest text-pink-300 bg-pink-950/60 border border-pink-500/40 uppercase">
-                  Dance Factory
-                </span>
-              </div>
-            </div>
-
-            {/* Essentials — schedule + price in one row */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 max-w-2xl mx-auto">
-              <div className="p-4 rounded-2xl bg-black/40 border border-fuchsia-500/20 text-center">
-                <span className="text-[10px] text-pink-300 font-mono uppercase tracking-widest block mb-1">8–9 PM</span>
-                <span className="text-sm text-white font-bold block">Class</span>
-                <span className="text-xs text-purple-200 mt-0.5 block">Albina & Isaac</span>
-              </div>
-              <div className="p-4 rounded-2xl bg-black/40 border border-fuchsia-500/20 text-center">
-                <span className="text-[10px] text-pink-300 font-mono uppercase tracking-widest block mb-1">9 PM–1 AM</span>
-                <span className="text-sm text-white font-bold block">Social Dancing</span>
-                <span className="text-xs text-purple-200 mt-0.5 block">DJ JR</span>
-              </div>
-              <div className="p-4 rounded-2xl bg-pink-500/10 border border-pink-500/40 text-center">
-                <span className="text-[10px] text-pink-300 font-mono uppercase tracking-widest block mb-1">Full Night</span>
-                <span className="text-sm text-white font-bold">$12</span>
+            {/* Flyer — the visual centerpiece. Framed and glowing in the
+                card's own palette, with a soft fade at the bottom so it
+                reads as part of the page rather than a pasted image. */}
+            <div className="max-w-sm mx-auto mb-8">
+              <div className="relative rounded-2xl overflow-hidden border border-fuchsia-400/50 shadow-[0_0_45px_rgba(236,72,153,0.35)]">
+                <img
+                  src={invasionFlyer}
+                  alt="Bachata Invasion — every 2nd Friday at Dance Factory"
+                  className="w-full h-auto block"
+                />
+                <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#0a0310] via-transparent to-transparent" />
+                <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-white/10 rounded-2xl" />
               </div>
             </div>
 
@@ -198,46 +173,18 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
 
           <div className="rounded-3xl p-6 sm:p-10 border border-slate-300/40 bg-gradient-to-br from-[#121318] via-[#0d0e12] to-[#08080a] shadow-[0_0_50px_rgba(255,255,255,0.08)] relative overflow-hidden">
 
-            {/* Title — centered, nothing above it */}
-            <div className="text-center max-w-2xl mx-auto mb-8">
-              <h2 className="text-4xl sm:text-6xl font-black uppercase font-sans tracking-tight leading-none text-white">
-                BACHATA <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-100 via-slate-300 to-slate-500 drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-                  LOCURA
-                </span>
-              </h2>
-
-              <p className="text-sm sm:text-base text-slate-300 leading-relaxed mt-4">
-                Tampa’s premier Sunday Bachata social experience! High-vibe social dancing, sleek aesthetics, presocial class with <strong className="text-white">Albina & Isaac</strong>, and a fire set by <strong className="text-white">DJ JR</strong>.
-              </p>
-
-              {/* Tabs moved here, under the description */}
-              <div className="flex flex-wrap items-center justify-center gap-2 mt-5">
-                <span className="px-3.5 py-1 rounded-full text-[10px] sm:text-xs font-mono font-bold tracking-widest text-emerald-400 bg-emerald-950/60 border border-emerald-500/40 uppercase">
-                  ★ Specialty Edition Social
-                </span>
-                <span className="px-3 py-1 rounded-full text-[10px] sm:text-xs font-mono font-bold tracking-widest text-slate-200 bg-slate-800/80 border border-slate-400/40 uppercase">
-                  Sunday, Aug 16 • Dress: Silver & Black
-                </span>
-              </div>
-            </div>
-
-            {/* Essentials — schedule in one row */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 max-w-2xl mx-auto">
-              <div className="p-4 rounded-2xl bg-black/40 border border-white/10 text-center">
-                <span className="text-[10px] text-slate-400 font-mono uppercase tracking-widest block mb-1">4 PM</span>
-                <span className="text-sm text-white font-bold block">Presocial Class</span>
-                <span className="text-xs text-slate-400 mt-0.5 block">Albina & Isaac</span>
-              </div>
-              <div className="p-4 rounded-2xl bg-black/40 border border-white/10 text-center">
-                <span className="text-[10px] text-slate-400 font-mono uppercase tracking-widest block mb-1">5–9 PM</span>
-                <span className="text-sm text-white font-bold block">Social Dancing</span>
-                <span className="text-xs text-slate-400 mt-0.5 block">DJ JR</span>
-              </div>
-              <div className="p-4 rounded-2xl bg-white/5 border border-slate-300/30 text-center">
-                <span className="text-[10px] text-slate-400 font-mono uppercase tracking-widest block mb-1">Venue</span>
-                <span className="text-sm text-white font-bold block">Yuengling Draft Haus</span>
-                <span className="text-xs text-slate-400 mt-0.5 block">Tampa, FL</span>
+            {/* Flyer — the visual centerpiece. Framed and glowing in the
+                card's own palette, with a soft fade at the bottom so it
+                reads as part of the page rather than a pasted image. */}
+            <div className="max-w-sm mx-auto mb-8">
+              <div className="relative rounded-2xl overflow-hidden border border-slate-300/50 shadow-[0_0_45px_rgba(255,255,255,0.15)]">
+                <img
+                  src={locuraFlyer}
+                  alt="Bachata Locura — Tropical Midnight Edition, September 13th"
+                  className="w-full h-auto block"
+                />
+                <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#08080a] via-transparent to-transparent" />
+                <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-white/10 rounded-2xl" />
               </div>
             </div>
 
