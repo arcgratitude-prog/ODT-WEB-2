@@ -16,6 +16,7 @@ import { ReviewPage } from './components/ReviewPage';
 import { ReferralProgramSection } from './components/ReferralProgramSection';
 import { InstagramStoryModal } from './components/InstagramStoryModal';
 import { StudentPortalModal } from './components/StudentPortalModal';
+import { AdminCheckIn } from './components/AdminCheckIn';
 import { TicketPass } from './types';
 
 export default function App() {
@@ -130,6 +131,13 @@ export default function App() {
       console.error('Failed to update localStorage:', e);
     }
   };
+
+  // Private staff tool — reached directly at yoursite.com/?admin=checkin,
+  // not linked anywhere in the public nav. Renders standalone, skipping
+  // the public site's Navbar/Footer/background entirely.
+  if (typeof window !== 'undefined' && window.location.search.toLowerCase().includes('admin=checkin')) {
+    return <AdminCheckIn />;
+  }
 
   return (
     <div className="min-h-screen bg-[#0a0a0c] text-slate-100 relative selection:bg-red-600 selection:text-white overflow-x-hidden pb-24 md:pb-0">

@@ -14,17 +14,38 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { passName, priceInCents } = req.body;
+    const {
+      passName,
+      priceInCents,
+      passType,
+      customerName,
+      customerEmail,
+      customerPhone,
+      classesIncluded,
+      ticketId,
+    } = req.body;
 
     if (!passName || typeof priceInCents !== 'number' || priceInCents < 50) {
       return res.status(400).json({ error: 'Invalid request' });
     }
 
+    // These ride along on the PaymentIntent as metadata so the webhook
+    // (api/stripe-webhook.js) can read them back once payment succeeds —
+    // Stripe is the source of truth here, not the customer's browser.
     const paymentIntent = await stripe.paymentIntents.create({
       amount: priceInCents,
       currency: 'usd',
       automatic_payment_methods: { enabled: true },
       description: passName,
+      metadata: {
+        passName,
+        passType: passType || '',
+        customerName: customerName || '',
+        customerEmail: customerEmail || '',
+        customerPhone: customerPhone || '',
+        classesIncluded: classesIncluded || '',
+        ticketId: ticketId || '',
+      },
     });
 
     res.status(200).json({ clientSecret: paymentIntent.client_secret });

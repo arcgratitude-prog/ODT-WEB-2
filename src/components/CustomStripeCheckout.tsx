@@ -16,6 +16,15 @@ interface CustomStripeCheckoutProps {
   passName: string;
   priceInDollars: number;
   onSuccess: () => void;
+  // Booking metadata — rides along on the Stripe PaymentIntent so the
+  // webhook (api/stripe-webhook.js) can save a real booking record and
+  // notify admins with the actual customer's info, not a placeholder.
+  passType?: string;
+  customerName?: string;
+  customerEmail?: string;
+  customerPhone?: string;
+  classesIncluded?: string;
+  ticketId?: string;
 }
 
 type SelectableMethod = 'wallet' | 'card';
@@ -335,6 +344,12 @@ export const CustomStripeCheckout: React.FC<CustomStripeCheckoutProps> = ({
   passName,
   priceInDollars,
   onSuccess,
+  passType,
+  customerName,
+  customerEmail,
+  customerPhone,
+  classesIncluded,
+  ticketId,
 }) => {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -354,6 +369,12 @@ export const CustomStripeCheckout: React.FC<CustomStripeCheckoutProps> = ({
       body: JSON.stringify({
         passName,
         priceInCents: Math.round(priceInDollars * 100),
+        passType,
+        customerName,
+        customerEmail,
+        customerPhone,
+        classesIncluded,
+        ticketId,
       }),
     })
       .then((res) => res.json())
@@ -372,7 +393,8 @@ export const CustomStripeCheckout: React.FC<CustomStripeCheckoutProps> = ({
     return () => {
       cancelled = true;
     };
-  }, [passName, priceInDollars]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [passName, priceInDollars, customerName, customerEmail, customerPhone]);
 
   if (loadError) {
     return <div className="text-center py-8 text-sm text-red-400">{loadError}</div>;

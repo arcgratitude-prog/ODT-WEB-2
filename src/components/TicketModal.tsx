@@ -26,6 +26,10 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   const [phone, setPhone] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [generatedPass, setGeneratedPass] = useState<TicketPass | null>(null);
+  // Paid passes need a name + email up front too — Stripe alone doesn't
+  // guarantee we get this from a card payment, only from wallet payments.
+  const [contactConfirmed, setContactConfirmed] = useState(false);
+  const ticketIdRef = React.useRef(`UB-${Math.random().toString(36).substring(2, 8).toUpperCase()}`);
 
   useEffect(() => {
     if (initialPassTypeId) {
@@ -33,6 +37,15 @@ export const TicketModal: React.FC<TicketModalProps> = ({
       setGeneratedPass(null);
     }
   }, [initialPassTypeId]);
+
+  // Reset the contact form each time the modal is freshly opened, and mint
+  // a fresh ticket ID so the webhook can't collide with a previous attempt.
+  useEffect(() => {
+    if (isOpen) {
+      setContactConfirmed(false);
+      ticketIdRef.current = `UB-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -53,7 +66,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
         origin: { y: 0.6 }
       });
 
-      const ticketId = `UB-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+      const ticketId = ticketIdRef.current;
 
       const newPass: TicketPass = {
         ticketId,
@@ -86,13 +99,13 @@ export const TicketModal: React.FC<TicketModalProps> = ({
       origin: { y: 0.6 }
     });
 
-    const ticketId = `UB-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+    const ticketId = ticketIdRef.current;
 
     const newPass: TicketPass = {
       ticketId,
-      userName: 'Valued Dancer',
-      userEmail: 'N/A',
-      userPhone: 'N/A',
+      userName: name.trim() || 'Valued Dancer',
+      userEmail: email.trim() || 'N/A',
+      userPhone: phone.trim() || 'N/A',
       passName: currentPassOption.name,
       passType: currentPassOption.type,
       price: currentPassOption.price,
@@ -172,12 +185,96 @@ export const TicketModal: React.FC<TicketModalProps> = ({
             </div>
 
             {isPaidPass ? (
-              /* Custom minimal payment UI — handles card, Apple Pay, Google Pay */
-              <CustomStripeCheckout
-                passName={currentPassOption.name}
-                priceInDollars={currentPassOption.price}
-                onSuccess={handlePaymentSuccess}
-              />
+              contactConfirmed ? (
+                /* Custom minimal payment UI — handles card, Apple Pay, Google Pay */
+                <CustomStripeCheckout
+                  passName={currentPassOption.name}
+                  priceInDollars={currentPassOption.price}
+                  onSuccess={handlePaymentSuccess}
+                  passType={currentPassOption.type}
+                  customerName={name}
+                  customerEmail={email}
+                  customerPhone={phone}
+                  classesIncluded={
+                    initialClassTimes.length > 0
+                      ? initialClassTimes.join(', ')
+                      : `${currentPassOption.classesCount} Class Session(s)`
+                  }
+                  ticketId={ticketIdRef.current}
+                />
+              ) : (
+                /* Collect name + email before payment so we always have real
+                   contact info for the booking record and admin alert — card
+                   payments don't hand this over the way wallet payments do. */
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (!name.trim() || !email.trim()) return;
+                    setContactConfirmed(true);
+                  }}
+                  className="space-y-4"
+                >
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-slate-300 mb-1">
+                      Full Name *
+                    </label>
+                    <div className="relative">
+                      <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                      <input
+                        type="text"
+                        required
+                        placeholder="e.g. Alex Rivera"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none focus:border-red-500 transition-colors"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-slate-300 mb-1">
+                      Email Address *
+                    </label>
+                    <div className="relative">
+                      <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                      <input
+                        type="email"
+                        required
+                        placeholder="e.g. alex@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none focus:border-red-500 transition-colors"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-slate-300 mb-1">
+                      Phone Number (Optional)
+                    </label>
+                    <div className="relative">
+                      <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                      <input
+                        type="tel"
+                        placeholder="e.g. (813) 555-0199"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none focus:border-red-500 transition-colors"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-2">
+                    <button
+                      type="submit"
+                      className="liquid-glass-btn liquid-btn-primary w-full py-4 rounded-2xl text-xs font-black text-white uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl shadow-red-600/40"
+                    >
+                      <Sparkles className="w-4 h-4 text-yellow-300" />
+                      <span>Continue to Payment</span>
+                    </button>
+                  </div>
+                </form>
+              )
             ) : (
               /* Free pass keeps the simple name/email form, no payment needed */
               <form onSubmit={handleSubmit} className="space-y-4">
