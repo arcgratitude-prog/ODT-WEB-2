@@ -271,15 +271,18 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                   <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Student</span>
                 </div>
 
-                {/* Pre-Sale — the featured, purchasable option */}
+                {/* Pre-Sale — the featured, purchasable option. Glows/pulses
+                    so it visually reads as the one to tap. */}
                 <button
                   onClick={() => onOpenBooking('social-presale')}
-                  className="flex flex-col items-center gap-1.5 group"
+                  className="flex flex-col items-center gap-1.5 group relative"
                 >
-                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-b from-slate-600 to-slate-900 border-2 border-slate-200/70 shadow-lg shadow-white/10 flex items-center justify-center group-hover:border-white transition-all group-active:scale-95">
+                  {/* Soft ambient pulse ring behind the circle */}
+                  <span className="absolute top-0 w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-fuchsia-400/40 blur-md animate-pulse pointer-events-none" />
+                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-b from-fuchsia-500 via-purple-600 to-slate-900 border-2 border-fuchsia-200/80 shadow-lg shadow-fuchsia-500/50 flex items-center justify-center transition-all group-hover:border-white group-hover:shadow-fuchsia-400/80 group-hover:shadow-xl group-hover:scale-105 group-active:scale-95">
                     <span className="text-xl sm:text-2xl font-black text-white font-mono">$15</span>
                   </div>
-                  <span className="text-[10px] font-bold text-white uppercase tracking-wide">Pre-Sale</span>
+                  <span className="text-[10px] font-bold text-white uppercase tracking-wide">Tap to Get →</span>
                 </button>
 
                 {/* At the Door — door only */}
