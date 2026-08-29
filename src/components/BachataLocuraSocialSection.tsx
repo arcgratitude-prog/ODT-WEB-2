@@ -286,46 +286,44 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                   </div>
                 </div>
 
-                {/* Tier 2: College Students */}
+                {/* Tier 2: College Students — not purchasable online, pay at the door with ID */}
                 <div
-                  onClick={() => onOpenBooking('social-presale')}
-                  className="p-5 rounded-2xl bg-gradient-to-b from-zinc-900 to-black border border-white/10 shadow-lg flex flex-col justify-between hover:border-slate-400/40 transition-all cursor-pointer group"
+                  className="p-5 rounded-2xl bg-gradient-to-b from-zinc-900 to-black border border-white/10 shadow-lg flex flex-col justify-between opacity-80"
                 >
                   <div>
                     <h4 className="text-lg font-black text-white uppercase font-sans">
                       Students
                     </h4>
                     <p className="text-xs text-slate-300 mt-1">
-                      Show ID at front
+                      Present ID at the door
                     </p>
                   </div>
 
                   <div className="mt-4 pt-3 border-t border-white/10 flex items-baseline justify-between">
                     <span className="text-2xl font-black text-emerald-400 font-mono">$15</span>
-                    <span className="text-[11px] font-bold text-slate-400 group-hover:text-emerald-300 transition-colors">
-                      Get Ticket →
+                    <span className="text-[11px] font-bold text-slate-500">
+                      Pay at Door
                     </span>
                   </div>
                 </div>
 
-                {/* Tier 3: At the Door */}
+                {/* Tier 3: At the Door — not purchasable online */}
                 <div
-                  onClick={() => onOpenBooking('social-presale')}
-                  className="p-5 rounded-2xl bg-gradient-to-b from-zinc-900 to-black border border-white/10 shadow-lg flex flex-col justify-between hover:border-slate-400/40 transition-all cursor-pointer group"
+                  className="p-5 rounded-2xl bg-gradient-to-b from-zinc-900 to-black border border-white/10 shadow-lg flex flex-col justify-between opacity-80"
                 >
                   <div>
                     <h4 className="text-lg font-black text-white uppercase font-sans">
                       At the Door
                     </h4>
                     <p className="text-xs text-slate-300 mt-1">
-                      Day of event
+                      Pay in person, day of event
                     </p>
                   </div>
 
                   <div className="mt-4 pt-3 border-t border-white/10 flex items-baseline justify-between">
                     <span className="text-2xl font-black text-slate-200 font-mono">$20</span>
-                    <span className="text-[11px] font-bold text-slate-400 group-hover:text-slate-200 transition-colors">
-                      Info →
+                    <span className="text-[11px] font-bold text-slate-500">
+                      Pay at Door
                     </span>
                   </div>
                 </div>
