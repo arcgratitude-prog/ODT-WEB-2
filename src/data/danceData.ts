@@ -100,13 +100,13 @@ export const SOCIAL_PASS_OPTION: PassOption = {
   price: 15,
   originalPrice: 20,
   savings: 'Save $5 Pre-Sale',
-  tagline: 'Sunday, September 13th @ Yuengling Draft Haus (Presocial Class + Social)',
+  tagline: 'Sunday, September 13th @ Westshore Plaza Mall (Presocial Class + Social)',
   classesCount: 1,
   popular: true,
   features: [
     'Presocial Class with Albina & Isaac (4:00 PM)',
-    'Social Dancing with DJ JR (5:00 PM - 9:00 PM)',
-    'Yuengling Draft Haus Venue (11109 N 30th St)',
+    'Social Dancing with DJ JR (4:00 PM - 9:00 PM)',
+    'Westshore Plaza Mall Venue (334 Westshore Plaza, Unit A10)',
     'Digital Mobile Pass with Instant Check-In'
   ],
   type: 'drop_in_1'

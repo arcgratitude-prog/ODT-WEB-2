@@ -38,16 +38,16 @@ export const CalendarPage: React.FC<CalendarPageProps> = ({ onOpenBooking, onNav
   const generateEvents = (): CalendarEvent[] => {
     const events: CalendarEvent[] = [];
 
-    // 1. Featured Social Event: Sunday, August 16, 2026
+    // 1. Featured Social Event: Sunday, September 13, 2026
     events.push({
-      id: 'locura-aug16',
-      title: 'Bachata Locura Social @ Yuengling',
-      date: new Date(2026, 7, 16),
+      id: 'locura-sept13',
+      title: 'Bachata Locura Social @ Westshore Plaza Mall',
+      date: new Date(2026, 8, 13),
       timeStr: '4:00 PM – 9:00 PM',
       category: 'social',
-      location: 'Yuengling Draft Haus (11109 N 30th St, Tampa, FL)',
+      location: 'Westshore Plaza Mall (334 Westshore Plaza, Unit A10, Tampa, FL)',
       passTypeId: 'social-presale',
-      description: 'Special Tampa Social with Presocial Class by Albina & Isaac (4 PM) and Social Dancing with DJ JR (5-9 PM).',
+      description: 'Special Tampa Social with Presocial Class by Albina & Isaac (4 PM) and Social Dancing with DJ JR (4-9 PM).',
       badge: '★ SPECIAL SOCIAL',
       color: 'from-slate-200 via-white to-slate-300 text-black',
       isFeatured: true

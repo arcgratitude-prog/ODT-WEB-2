@@ -25,7 +25,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
   };
 
   const handleCopyLocuraAddress = () => {
-    navigator.clipboard.writeText("11109 N 30th St, Tampa, FL 33612");
+    navigator.clipboard.writeText("334 Westshore Plaza, Unit A10, Tampa, FL 33609");
     setCopiedLocuraAddress(true);
     setTimeout(() => setCopiedLocuraAddress(false), 2000);
   };
@@ -79,7 +79,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                 : 'bg-slate-900 text-amber-300 border border-amber-500/30'
             }`}>
               <Calendar className="w-2.5 h-2.5 text-amber-400" />
-              <span>Sun • Aug 16</span>
+              <span>Sun • Sept 13</span>
             </span>
             <div className="flex items-center gap-1.5">
               <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
@@ -230,10 +230,10 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                 Sunday, September 13th · 4–9 PM · Dress: Pink & Purple
               </p>
               <p className="text-xs text-slate-400">
-                4 PM Presocial Class with <span className="text-white font-semibold">Albina & Isaac</span> · Social Dancing with <span className="text-white font-semibold">DJ JR</span>
+                Presocial Class at 4 PM with <span className="text-white font-semibold">Albina & Isaac</span> · Music by <span className="text-white font-semibold">DJ JR</span>
               </p>
               <p className="text-xs text-slate-500">
-                Yuengling Draft Haus · 11109 N 30th St, Tampa, FL 33612
+                Westshore Plaza Mall · 334 Westshore Plaza, Unit A10, Tampa, FL 33609
               </p>
             </div>
 
@@ -245,13 +245,13 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                 <span className="text-xs text-slate-400 mt-0.5 block">Albina & Isaac</span>
               </div>
               <div className="p-4 rounded-2xl bg-black/40 border border-white/10 text-center">
-                <span className="text-[10px] text-slate-400 font-mono uppercase tracking-widest block mb-1">5–9 PM</span>
+                <span className="text-[10px] text-slate-400 font-mono uppercase tracking-widest block mb-1">4–9 PM</span>
                 <span className="text-sm text-white font-bold block">Social Dancing</span>
                 <span className="text-xs text-slate-400 mt-0.5 block">DJ JR</span>
               </div>
               <div className="p-4 rounded-2xl bg-white/5 border border-slate-300/30 text-center">
                 <span className="text-[10px] text-slate-400 font-mono uppercase tracking-widest block mb-1">Venue</span>
-                <span className="text-sm text-white font-bold block">Yuengling Draft Haus</span>
+                <span className="text-sm text-white font-bold block">Westshore Plaza Mall</span>
                 <span className="text-xs text-slate-400 mt-0.5 block">Tampa, FL</span>
               </div>
             </div>
@@ -296,12 +296,12 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                       Students
                     </h4>
                     <p className="text-xs text-slate-300 mt-1">
-                      Valid student ID
+                      Show ID at front
                     </p>
                   </div>
 
                   <div className="mt-4 pt-3 border-t border-white/10 flex items-baseline justify-between">
-                    <span className="text-2xl font-black text-emerald-400 font-mono">$12</span>
+                    <span className="text-2xl font-black text-emerald-400 font-mono">$15</span>
                     <span className="text-[11px] font-bold text-slate-400 group-hover:text-emerald-300 transition-colors">
                       Get Ticket →
                     </span>
@@ -341,10 +341,10 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                 </div>
                 <div>
                   <h5 className="text-sm font-bold text-white">
-                    Yuengling Draft Haus
+                    Westshore Plaza Mall
                   </h5>
                   <p className="text-xs text-slate-300 font-mono">
-                    11109 N 30th St, Tampa, FL 33612
+                    334 Westshore Plaza, Unit A10, Tampa, FL 33609
                   </p>
                 </div>
               </div>
@@ -359,7 +359,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                 </button>
 
                 <a
-                  href="https://maps.google.com/?q=Yuengling+Draft+Haus+11109+N+30th+St+Tampa+FL+33612"
+                  href={STUDIO_INFO.googleMapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold flex items-center gap-1.5 border border-slate-600 transition-all"
