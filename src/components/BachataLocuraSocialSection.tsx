@@ -256,21 +256,42 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
               </div>
             </div>
 
-            {/* Ticket Options */}
+            {/* Ticket Options — Pre-Sale is the primary online purchase, so
+                it's centered and sized up; Students/At the Door are
+                door-only info, so they're smaller side cards. */}
             <div className="mb-8">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-3 gap-2 sm:gap-4 items-center max-w-2xl mx-auto">
 
-                {/* Tier 1: Pre-Sale */}
+                {/* Tier 2: College Students — not purchasable online, pay at the door with ID */}
+                <div className="p-3 sm:p-4 rounded-xl bg-gradient-to-b from-zinc-900 to-black border border-white/10 shadow-md flex flex-col justify-between opacity-75 scale-95">
+                  <div>
+                    <h4 className="text-xs sm:text-sm font-black text-white uppercase font-sans">
+                      Students
+                    </h4>
+                    <p className="text-[10px] text-slate-400 mt-0.5">
+                      Present ID at the door
+                    </p>
+                  </div>
+
+                  <div className="mt-3 pt-2 border-t border-white/10 flex items-baseline justify-between">
+                    <span className="text-base font-black text-emerald-400 font-mono">$15</span>
+                    <span className="text-[9px] font-bold text-slate-500">
+                      Pay at Door
+                    </span>
+                  </div>
+                </div>
+
+                {/* Tier 1: Pre-Sale — the featured, purchasable option */}
                 <div
                   onClick={() => onOpenBooking('social-presale')}
-                  className="p-5 rounded-2xl bg-gradient-to-b from-slate-800/80 to-zinc-900 border border-slate-300/50 shadow-xl relative overflow-hidden flex flex-col justify-between group hover:border-slate-200 transition-all cursor-pointer"
+                  className="p-6 sm:p-8 rounded-3xl bg-gradient-to-b from-slate-700 via-slate-800 to-zinc-900 border-2 border-slate-200/70 shadow-2xl shadow-white/10 relative overflow-hidden flex flex-col justify-between group hover:border-white transition-all cursor-pointer z-10 scale-110"
                 >
                   <div className="absolute top-0 right-0 px-3 py-1 bg-gradient-to-l from-slate-200 to-slate-400 text-black text-[10px] font-black uppercase rounded-bl-xl tracking-wider">
                     SAVE $5
                   </div>
 
                   <div>
-                    <h4 className="text-lg font-black text-white uppercase font-sans">
+                    <h4 className="text-xl sm:text-2xl font-black text-white uppercase font-sans">
                       Pre-Sale
                     </h4>
                     <p className="text-xs text-slate-300 mt-1">
@@ -278,51 +299,28 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                     </p>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-white/10 flex items-baseline justify-between">
-                    <span className="text-2xl font-black text-white font-mono">$15</span>
-                    <span className="text-[11px] font-bold text-slate-300 group-hover:text-white transition-colors">
+                  <div className="mt-5 pt-3 border-t border-white/20 flex items-baseline justify-between">
+                    <span className="text-3xl sm:text-4xl font-black text-white font-mono">$15</span>
+                    <span className="text-xs font-bold text-slate-300 group-hover:text-white transition-colors">
                       Get Ticket →
                     </span>
                   </div>
                 </div>
 
-                {/* Tier 2: College Students — not purchasable online, pay at the door with ID */}
-                <div
-                  className="p-5 rounded-2xl bg-gradient-to-b from-zinc-900 to-black border border-white/10 shadow-lg flex flex-col justify-between opacity-80"
-                >
-                  <div>
-                    <h4 className="text-lg font-black text-white uppercase font-sans">
-                      Students
-                    </h4>
-                    <p className="text-xs text-slate-300 mt-1">
-                      Present ID at the door
-                    </p>
-                  </div>
-
-                  <div className="mt-4 pt-3 border-t border-white/10 flex items-baseline justify-between">
-                    <span className="text-2xl font-black text-emerald-400 font-mono">$15</span>
-                    <span className="text-[11px] font-bold text-slate-500">
-                      Pay at Door
-                    </span>
-                  </div>
-                </div>
-
                 {/* Tier 3: At the Door — not purchasable online */}
-                <div
-                  className="p-5 rounded-2xl bg-gradient-to-b from-zinc-900 to-black border border-white/10 shadow-lg flex flex-col justify-between opacity-80"
-                >
+                <div className="p-3 sm:p-4 rounded-xl bg-gradient-to-b from-zinc-900 to-black border border-white/10 shadow-md flex flex-col justify-between opacity-75 scale-95">
                   <div>
-                    <h4 className="text-lg font-black text-white uppercase font-sans">
+                    <h4 className="text-xs sm:text-sm font-black text-white uppercase font-sans">
                       At the Door
                     </h4>
-                    <p className="text-xs text-slate-300 mt-1">
-                      Pay in person, day of event
+                    <p className="text-[10px] text-slate-400 mt-0.5">
+                      Pay in person
                     </p>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-white/10 flex items-baseline justify-between">
-                    <span className="text-2xl font-black text-slate-200 font-mono">$20</span>
-                    <span className="text-[11px] font-bold text-slate-500">
+                  <div className="mt-3 pt-2 border-t border-white/10 flex items-baseline justify-between">
+                    <span className="text-base font-black text-slate-200 font-mono">$20</span>
+                    <span className="text-[9px] font-bold text-slate-500">
                       Pay at Door
                     </span>
                   </div>
