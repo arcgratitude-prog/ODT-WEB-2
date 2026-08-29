@@ -155,8 +155,8 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
   };
 
   const refLink = user 
-    ? `https://aiurbano.dance?ref=${user.referralCode}`
-    : `https://aiurbano.dance?ref=dancefriend`;
+    ? `https://officialdancetheory.com?ref=${user.referralCode}`
+    : `https://officialdancetheory.com?ref=dancefriend`;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(refLink);

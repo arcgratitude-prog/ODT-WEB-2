@@ -29,6 +29,37 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Invalid request' });
     }
 
+    // Look up or create a Stripe Customer so the buyer's name/email shows
+    // front-and-center in the Stripe Dashboard (payment list + detail view),
+    // not just buried in metadata. Search by email first so repeat buyers
+    // don't create duplicate customer records.
+    let customerId;
+    if (customerEmail && customerEmail !== 'N/A') {
+      const existing = await stripe.customers.list({ email: customerEmail, limit: 1 });
+      if (existing.data.length > 0) {
+        customerId = existing.data[0].id;
+        // Keep the name/phone on file current in case they changed it.
+        await stripe.customers.update(customerId, {
+          name: customerName || undefined,
+          phone: customerPhone || undefined,
+        });
+      } else {
+        const created = await stripe.customers.create({
+          name: customerName || undefined,
+          email: customerEmail,
+          phone: customerPhone || undefined,
+        });
+        customerId = created.id;
+      }
+    }
+
+    // The description is what shows front-and-center in the Stripe
+    // Dashboard's payment list — put the customer's name AND what they
+    // bought right there so nothing is buried in metadata.
+    const description = customerName
+      ? `${customerName} — ${passName}`
+      : passName;
+
     // These ride along on the PaymentIntent as metadata so the webhook
     // (api/stripe-webhook.js) can read them back once payment succeeds —
     // Stripe is the source of truth here, not the customer's browser.
@@ -36,7 +67,8 @@ export default async function handler(req, res) {
       amount: priceInCents,
       currency: 'usd',
       automatic_payment_methods: { enabled: true },
-      description: passName,
+      description,
+      ...(customerId ? { customer: customerId } : {}),
       metadata: {
         passName,
         passType: passType || '',

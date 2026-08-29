@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://aiurbano.dance/sitemap.xml
+Sitemap: https://officialdancetheory.com/sitemap.xml

@@ -12,8 +12,8 @@ export const ReferralProgramSection: React.FC<ReferralProgramSectionProps> = ({ 
   const [referralCount, setReferralCount] = useState<number>(1);
 
   const refLink = userName.trim() 
-    ? `https://aiurbano.dance?ref=${encodeURIComponent(userName.trim().toLowerCase().replace(/\s+/g, ''))}`
-    : `https://aiurbano.dance?ref=dancefriend`;
+    ? `https://officialdancetheory.com?ref=${encodeURIComponent(userName.trim().toLowerCase().replace(/\s+/g, ''))}`
+    : `https://officialdancetheory.com?ref=dancefriend`;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(refLink);

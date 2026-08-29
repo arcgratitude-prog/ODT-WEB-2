@@ -4,32 +4,32 @@
         xsi:schemaLocation="http://www.sitemapindex.org/schemas/sitemap/0.9
         http://www.sitemapindex.org/schemas/sitemap/0.9/sitemap.xsd">
   <url>
-    <loc>https://aiurbano.dance/</loc>
-    <lastmod>2026-07-24</lastmod>
+    <loc>https://officialdancetheory.com/</loc>
+    <lastmod>2026-08-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://aiurbano.dance/#schedule</loc>
-    <lastmod>2026-07-24</lastmod>
+    <loc>https://officialdancetheory.com/#schedule</loc>
+    <lastmod>2026-08-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://aiurbano.dance/#pricing</loc>
-    <lastmod>2026-07-24</lastmod>
+    <loc>https://officialdancetheory.com/#pricing</loc>
+    <lastmod>2026-08-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://aiurbano.dance/#location</loc>
-    <lastmod>2026-07-24</lastmod>
+    <loc>https://officialdancetheory.com/#location</loc>
+    <lastmod>2026-08-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://aiurbano.dance/#faq</loc>
-    <lastmod>2026-07-24</lastmod>
+    <loc>https://officialdancetheory.com/#faq</loc>
+    <lastmod>2026-08-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
