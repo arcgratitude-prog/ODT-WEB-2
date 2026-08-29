@@ -109,3 +109,8 @@ export interface MemberUser {
 
 export type StudentUser = MemberUser; // Backward compatibility alias
 
+// Checkout theme — matches the color of whatever section the customer is
+// booking from (weekly classes vs. Bachata Invasion vs. Bachata Locura)
+// instead of always showing the same accent color.
+export type CheckoutTheme = 'red' | 'fuchsia' | 'silver';
+

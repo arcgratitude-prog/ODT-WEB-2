@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Sparkles, CheckCircle2, Calendar, MapPin, Download, QrCode, Ticket, ShieldCheck, User, Mail, Phone, ArrowRight } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { PASS_OPTIONS, SOCIAL_PASS_OPTION, BACHATA_INVASION_PASS_OPTION, SECRET_OPEN_HOUSE_PASS, STUDIO_INFO } from '../data/danceData';
-import { TicketPass } from '../types';
+import { TicketPass, CheckoutTheme } from '../types';
 import { CustomStripeCheckout } from './CustomStripeCheckout';
 
 interface TicketModalProps {
@@ -12,6 +12,77 @@ interface TicketModalProps {
   initialClassTimes?: string[];
   onPassCreated: (pass: TicketPass) => void;
 }
+
+// Checkout theme — matches whatever section the customer is booking from,
+// instead of always showing the same red. Weekly classes/tiers/drop-ins
+// keep the site's red accent; the two social events get their own colors.
+const getCheckoutTheme = (passId: string): CheckoutTheme => {
+  if (passId.startsWith('social-invasion')) return 'fuchsia'; // Bachata Invasion
+  if (passId.startsWith('social-presale')) return 'silver'; // Bachata Locura
+  return 'red'; // weekly tiers, drop-ins, open house, 4-week cycle
+};
+
+const THEME_CLASSES: Record<CheckoutTheme, {
+  badgeBorder: string;
+  badgeText: string;
+  cardBorder: string;
+  chipBg: string;
+  chipText: string;
+  chipBorder: string;
+  priceText: string;
+  focusBorder: string;
+  btnShadow: string;
+  btnGradient: string;
+  btnBorder: string;
+  ticketBorder: string;
+  ticketAccent: string;
+}> = {
+  red: {
+    badgeBorder: 'border-red-500/30',
+    badgeText: 'text-red-400',
+    cardBorder: 'border-red-500/40',
+    chipBg: 'bg-red-500/20',
+    chipText: 'text-red-400',
+    chipBorder: 'border-red-500/30',
+    priceText: 'text-red-400',
+    focusBorder: 'focus:border-red-500',
+    btnShadow: 'shadow-red-600/40',
+    btnGradient: 'bg-gradient-to-br from-red-600 to-slate-950 hover:from-red-500 hover:to-slate-900',
+    btnBorder: 'border-red-300/50',
+    ticketBorder: 'border-red-500/40',
+    ticketAccent: 'text-red-400',
+  },
+  fuchsia: {
+    badgeBorder: 'border-fuchsia-500/40',
+    badgeText: 'text-fuchsia-400',
+    cardBorder: 'border-fuchsia-500/40',
+    chipBg: 'bg-fuchsia-500/20',
+    chipText: 'text-fuchsia-300',
+    chipBorder: 'border-fuchsia-500/30',
+    priceText: 'text-fuchsia-400',
+    focusBorder: 'focus:border-fuchsia-500',
+    btnShadow: 'shadow-fuchsia-600/40',
+    btnGradient: 'bg-gradient-to-br from-fuchsia-600 to-purple-950 hover:from-fuchsia-500 hover:to-purple-900',
+    btnBorder: 'border-fuchsia-300/50',
+    ticketBorder: 'border-fuchsia-500/40',
+    ticketAccent: 'text-fuchsia-400',
+  },
+  silver: {
+    badgeBorder: 'border-slate-300/40',
+    badgeText: 'text-slate-200',
+    cardBorder: 'border-slate-300/40',
+    chipBg: 'bg-slate-300/20',
+    chipText: 'text-slate-200',
+    chipBorder: 'border-slate-300/30',
+    priceText: 'text-slate-100',
+    focusBorder: 'focus:border-slate-300',
+    btnShadow: 'shadow-slate-400/30',
+    btnGradient: 'bg-gradient-to-br from-slate-400 to-slate-950 hover:from-slate-300 hover:to-slate-900',
+    btnBorder: 'border-slate-200/60',
+    ticketBorder: 'border-slate-300/40',
+    ticketAccent: 'text-slate-200',
+  },
+};
 
 export const TicketModal: React.FC<TicketModalProps> = ({
   isOpen,
@@ -52,6 +123,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   const allAvailablePasses = [BACHATA_INVASION_PASS_OPTION, SOCIAL_PASS_OPTION, SECRET_OPEN_HOUSE_PASS, ...PASS_OPTIONS];
   const currentPassOption = allAvailablePasses.find(p => p.id === selectedPassId) || PASS_OPTIONS[0];
   const isPaidPass = currentPassOption.price > 0;
+  const theme = THEME_CLASSES[getCheckoutTheme(currentPassOption.id)];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -140,7 +212,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
         {!generatedPass ? (
           <div className="space-y-6">
             <div className="text-center space-y-2">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-badge border border-red-500/30 text-xs font-bold text-red-400 uppercase">
+              <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-badge border ${theme.badgeBorder} text-xs font-bold ${theme.badgeText} uppercase`}>
                 <Sparkles className="w-3.5 h-3.5 text-yellow-300 animate-pulse" />
                 {isPaidPass ? 'SECURE CHECKOUT' : 'DIGITAL CLASS TICKET'}
               </div>
@@ -150,10 +222,10 @@ export const TicketModal: React.FC<TicketModalProps> = ({
             </div>
 
             {/* Selected Pass Summary Card */}
-            <div className="bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 rounded-2xl p-4 sm:p-5 border border-red-500/40 shadow-xl space-y-3">
+            <div className={`bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 rounded-2xl p-4 sm:p-5 border ${theme.cardBorder} shadow-xl space-y-3`}>
               <div className="flex items-start justify-between gap-3 border-b border-white/10 pb-3">
                 <div>
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-red-500/20 text-red-400 border border-red-500/30 uppercase tracking-wider">
+                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold ${theme.chipBg} ${theme.chipText} border ${theme.chipBorder} uppercase tracking-wider`}>
                     {currentPassOption.price === 0 ? 'FREE PASS CHECKOUT' : `CHECKOUT: $${currentPassOption.price}`}
                   </span>
                   <h4 className="text-lg font-black text-white uppercase mt-1">
@@ -164,7 +236,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                   </p>
                 </div>
                 <div className="text-right shrink-0">
-                  <div className="text-xl sm:text-2xl font-mono font-black text-red-400">
+                  <div className={`text-xl sm:text-2xl font-mono font-black ${theme.priceText}`}>
                     {currentPassOption.price === 0 ? 'FREE' : `$${currentPassOption.price}`}
                   </div>
                 </div>
@@ -201,6 +273,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                       : `${currentPassOption.classesCount} Class Session(s)`
                   }
                   ticketId={ticketIdRef.current}
+                  theme={getCheckoutTheme(currentPassOption.id)}
                 />
               ) : (
                 /* Collect name + email before payment so we always have real
@@ -226,7 +299,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                         placeholder="e.g. Alex Rivera"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none focus:border-red-500 transition-colors"
+                        className={`w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none ${theme.focusBorder} transition-colors`}
                       />
                     </div>
                   </div>
@@ -243,7 +316,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                         placeholder="e.g. alex@example.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none focus:border-red-500 transition-colors"
+                        className={`w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none ${theme.focusBorder} transition-colors`}
                       />
                     </div>
                   </div>
@@ -259,7 +332,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                         placeholder="e.g. (813) 555-0199"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none focus:border-red-500 transition-colors"
+                        className={`w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none ${theme.focusBorder} transition-colors`}
                       />
                     </div>
                   </div>
@@ -267,7 +340,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                   <div className="pt-2">
                     <button
                       type="submit"
-                      className="liquid-glass-btn liquid-btn-primary w-full py-4 rounded-2xl text-xs font-black text-white uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl shadow-red-600/40"
+                      className={`w-full py-4 rounded-2xl border ${theme.btnBorder} ${theme.btnGradient} text-xs font-black text-white uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl ${theme.btnShadow} transition-all active:scale-95`}
                     >
                       <Sparkles className="w-4 h-4 text-yellow-300" />
                       <span>Continue to Payment</span>
@@ -290,7 +363,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                       placeholder="e.g. Alex Rivera"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none focus:border-red-500 transition-colors"
+                      className={`w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none ${theme.focusBorder} transition-colors`}
                     />
                   </div>
                 </div>
@@ -307,7 +380,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                       placeholder="e.g. alex@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none focus:border-red-500 transition-colors"
+                      className={`w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none ${theme.focusBorder} transition-colors`}
                     />
                   </div>
                 </div>
@@ -323,7 +396,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                       placeholder="e.g. (813) 555-0199"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none focus:border-red-500 transition-colors"
+                      className={`w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none ${theme.focusBorder} transition-colors`}
                     />
                   </div>
                 </div>
@@ -332,7 +405,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="liquid-glass-btn liquid-btn-primary w-full py-4 rounded-2xl text-xs font-black text-white uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl shadow-red-600/40"
+                    className={`w-full py-4 rounded-2xl border ${theme.btnBorder} ${theme.btnGradient} text-xs font-black text-white uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl ${theme.btnShadow} transition-all active:scale-95`}
                   >
                     {isSubmitting ? (
                       <span className="animate-pulse">Generating Pass...</span>
@@ -364,10 +437,10 @@ export const TicketModal: React.FC<TicketModalProps> = ({
               </h3>
             </div>
 
-            <div className="liquid-glass-card rounded-3xl p-6 border border-red-500/40 text-left space-y-4 relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 shadow-2xl">
+            <div className={`liquid-glass-card rounded-3xl p-6 border ${theme.ticketBorder} text-left space-y-4 relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 shadow-2xl`}>
               <div className="flex justify-between items-start border-b border-white/10 pb-3">
                 <div>
-                  <span className="text-[10px] font-mono font-bold text-red-400 uppercase block">
+                  <span className={`text-[10px] font-mono font-bold ${theme.ticketAccent} uppercase block`}>
                     {STUDIO_INFO.instagram} • TAMPA
                   </span>
                   <h4 className="text-base font-black text-white uppercase">
@@ -414,7 +487,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                 href={calendarUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="liquid-glass-btn liquid-btn-primary py-3.5 rounded-2xl text-xs font-bold text-white uppercase tracking-wider flex items-center justify-center gap-2"
+                className={`border ${theme.btnBorder} ${theme.btnGradient} py-3.5 rounded-2xl text-xs font-bold text-white uppercase tracking-wider flex items-center justify-center gap-2 transition-all active:scale-95`}
               >
                 <Calendar className="w-4 h-4" />
                 <span>Add To Calendar</span>

@@ -7,6 +7,7 @@ import {
 } from '@stripe/react-stripe-js';
 import { loadStripe, PaymentRequest, type StripeCardElement } from '@stripe/stripe-js';
 import { Check, CreditCard, Loader2, CheckCircle2, ShieldCheck } from 'lucide-react';
+import type { CheckoutTheme } from '../types';
 
 const stripePromise = loadStripe(
   'pk_live_51TVgyc0sK2OeDNeTeiLZtSPCT1Esrjakl3wdToEdsYVEdWt2v5USe0cuaZ3fhkZhFiQoJcL5PTmLUaEp9SezW73O00st5xAx2M'
@@ -25,9 +26,50 @@ interface CustomStripeCheckoutProps {
   customerPhone?: string;
   classesIncluded?: string;
   ticketId?: string;
+  theme?: CheckoutTheme;
 }
 
 type SelectableMethod = 'wallet' | 'card';
+
+// Accent classes per checkout theme — matches whichever section (weekly
+// classes, Bachata Invasion, Bachata Locura) the customer is booking from.
+const ACCENT_CLASSES: Record<CheckoutTheme, {
+  selectedBorder: string;
+  checkIcon: string;
+  payButtonBorder: string;
+  payButtonBg: string;
+  payButtonText: string;
+  spinner: string;
+  spinnerText: string;
+}> = {
+  red: {
+    selectedBorder: 'border-red-400/50',
+    checkIcon: 'text-red-400',
+    payButtonBorder: 'border-red-400/50',
+    payButtonBg: 'bg-red-400/5 hover:bg-red-400/10',
+    payButtonText: 'text-red-300',
+    spinner: 'text-red-400',
+    spinnerText: 'text-red-300',
+  },
+  fuchsia: {
+    selectedBorder: 'border-fuchsia-400/50',
+    checkIcon: 'text-fuchsia-400',
+    payButtonBorder: 'border-fuchsia-400/50',
+    payButtonBg: 'bg-fuchsia-400/5 hover:bg-fuchsia-400/10',
+    payButtonText: 'text-fuchsia-300',
+    spinner: 'text-fuchsia-400',
+    spinnerText: 'text-fuchsia-300',
+  },
+  silver: {
+    selectedBorder: 'border-slate-300/50',
+    checkIcon: 'text-slate-200',
+    payButtonBorder: 'border-slate-300/50',
+    payButtonBg: 'bg-slate-300/5 hover:bg-slate-300/10',
+    payButtonText: 'text-slate-200',
+    spinner: 'text-slate-200',
+    spinnerText: 'text-slate-300',
+  },
+};
 
 // ---- Payment method row — glassy, neon-glow selected state ----
 const MethodRow: React.FC<{
@@ -35,13 +77,14 @@ const MethodRow: React.FC<{
   onSelect: () => void;
   icon: React.ReactNode;
   title: string;
-}> = ({ isSelected, onSelect, icon, title }) => (
+  accent: typeof ACCENT_CLASSES[CheckoutTheme];
+}> = ({ isSelected, onSelect, icon, title, accent }) => (
   <button
     type="button"
     onClick={onSelect}
     className={`relative w-full text-left p-4 rounded-2xl transition-all duration-200 flex items-center justify-between ${
       isSelected
-        ? 'bg-white/[0.06] border border-sky-400/50'
+        ? `bg-white/[0.06] border ${accent.selectedBorder}`
         : 'bg-white/[0.03] hover:bg-white/[0.05] border border-white/10'
     }`}
   >
@@ -52,7 +95,7 @@ const MethodRow: React.FC<{
       </div>
     </div>
     {isSelected && (
-      <Check className="w-4 h-4 text-sky-400 stroke-[3]" />
+      <Check className={`w-4 h-4 stroke-[3] ${accent.checkIcon}`} />
     )}
   </button>
 );
@@ -76,7 +119,9 @@ const InnerCheckoutForm: React.FC<{
   priceInDollars: number;
   clientSecret: string;
   onSuccess: () => void;
-}> = ({ passName, priceInDollars, clientSecret, onSuccess }) => {
+  theme: CheckoutTheme;
+}> = ({ passName, priceInDollars, clientSecret, onSuccess, theme }) => {
+  const accent = ACCENT_CLASSES[theme];
   const stripe = useStripe();
   const elements = useElements();
 
@@ -261,10 +306,18 @@ const InnerCheckoutForm: React.FC<{
               isSelected={selected === 'wallet'}
               onSelect={() => setSelected('wallet')}
               title={walletLabel}
+              accent={accent}
               icon={
                 <div className="flex items-center justify-center w-9 h-7 rounded-md bg-black text-white">
                   {walletLabel === 'Apple Pay' ? (
-                    <span className="text-sm"></span>
+                    <svg
+                      viewBox="0 0 170 170"
+                      className="w-4 h-4"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path d="M150.4 128.6c-2.7 6.2-5.9 11.9-9.7 17.2-5.2 7.3-9.4 12.3-12.6 15.1-5 4.6-10.3 6.9-16 7.1-4.1 0-9-1.2-14.7-3.5-5.7-2.3-11-3.5-15.8-3.5-5.1 0-10.5 1.2-16.3 3.5-5.8 2.3-10.5 3.6-14.1 3.7-5.4.2-10.9-2.2-16.3-7.2-3.5-3.1-7.9-8.3-13.2-15.6-5.7-7.9-10.4-17-14.1-27.5-4-11.3-6-22.3-6-32.9 0-12.2 2.6-22.7 7.9-31.5C9.4 26.1 16 20.6 24.5 16.3c8.5-4.3 17.7-6.5 27.5-6.7 4.4 0 10.2 1.4 17.4 4.1 7.2 2.7 11.8 4.1 13.8 4.1 1.5 0 6.7-1.6 15.4-4.9 8.3-3 15.3-4.3 21-3.8 15.5 1.3 27.2 7.4 34.9 18.4-13.9 8.4-20.7 20.2-20.6 35.3.1 11.8 4.3 21.6 12.6 29.4 3.8 3.6 8 6.4 12.7 8.4-1 3-2.1 5.9-3.2 8.6zM119.3 3.4c0 9.1-3.3 17.6-9.9 25.4-8 9.3-17.6 14.7-28.1 13.8-.1-1.1-.2-2.3-.2-3.5 0-8.8 3.8-18.1 10.5-25.7 3.4-3.9 7.7-7.1 12.9-9.7 5.2-2.5 10.1-3.9 14.7-4.1.1 1.3.1 2.5.1 3.8z"/>
+                    </svg>
                   ) : (
                     <span className="text-[10px] font-bold">G Pay</span>
                   )}
@@ -277,6 +330,7 @@ const InnerCheckoutForm: React.FC<{
             isSelected={selected === 'card'}
             onSelect={() => setSelected('card')}
             title="Card"
+            accent={accent}
             icon={
               <div className="flex items-center justify-center w-9 h-7 rounded-md bg-white/10 text-slate-300">
                 <CreditCard className="w-4 h-4" />
@@ -308,7 +362,7 @@ const InnerCheckoutForm: React.FC<{
           <button
             onClick={handlePayNow}
             disabled={!stripe || isProcessing}
-            className="w-full py-4 rounded-2xl border border-sky-400/50 bg-sky-400/5 hover:bg-sky-400/10 text-sky-300 font-bold text-sm uppercase tracking-[0.15em] transition-all disabled:opacity-40 flex items-center justify-center gap-2"
+            className={`w-full py-4 rounded-2xl border ${accent.payButtonBorder} ${accent.payButtonBg} ${accent.payButtonText} font-bold text-sm uppercase tracking-[0.15em] transition-all disabled:opacity-40 flex items-center justify-center gap-2`}
           >
             {isProcessing ? (
               <>
@@ -330,8 +384,8 @@ const InnerCheckoutForm: React.FC<{
       {/* Processing overlay */}
       {isProcessing && (
         <div className="absolute inset-0 rounded-3xl bg-black/70 backdrop-blur-sm flex flex-col items-center justify-center gap-3 z-20">
-          <Loader2 className="w-8 h-8 text-sky-400 animate-spin" />
-          <span className="text-[11px] font-semibold uppercase tracking-widest text-sky-300">
+          <Loader2 className={`w-8 h-8 animate-spin ${accent.spinner}`} />
+          <span className={`text-[11px] font-semibold uppercase tracking-widest ${accent.spinnerText}`}>
             Confirming Payment...
           </span>
         </div>
@@ -350,6 +404,7 @@ export const CustomStripeCheckout: React.FC<CustomStripeCheckoutProps> = ({
   customerPhone,
   classesIncluded,
   ticketId,
+  theme = 'red',
 }) => {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -403,7 +458,7 @@ export const CustomStripeCheckout: React.FC<CustomStripeCheckoutProps> = ({
   if (!clientSecret) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-6 h-6 text-sky-400 animate-spin" />
+        <Loader2 className={`w-6 h-6 animate-spin ${ACCENT_CLASSES[theme].spinner}`} />
       </div>
     );
   }
@@ -415,6 +470,7 @@ export const CustomStripeCheckout: React.FC<CustomStripeCheckoutProps> = ({
         priceInDollars={priceInDollars}
         clientSecret={clientSecret}
         onSuccess={onSuccess}
+        theme={theme}
       />
     </Elements>
   );
