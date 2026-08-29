@@ -126,6 +126,24 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
               </p>
             </div>
 
+            {/* Essentials — schedule + price in one row */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 max-w-2xl mx-auto">
+              <div className="p-4 rounded-2xl bg-black/40 border border-fuchsia-500/20 text-center">
+                <span className="text-[10px] text-pink-300 font-mono uppercase tracking-widest block mb-1">8–9 PM</span>
+                <span className="text-sm text-white font-bold block">Class</span>
+                <span className="text-xs text-purple-200 mt-0.5 block">Albina & Isaac</span>
+              </div>
+              <div className="p-4 rounded-2xl bg-black/40 border border-fuchsia-500/20 text-center">
+                <span className="text-[10px] text-pink-300 font-mono uppercase tracking-widest block mb-1">9 PM–1 AM</span>
+                <span className="text-sm text-white font-bold block">Social Dancing</span>
+                <span className="text-xs text-purple-200 mt-0.5 block">DJ JR</span>
+              </div>
+              <div className="p-4 rounded-2xl bg-pink-500/10 border border-pink-500/40 text-center">
+                <span className="text-[10px] text-pink-300 font-mono uppercase tracking-widest block mb-1">Full Night</span>
+                <span className="text-sm text-white font-bold">$12</span>
+              </div>
+            </div>
+
             {/* Get Ticket CTA */}
             <div className="flex justify-center mb-8">
               <button
@@ -217,6 +235,25 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
               <p className="text-xs text-slate-500">
                 Yuengling Draft Haus · 11109 N 30th St, Tampa, FL 33612
               </p>
+            </div>
+
+            {/* Essentials — schedule in one row */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 max-w-2xl mx-auto">
+              <div className="p-4 rounded-2xl bg-black/40 border border-white/10 text-center">
+                <span className="text-[10px] text-slate-400 font-mono uppercase tracking-widest block mb-1">4 PM</span>
+                <span className="text-sm text-white font-bold block">Presocial Class</span>
+                <span className="text-xs text-slate-400 mt-0.5 block">Albina & Isaac</span>
+              </div>
+              <div className="p-4 rounded-2xl bg-black/40 border border-white/10 text-center">
+                <span className="text-[10px] text-slate-400 font-mono uppercase tracking-widest block mb-1">5–9 PM</span>
+                <span className="text-sm text-white font-bold block">Social Dancing</span>
+                <span className="text-xs text-slate-400 mt-0.5 block">DJ JR</span>
+              </div>
+              <div className="p-4 rounded-2xl bg-white/5 border border-slate-300/30 text-center">
+                <span className="text-[10px] text-slate-400 font-mono uppercase tracking-widest block mb-1">Venue</span>
+                <span className="text-sm text-white font-bold block">Yuengling Draft Haus</span>
+                <span className="text-xs text-slate-400 mt-0.5 block">Tampa, FL</span>
+              </div>
             </div>
 
             {/* Ticket Options */}

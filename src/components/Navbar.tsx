@@ -177,9 +177,9 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             )}
 
-            {/* Desktop Only: Book a Class Button */}
+            {/* Desktop Only: Book a Class Button — jumps to the pricing/tiers section */}
             <button
-              onClick={() => onOpenBooking('dropin-1')}
+              onClick={() => handleNavClick('home', 'passes')}
               id="header-free-pass-btn"
               className="hidden md:flex liquid-glass-btn liquid-btn-primary px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold text-white tracking-wide items-center gap-1.5 shadow-lg shadow-red-600/30 shrink-0"
             >
@@ -203,11 +203,11 @@ export const Navbar: React.FC<NavbarProps> = ({
         {mobileMenuOpen && (
           <div className="md:hidden mt-2 liquid-glass-panel-dark rounded-2xl p-3.5 flex flex-col gap-2 border border-white/20 shadow-2xl animate-in fade-in slide-in-from-top-4 duration-200">
             
-            {/* 1. Join a Class CTA */}
+            {/* 1. Join a Class CTA — jumps to the pricing/tiers section */}
             <button
               onClick={() => {
                 setMobileMenuOpen(false);
-                onOpenBooking('dropin-1');
+                handleNavClick('home', 'passes');
               }}
               className="w-full py-3 px-4 rounded-xl text-xs font-black text-white bg-gradient-to-r from-red-600 via-rose-600 to-red-700 border border-red-400 flex items-center justify-between shadow-lg shadow-red-600/30 uppercase tracking-wider"
             >
