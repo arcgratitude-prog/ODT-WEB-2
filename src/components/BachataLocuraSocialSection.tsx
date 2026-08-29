@@ -256,77 +256,44 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
               </div>
             </div>
 
-            {/* Ticket Options — Pre-Sale is the primary online purchase, so
-                it's centered and sized up; Students/At the Door are
-                door-only info, so they're smaller side cards. */}
+            {/* Ticket Options — simple round price badges. Pre-Sale is the
+                only one that's clickable/purchasable online, so it's the
+                biggest circle in the middle; Students/At the Door are
+                small door-only info badges on either side. */}
             <div className="mb-8">
-              <div className="grid grid-cols-3 gap-2 sm:gap-4 items-center max-w-2xl mx-auto">
+              <div className="flex items-center justify-center gap-4 sm:gap-6">
 
-                {/* Tier 2: College Students — not purchasable online, pay at the door with ID */}
-                <div className="p-3 sm:p-4 rounded-xl bg-gradient-to-b from-zinc-900 to-black border border-white/10 shadow-md flex flex-col justify-between opacity-75 scale-95">
-                  <div>
-                    <h4 className="text-xs sm:text-sm font-black text-white uppercase font-sans">
-                      Students
-                    </h4>
-                    <p className="text-[10px] text-slate-400 mt-0.5">
-                      Present ID at the door
-                    </p>
+                {/* Students — door only */}
+                <div className="flex flex-col items-center gap-1.5 opacity-70">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-zinc-900 border border-white/15 flex items-center justify-center">
+                    <span className="text-sm sm:text-base font-black text-emerald-400 font-mono">$15</span>
                   </div>
-
-                  <div className="mt-3 pt-2 border-t border-white/10 flex items-baseline justify-between">
-                    <span className="text-base font-black text-emerald-400 font-mono">$15</span>
-                    <span className="text-[9px] font-bold text-slate-500">
-                      Pay at Door
-                    </span>
-                  </div>
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Student</span>
                 </div>
 
-                {/* Tier 1: Pre-Sale — the featured, purchasable option */}
-                <div
+                {/* Pre-Sale — the featured, purchasable option */}
+                <button
                   onClick={() => onOpenBooking('social-presale')}
-                  className="p-6 sm:p-8 rounded-3xl bg-gradient-to-b from-slate-700 via-slate-800 to-zinc-900 border-2 border-slate-200/70 shadow-2xl shadow-white/10 relative overflow-hidden flex flex-col justify-between group hover:border-white transition-all cursor-pointer z-10 scale-110"
+                  className="flex flex-col items-center gap-1.5 group"
                 >
-                  <div className="absolute top-0 right-0 px-3 py-1 bg-gradient-to-l from-slate-200 to-slate-400 text-black text-[10px] font-black uppercase rounded-bl-xl tracking-wider">
-                    SAVE $5
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-b from-slate-600 to-slate-900 border-2 border-slate-200/70 shadow-lg shadow-white/10 flex items-center justify-center group-hover:border-white transition-all group-active:scale-95">
+                    <span className="text-xl sm:text-2xl font-black text-white font-mono">$15</span>
                   </div>
+                  <span className="text-[10px] font-bold text-white uppercase tracking-wide">Pre-Sale</span>
+                </button>
 
-                  <div>
-                    <h4 className="text-xl sm:text-2xl font-black text-white uppercase font-sans">
-                      Pre-Sale
-                    </h4>
-                    <p className="text-xs text-slate-300 mt-1">
-                      Ends 10/11
-                    </p>
+                {/* At the Door — door only */}
+                <div className="flex flex-col items-center gap-1.5 opacity-70">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-zinc-900 border border-white/15 flex items-center justify-center">
+                    <span className="text-sm sm:text-base font-black text-slate-200 font-mono">$20</span>
                   </div>
-
-                  <div className="mt-5 pt-3 border-t border-white/20 flex items-baseline justify-between">
-                    <span className="text-3xl sm:text-4xl font-black text-white font-mono">$15</span>
-                    <span className="text-xs font-bold text-slate-300 group-hover:text-white transition-colors">
-                      Get Ticket →
-                    </span>
-                  </div>
-                </div>
-
-                {/* Tier 3: At the Door — not purchasable online */}
-                <div className="p-3 sm:p-4 rounded-xl bg-gradient-to-b from-zinc-900 to-black border border-white/10 shadow-md flex flex-col justify-between opacity-75 scale-95">
-                  <div>
-                    <h4 className="text-xs sm:text-sm font-black text-white uppercase font-sans">
-                      At the Door
-                    </h4>
-                    <p className="text-[10px] text-slate-400 mt-0.5">
-                      Pay in person
-                    </p>
-                  </div>
-
-                  <div className="mt-3 pt-2 border-t border-white/10 flex items-baseline justify-between">
-                    <span className="text-base font-black text-slate-200 font-mono">$20</span>
-                    <span className="text-[9px] font-bold text-slate-500">
-                      Pay at Door
-                    </span>
-                  </div>
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wide">At Door</span>
                 </div>
 
               </div>
+              <p className="text-center text-[10px] text-slate-500 mt-3">
+                Pre-sale ends 10/11 · Students show ID at the door · At the door, pay in person
+              </p>
             </div>
 
             {/* Location & Directions */}
