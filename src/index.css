@@ -195,3 +195,68 @@
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(220, 38, 38, 0.6);
 }
+
+/* ============================================================
+   Digital Pass page (/?ticket=...) — 3D transform utilities.
+   Tailwind v4 doesn't ship perspective/transform-style/backface
+   utilities out of the box, so these are defined here directly,
+   ported from the Stitch prototype's own index.css.
+   ============================================================ */
+@layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  .perspective-1400 {
+    perspective: 1400px;
+  }
+  .transform-style-3d {
+    transform-style: preserve-3d;
+  }
+  .backface-hidden {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+}
+
+@keyframes floatBob {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(1deg);
+  }
+}
+
+.animate-float {
+  animation: floatBob 4s ease-in-out infinite;
+}
+
+@keyframes passFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: passFadeIn 0.35s ease-out forwards;
+}
+
+@keyframes passScaleUp {
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-scale-up {
+  animation: passScaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

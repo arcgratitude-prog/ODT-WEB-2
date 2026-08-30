@@ -128,6 +128,11 @@ function buildOrderReceiptEmail(booking) {
     <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.65);line-height:1.6;">
       Thank you for purchasing your pass for <strong style="color:#ffffff;">${escapeHtml(booking.passName)}</strong>. Show this email (or your Order # above) at check-in.
     </p>
+    <table cellpadding="0" cellspacing="0" style="margin-top:16px;"><tr>
+      <td bgcolor="#e879f9" style="background:#e879f9;border-radius:12px;">
+        <a href="https://officialdancetheory.com/?ticket=${encodeURIComponent(booking.ticketId)}" style="display:inline-block;padding:10px 18px;font-size:12px;font-weight:800;color:#1a0b2e;text-decoration:none;">View Your Digital Pass &rarr;</a>
+      </td>
+    </tr></table>
   </td></tr>
 
   <tr><td style="height:16px; line-height:16px; font-size:0;">&nbsp;</td></tr>

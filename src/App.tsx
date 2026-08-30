@@ -17,6 +17,7 @@ import { InstagramStoryModal } from './components/InstagramStoryModal';
 import { StudentPortalModal } from './components/StudentPortalModal';
 import { AdminCheckIn } from './components/AdminCheckIn';
 import { InAppBrowserNotice } from './components/InAppBrowserNotice';
+import { DigitalPassPage } from './components/DigitalPassPage';
 import { TicketPass } from './types';
 
 export default function App() {
@@ -127,6 +128,17 @@ export default function App() {
   // the public site's Navbar/Footer/background entirely.
   if (typeof window !== 'undefined' && window.location.search.toLowerCase().includes('admin=checkin')) {
     return <AdminCheckIn />;
+  }
+
+  // Interactive 3D digital pass — reached via the "View Your Digital
+  // Pass" link in the confirmation email, at yoursite.com/?ticket=<id>.
+  // Renders standalone, same pattern as the admin check-in page above.
+  if (typeof window !== 'undefined') {
+    const params = new URLSearchParams(window.location.search);
+    const ticketId = params.get('ticket');
+    if (ticketId) {
+      return <DigitalPassPage ticketId={ticketId} />;
+    }
   }
 
   return (
