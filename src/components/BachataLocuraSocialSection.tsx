@@ -119,7 +119,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                 Bachata <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-fuchsia-400 to-purple-400">Invasion</span>
               </h2>
               <p className="text-sm text-purple-100">
-                Every 2nd Friday · 8 PM–1 AM · <span className="font-bold text-white">$1</span>
+                Every 2nd Friday · 8 PM–1 AM · <span className="font-bold text-white">$12</span>
               </p>
               <p className="text-xs text-purple-300">
                 8–9 PM Class with <span className="text-white font-semibold">Albina & Isaac</span> · Social Dancing with <span className="text-white font-semibold">DJ JR</span>
@@ -140,7 +140,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
               </div>
               <div className="p-4 rounded-2xl bg-pink-500/10 border border-pink-500/40 text-center">
                 <span className="text-[10px] text-pink-300 font-mono uppercase tracking-widest block mb-1">Full Night</span>
-                <span className="text-sm text-white font-bold">$1</span>
+                <span className="text-sm text-white font-bold">$12</span>
               </div>
             </div>
 
@@ -151,7 +151,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                 className="px-8 py-4 rounded-2xl bg-gradient-to-r from-pink-500 via-fuchsia-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 text-white font-black text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl shadow-fuchsia-600/40 transition-all transform hover:scale-[1.03] border border-pink-300/40"
               >
                 <Ticket className="w-4 h-4 text-white" />
-                <span>Get $1 Ticket</span>
+                <span>Get $12 Ticket</span>
                 <ArrowRight className="w-4 h-4 text-white" />
               </button>
             </div>
@@ -285,7 +285,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                   <span className="absolute top-0 w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-fuchsia-400/40 blur-md animate-pulse pointer-events-none" />
                   <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-b from-fuchsia-500 via-purple-600 to-slate-900 border-2 border-fuchsia-200/80 shadow-lg shadow-fuchsia-500/50 flex flex-col items-center justify-center transition-all group-hover:border-white group-hover:shadow-fuchsia-400/80 group-hover:shadow-xl group-hover:scale-105 group-active:scale-95">
                     <span className="text-[9px] font-bold text-fuchsia-100 uppercase tracking-wide">Pre-Sale</span>
-                    <span className="text-xl sm:text-2xl font-black text-white font-mono">$1</span>
+                    <span className="text-xl sm:text-2xl font-black text-white font-mono">$15</span>
                   </div>
                   <span className="text-[10px] font-bold text-white uppercase tracking-wide">Tap to Get →</span>
                 </button>

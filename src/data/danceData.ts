@@ -80,7 +80,7 @@ export const CLASSES_DATA: ClassItem[] = [
 export const BACHATA_INVASION_PASS_OPTION: PassOption = {
   id: 'social-invasion-10',
   name: 'Bachata Invasion Social Pass',
-  price: 1,
+  price: 12,
   tagline: 'Every 2nd Friday @ Dance Factory Tampa (8:00 PM - 1:00 AM)',
   classesCount: 1,
   popular: true,
@@ -97,7 +97,7 @@ export const BACHATA_INVASION_PASS_OPTION: PassOption = {
 export const SOCIAL_PASS_OPTION: PassOption = {
   id: 'social-presale',
   name: 'Bachata Locura Social Pass',
-  price: 1,
+  price: 15,
   originalPrice: 20,
   savings: 'Save $5 Pre-Sale',
   tagline: 'Sunday, September 13th @ Westshore Plaza Mall (Presocial Class + Social)',
@@ -116,7 +116,7 @@ export const PASS_OPTIONS: PassOption[] = [
   {
     id: 'track-foundations',
     name: 'Tier 1: Solo Sesh',
-    price: 1,
+    price: 80,
     tagline: 'One class a week, your pick. Ease in on your own terms.',
     classesCount: 4,
     popular: false,
@@ -131,7 +131,7 @@ export const PASS_OPTIONS: PassOption[] = [
   {
     id: 'track-progression',
     name: 'Tier 2: Grindin’',
-    price: 1,
+    price: 105,
     savings: 'MOST POPULAR TRACK',
     tagline: 'Two classes a week. You’re building real momentum now.',
     classesCount: 8,
@@ -147,7 +147,7 @@ export const PASS_OPTIONS: PassOption[] = [
   {
     id: 'track-unlimited',
     name: 'Tier 3: Locked In',
-    price: 1,
+    price: 125,
     savings: 'FULL IMMERSION • BEST VALUE',
     tagline: 'All 3 classes, every Wednesday. No half-stepping.',
     classesCount: 12,
@@ -165,7 +165,7 @@ export const PASS_OPTIONS: PassOption[] = [
   {
     id: 'dropin-1',
     name: '1 Class Drop-In',
-    price: 1,
+    price: 20,
     tagline: 'Pick any single Wednesday class session',
     classesCount: 1,
     popular: false,
@@ -180,7 +180,7 @@ export const PASS_OPTIONS: PassOption[] = [
   {
     id: 'dropin-2',
     name: '2 Class Drop-In',
-    price: 1,
+    price: 35,
     tagline: 'Attend any 2 Wednesday class sessions',
     classesCount: 2,
     popular: false,
@@ -195,7 +195,7 @@ export const PASS_OPTIONS: PassOption[] = [
   {
     id: 'dropin-full',
     name: '3 Class Drop-In',
-    price: 1,
+    price: 50,
     tagline: 'Full night — all 3 Wednesday class sessions',
     classesCount: 3,
     popular: false,
@@ -216,8 +216,8 @@ export const SPECIAL_EVENTS: SpecialEvent[] = [
     badge: 'PROGRESSIVE COURSES',
     dateString: 'August 12th – September 2nd (Every Wednesday)',
     isoDate: '2026-08-12T19:00:00',
-    description: 'Structured 4-week tracks (Tier 1 Foundations $1, Tier 2 Progression $1, Tier 3 Unlimited $1 — test pricing) designed to elevate your social dancing confidence, technique, connection, and urban flow.',
-    highlightText: '4-Week Tracks • Foundations ($1) • Progression ($1) • Unlimited ($1)',
+    description: 'Structured 4-week tracks (Tier 1 Foundations $80, Tier 2 Progression $105, Tier 3 Unlimited $125) designed to elevate your social dancing confidence, technique, connection, and urban flow.',
+    highlightText: '4-Week Tracks • Foundations ($80) • Progression ($105) • Unlimited ($125)',
     isFree: false,
     ctaText: 'Register for 4-Week Tracks'
   }
@@ -231,7 +231,7 @@ export const FAQ_DATA: FAQItem[] = [
   },
   {
     question: 'How much do bachata classes cost in Tampa?',
-    answer: 'Drop-ins are $1/class right now (test pricing). Monthly tracks are also $1 during testing.',
+    answer: 'Drop-ins start at $20/class. Monthly tracks run $80–$125 depending on how many classes per week.',
     category: 'Pricing'
   },
   {
