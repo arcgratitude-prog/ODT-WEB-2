@@ -14,7 +14,7 @@
 
 import Stripe from 'stripe';
 import { ensureBookingsTable, sql } from './lib/db.js';
-import { sendBookingAlertEmail, sendBookingPushNotification } from './lib/notify.js';
+import { sendBookingAlertEmail, sendBookingPushNotification, sendCustomerConfirmationEmail } from './lib/notify.js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -79,10 +79,18 @@ export default async function handler(req, res) {
     stripePaymentIntentId: paymentIntent.id,
   };
 
+  let isNewBooking = true;
+
   try {
     await ensureBookingsTable();
 
-    await sql`
+    // RETURNING lets us tell a genuinely new booking apart from Stripe
+    // redelivering an event we already fully processed (it retries
+    // successful webhooks too, e.g. if our response was slow). If the
+    // row already existed, ON CONFLICT DO NOTHING returns zero rows —
+    // that's our signal to skip re-sending every notification below,
+    // so a redelivery never emails the customer their confirmation twice.
+    const result = await sql`
       INSERT INTO bookings (
         ticket_id, customer_name, customer_email, customer_phone,
         pass_name, pass_type, amount_cents, classes_included,
@@ -92,24 +100,34 @@ export default async function handler(req, res) {
         ${booking.passName}, ${booking.passType}, ${booking.amountCents}, ${booking.classesIncluded},
         ${booking.stripePaymentIntentId}
       )
-      ON CONFLICT (stripe_payment_intent_id) DO NOTHING;
+      ON CONFLICT (stripe_payment_intent_id) DO NOTHING
+      RETURNING ticket_id;
     `;
+    isNewBooking = result.length > 0;
   } catch (err) {
     console.error('Failed to save booking to database:', err);
-    // Still try to send the alert even if the DB save failed — better an
-    // admin gets a heads-up than nothing at all. Return 500 so Stripe
-    // retries the DB save on its next attempt.
+    // Still alert the admin even though the DB save failed — better a
+    // human gets a heads-up than nothing at all. We deliberately do NOT
+    // send the customer confirmation here: since we don't know whether
+    // this booking was actually recorded, sending it now risks a
+    // duplicate once the DB save succeeds on a later retry. Return 500
+    // so Stripe retries the save on its next attempt.
     await sendBookingAlertEmail(booking);
     await sendBookingPushNotification(booking);
     return res.status(500).json({ error: 'Database save failed' });
   }
 
-  // Fire both notification channels — neither one blocks the other or
-  // the webhook response.
-  await Promise.all([
-    sendBookingAlertEmail(booking),
-    sendBookingPushNotification(booking),
-  ]);
+  if (isNewBooking) {
+    // Fire all three notification channels — none of them block each
+    // other or the webhook response.
+    await Promise.all([
+      sendBookingAlertEmail(booking),
+      sendBookingPushNotification(booking),
+      sendCustomerConfirmationEmail(booking),
+    ]);
+  } else {
+    console.log(`Skipping notifications — booking ${booking.stripePaymentIntentId} was already processed.`);
+  }
 
   res.status(200).json({ received: true });
 }

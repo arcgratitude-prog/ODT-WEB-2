@@ -41,7 +41,7 @@ export async function sendBookingAlertEmail(booking) {
 
   try {
     await resend.emails.send({
-      from: 'AI Urbano Bookings <onboarding@resend.dev>',
+      from: 'Official Dance Theory <tickets@officialdancetheory.com>',
       to: adminEmails,
       subject: `New booking: ${booking.customerName} — $${amount} (${booking.passName})`,
       html,
@@ -49,6 +49,66 @@ export async function sendBookingAlertEmail(booking) {
   } catch (err) {
     // Never let an email failure break the booking flow — just log it.
     console.error('Failed to send booking alert email:', err);
+  }
+}
+
+// Sends the branded "you're confirmed!" email to the customer who just
+// booked. Same fail-safe philosophy as the admin alert above: if Resend
+// isn't configured, or the email address on file looks bogus, this quietly
+// skips rather than blocking the booking or throwing an error Stripe would
+// see as a failure and retry unnecessarily.
+export async function sendCustomerConfirmationEmail(booking) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const toEmail = (booking.customerEmail || '').trim();
+  const looksLikeRealEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(toEmail) && toEmail !== 'unknown@example.com';
+
+  if (!apiKey || !looksLikeRealEmail) {
+    console.warn('Skipping customer confirmation email — RESEND_API_KEY not set or no valid customer email on file.');
+    return;
+  }
+
+  const resend = new Resend(apiKey);
+  const amount = (booking.amountCents / 100).toFixed(2);
+  const firstName = (booking.customerName || '').trim().split(/\s+/)[0] || 'there';
+
+  const html = `
+    <div style="font-family: -apple-system, sans-serif; max-width: 480px; margin: 0 auto; background:#0b0d12; color:#e5e7eb; border-radius:16px; overflow:hidden; border:1px solid #23262f;">
+      <div style="background: linear-gradient(135deg,#dc2626,#7f1d1d); padding: 28px 24px; text-align:center;">
+        <div style="color:#fff; font-size:20px; font-weight:800;">You're confirmed, ${escapeHtml(firstName)}! 🎉</div>
+        <div style="color:#fecaca; font-size:13px; margin-top:4px;">Official Dance Theory</div>
+      </div>
+      <div style="padding: 24px;">
+        <table style="width:100%; font-size:14px; border-collapse: collapse; margin-bottom: 20px;">
+          <tr><td style="color:#9ca3af; padding:6px 0;">Pass</td><td style="text-align:right; font-weight:700; color:#fff;">${escapeHtml(booking.passName)}</td></tr>
+          ${booking.classesIncluded ? `<tr><td style="color:#9ca3af; padding:6px 0;">Classes</td><td style="text-align:right; font-weight:700; color:#fff;">${escapeHtml(booking.classesIncluded)}</td></tr>` : ''}
+          <tr><td style="color:#9ca3af; padding:6px 0;">Amount Paid</td><td style="text-align:right; font-weight:700; color:#34d399;">$${amount}</td></tr>
+          <tr><td style="color:#9ca3af; padding:6px 0;">Ticket ID</td><td style="text-align:right; font-weight:700; color:#fff; font-family:monospace;">${escapeHtml(booking.ticketId)}</td></tr>
+        </table>
+
+        <div style="background:#14161c; border:1px solid #23262f; border-radius:12px; padding:16px; margin-bottom:16px;">
+          <div style="color:#9ca3af; font-size:11px; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">Where to go</div>
+          <div style="color:#fff; font-size:14px; font-weight:600;">Dance Factory, WestShore Plaza Mall</div>
+          <div style="color:#9ca3af; font-size:13px; margin-top:2px;">334 Westshore Plaza A10, Tampa, FL 33609</div>
+          <div style="color:#9ca3af; font-size:12px; margin-top:8px;">Free mall parking right outside the main entrance near the studio (A10 suite).</div>
+        </div>
+
+        <div style="color:#9ca3af; font-size:13px; line-height:1.5;">
+          Show this email or your Ticket ID at check-in. Questions? Just reply to this email — see you on the floor!
+        </div>
+      </div>
+    </div>
+  `;
+
+  try {
+    await resend.emails.send({
+      from: 'Official Dance Theory <tickets@officialdancetheory.com>',
+      to: toEmail,
+      subject: `You're confirmed! ${booking.passName} — Official Dance Theory`,
+      html,
+    });
+  } catch (err) {
+    // Never let an email failure break the booking flow — just log it.
+    console.error('Failed to send customer confirmation email:', err);
   }
 }
 
