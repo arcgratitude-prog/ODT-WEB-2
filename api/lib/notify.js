@@ -105,11 +105,13 @@ function buildOrderReceiptEmail(booking) {
   // on the digital pass page (DigitalPassPage.tsx), duplicated here since
   // this file runs server-side and that one runs in the browser bundle.
   // Update both together if event details ever change.
-  let schedule, curriculum, dateLabel, timeLabel;
+  let schedule, curriculum, dateLabel, timeLabel, dateBig, dateSmall;
   if (isLocura) {
     curriculum = null;
     dateLabel = 'Sun, Sept 13, 2026';
     timeLabel = '4–9 PM EDT';
+    dateBig = 'SEPT 13';
+    dateSmall = 'SUNDAY';
     schedule = [
       { time: '4:00 PM', title: 'Presocial Class with Albina & Isaac', desc: 'All-levels class to warm up before the social.' },
       { time: '5:00 PM', title: 'Social Dancing Begins', desc: 'Music by DJ JR.' },
@@ -119,6 +121,8 @@ function buildOrderReceiptEmail(booking) {
     curriculum = null;
     dateLabel = 'Every 2nd Fri';
     timeLabel = '8 PM–1 AM EDT';
+    dateBig = '2ND FRI';
+    dateSmall = 'MONTHLY';
     schedule = [
       { time: '8:00 PM', title: 'Class with Albina & Isaac', desc: '' },
       { time: '9:00 PM', title: 'Social Dancing Begins', desc: 'Music by DJ JR.' },
@@ -128,6 +132,8 @@ function buildOrderReceiptEmail(booking) {
     curriculum = ['Structured Urban Bachata curriculum', 'Video recaps after each class'];
     dateLabel = 'Ongoing — Weekly';
     timeLabel = booking.classesIncluded || 'See schedule';
+    dateBig = 'WEEKLY';
+    dateSmall = 'ONGOING';
     schedule = [
       { time: 'Weekly', title: booking.classesIncluded || 'Class Session', desc: 'Dance Factory Tampa' },
     ];
@@ -184,61 +190,36 @@ function buildOrderReceiptEmail(booking) {
 <tr><td align="center" bgcolor="#0a0717">
 <table width="100%" style="max-width:480px;" cellpadding="0" cellspacing="0">
 
-  <!-- Hero -->
-  <tr><td bgcolor="#14102a" style="background:#14102a;border-radius:20px;padding:28px 24px;border:1px solid rgba(255,255,255,0.08);">
-    <table cellpadding="0" cellspacing="0"><tr>
-      <td bgcolor="#052e21" style="background:#052e21;border:1px solid rgba(52,211,153,0.4);border-radius:999px;padding:6px 14px;">
-        <span style="font-size:10px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#34d399;">&#10003; Order #${escapeHtml(booking.ticketId)} Verified</span>
-      </td>
-    </tr></table>
-    <p style="margin:18px 0 8px;font-size:26px;font-weight:800;color:#ffffff;line-height:1.2;">
-      Get ready to dance, <span style="color:#e879f9;">${escapeHtml(name.split(/\s+/)[0] || name)}</span>!
-    </p>
-    <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.65);line-height:1.6;">
-      Thank you for purchasing your pass for <strong style="color:#ffffff;">${escapeHtml(booking.passName)}</strong>. Show this email (or your Order # above) at check-in.
-    </p>
-    <table cellpadding="0" cellspacing="0" style="margin-top:16px;"><tr>
-      <td bgcolor="#e879f9" style="background:#e879f9;border-radius:12px;">
-        <a href="https://officialdancetheory.com/?ticket=${encodeURIComponent(booking.ticketId)}" style="display:inline-block;padding:10px 18px;font-size:12px;font-weight:800;color:#1a0b2e;text-decoration:none;">View Your Digital Pass &rarr;</a>
-      </td>
-    </tr></table>
-  </td></tr>
-
-  <tr><td style="height:16px; line-height:16px; font-size:0;">&nbsp;</td></tr>
-
   <!-- Static Digital Ticket (no animation — just the visual, matches the
-       front face of the interactive 3D pass on the website) -->
+       front face of the interactive 3D pass on the website). Leads the
+       email per request: title centered, date big in the corner. -->
   <tr><td bgcolor="#1a0f30" style="background:#1a0f30;border-radius:20px;padding:20px;border:1px solid rgba(232,121,249,0.35);">
-    <table width="100%" cellpadding="0" cellspacing="0" style="border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:14px;margin-bottom:14px;"><tr>
-      <td><span style="font-family:'Helvetica Neue',sans-serif;font-size:15px;font-weight:800;letter-spacing:0.05em;color:#ffffff;">OFFICIAL DANCE THEORY</span></td>
-      <td align="right"><span style="font-size:9px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#f0abfc;background:#3b0a52;border:1px solid rgba(232,121,249,0.4);border-radius:999px;padding:4px 10px;white-space:nowrap;">${escapeHtml(booking.passName)}</span></td>
-    </tr></table>
-
-    <p style="margin:0 0 14px;font-size:20px;font-weight:900;color:#ffffff;text-transform:uppercase;letter-spacing:0.01em;">${escapeHtml(isLocura ? 'Bachata Locura' : isInvasion ? 'Bachata Invasion' : booking.passName)}</p>
-
-    <table width="100%" cellpadding="0" cellspacing="0" bgcolor="#0f0821" style="background:#0f0821;border-radius:12px;padding:12px;margin-bottom:14px;"><tr>
-      <td width="50%" style="vertical-align:top;">
-        <p style="margin:0 0 2px;font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.45);">Date &amp; Time</p>
-        <p style="margin:0;font-size:12px;font-weight:700;color:#ffffff;">${escapeHtml(dateLabel)}</p>
-        <p style="margin:0;font-size:11px;color:rgba(255,255,255,0.6);">${escapeHtml(timeLabel)}</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:14px;"><tr>
+      <td style="vertical-align:top;">
+        <span style="font-size:11px;font-weight:800;letter-spacing:0.08em;color:rgba(255,255,255,0.6);">OFFICIAL DANCE THEORY</span><br>
+        <span style="font-size:9px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;color:#34d399;">&#10003; Order #${escapeHtml(booking.ticketId)} Verified</span>
       </td>
-      <td width="50%" style="vertical-align:top;">
-        <p style="margin:0 0 2px;font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.45);">Venue</p>
-        <p style="margin:0;font-size:12px;font-weight:700;color:#ffffff;">${escapeHtml(venueName)}</p>
-        <p style="margin:0;font-size:11px;color:rgba(255,255,255,0.6);">Tampa, FL</p>
+      <td align="right" style="vertical-align:top;">
+        <table cellpadding="0" cellspacing="0" bgcolor="#3b0a52" style="background:#3b0a52;border:1px solid rgba(232,121,249,0.5);border-radius:10px;"><tr>
+          <td align="center" style="padding:6px 12px;">
+            <span style="display:block;font-size:17px;font-weight:900;color:#f0abfc;line-height:1;white-space:nowrap;">${escapeHtml(dateBig)}</span>
+            <span style="display:block;font-size:8px;font-weight:700;letter-spacing:0.1em;color:rgba(240,171,252,0.8);text-transform:uppercase;margin-top:2px;">${escapeHtml(dateSmall)}</span>
+          </td>
+        </tr></table>
       </td>
     </tr></table>
+
+    <p style="margin:0 0 4px;font-size:26px;font-weight:900;color:#ffffff;text-transform:uppercase;letter-spacing:0.01em;text-align:center;">${escapeHtml(isLocura ? 'Bachata Locura' : isInvasion ? 'Bachata Invasion' : booking.passName)}</p>
+    <p style="margin:0 0 16px;font-size:11px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:#f0abfc;text-align:center;">${isLocura || isInvasion ? `${escapeHtml(booking.passName)} &middot; ` : ''}${escapeHtml(timeLabel)}</p>
 
     <table width="100%" cellpadding="0" cellspacing="0" bgcolor="#0f0821" style="background:#0f0821;border-radius:12px;padding:12px;margin-bottom:14px;"><tr>
       <td width="50%" style="vertical-align:top;">
         <p style="margin:0 0 2px;font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.45);">Attendee</p>
         <p style="margin:0;font-size:12px;font-weight:700;color:#ffffff;">${escapeHtml(name)}</p>
-        <p style="margin:0;font-size:10px;font-family:monospace;color:rgba(255,255,255,0.4);">Order #${escapeHtml(booking.ticketId)}</p>
       </td>
       <td width="50%" style="vertical-align:top;">
         <p style="margin:0 0 2px;font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.45);">Instructors</p>
         <p style="margin:0;font-size:12px;font-weight:700;color:#ffffff;">Albina &amp; Isaac</p>
-        <p style="margin:0;font-size:10px;color:#34d399;">&#10003; Verified Pass</p>
       </td>
     </tr></table>
 
@@ -253,6 +234,40 @@ function buildOrderReceiptEmail(booking) {
       </td>
     </tr></table>
   </td></tr>
+
+  <!-- Full address, directly below the ticket for a quick glance -->
+  <tr><td style="padding:12px 4px 0;">
+    <table width="100%" cellpadding="0" cellspacing="0"><tr>
+      <td style="vertical-align:top;width:20px;"><span style="font-size:14px;">&#128205;</span></td>
+      <td style="vertical-align:top;">
+        <p style="margin:0;font-size:13px;font-weight:700;color:#ffffff;">${escapeHtml(venueName)}</p>
+        <p style="margin:1px 0 0;font-size:12px;color:rgba(255,255,255,0.55);">${escapeHtml(venueAddress)}, ${escapeHtml(cityState)}</p>
+      </td>
+      <td align="right" style="vertical-align:top;white-space:nowrap;">
+        <a href="${mapsUrl}" style="font-size:11px;font-weight:700;color:#67e8f9;text-decoration:none;">Directions &rarr;</a>
+      </td>
+    </tr></table>
+  </td></tr>
+
+  <tr><td style="height:16px; line-height:16px; font-size:0;">&nbsp;</td></tr>
+
+  <!-- Hero -->
+  <tr><td bgcolor="#14102a" style="background:#14102a;border-radius:20px;padding:28px 24px;border:1px solid rgba(255,255,255,0.08);">
+    <p style="margin:0 0 8px;font-size:22px;font-weight:800;color:#ffffff;line-height:1.2;">
+      Get ready to dance, <span style="color:#e879f9;">${escapeHtml(name.split(/\s+/)[0] || name)}</span>!
+    </p>
+    <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.65);line-height:1.6;">
+      Thank you for purchasing your pass for <strong style="color:#ffffff;">${escapeHtml(booking.passName)}</strong>. Show this email (or your Order # above) at check-in.
+    </p>
+    <table cellpadding="0" cellspacing="0" style="margin-top:16px;"><tr>
+      <td bgcolor="#e879f9" style="background:#e879f9;border-radius:12px;">
+        <a href="https://officialdancetheory.com/?ticket=${encodeURIComponent(booking.ticketId)}" style="display:inline-block;padding:10px 18px;font-size:12px;font-weight:800;color:#1a0b2e;text-decoration:none;">View Your Digital Pass &rarr;</a>
+      </td>
+    </tr></table>
+  </td></tr>
+
+  <tr><td style="height:16px; line-height:16px; font-size:0;">&nbsp;</td></tr>
+
   <tr><td bgcolor="#14102a" style="background:#14102a;border-radius:20px;padding:24px;border:1px solid rgba(255,255,255,0.08);">
     <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;"><tr>
       <td>
