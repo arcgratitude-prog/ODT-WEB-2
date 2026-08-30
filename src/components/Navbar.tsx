@@ -7,8 +7,8 @@ interface NavbarProps {
   onOpenBooking: (passTypeId?: string) => void;
   onOpenSavedPasses: () => void;
   savedPassesCount: number;
-  currentPage: 'home' | 'social' | 'schedule' | 'review' | 'referral' | 'secret-openhouse';
-  onNavigate: (page: 'home' | 'social' | 'schedule' | 'review' | 'referral' | 'secret-openhouse', sectionId?: string) => void;
+  currentPage: 'home' | 'social' | 'schedule' | 'review' | 'referral';
+  onNavigate: (page: 'home' | 'social' | 'schedule' | 'review' | 'referral', sectionId?: string) => void;
   activeSection: string;
   onOpenStoryModal?: () => void;
   onOpenStudentPortal?: () => void;
@@ -28,7 +28,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
 
-  const handleNavClick = (page: 'home' | 'social' | 'schedule' | 'review' | 'referral' | 'secret-openhouse', sectionId?: string) => {
+  const handleNavClick = (page: 'home' | 'social' | 'schedule' | 'review' | 'referral', sectionId?: string) => {
     setMobileMenuOpen(false);
     setMoreDropdownOpen(false);
     onNavigate(page, sectionId);

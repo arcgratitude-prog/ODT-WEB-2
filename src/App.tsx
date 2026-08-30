@@ -11,16 +11,16 @@ import { Footer } from './components/Footer';
 import { TicketModal } from './components/TicketModal';
 import { SavedPassesDrawer } from './components/SavedPassesDrawer';
 import { CalendarPage } from './components/CalendarPage';
-import { SecretSpecialPage } from './components/SecretSpecialPage';
 import { ReviewPage } from './components/ReviewPage';
 import { ReferralProgramSection } from './components/ReferralProgramSection';
 import { InstagramStoryModal } from './components/InstagramStoryModal';
 import { StudentPortalModal } from './components/StudentPortalModal';
 import { AdminCheckIn } from './components/AdminCheckIn';
+import { InAppBrowserNotice } from './components/InAppBrowserNotice';
 import { TicketPass } from './types';
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<'home' | 'social' | 'schedule' | 'review' | 'referral' | 'secret-openhouse'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'social' | 'schedule' | 'review' | 'referral'>('home');
   const [savedPasses, setSavedPasses] = useState<TicketPass[]>([]);
   const [isBookingOpen, setIsBookingOpen] = useState<boolean>(false);
   const [bookingPassTypeId, setBookingPassTypeId] = useState<string>('social-presale');
@@ -30,16 +30,6 @@ export default function App() {
   const [isStoryModalOpen, setIsStoryModalOpen] = useState<boolean>(false);
   const [activeSection, setActiveSection] = useState<string>('schedule');
 
-
-  // Check URL query search parameters for secret QR code scan
-  useEffect(() => {
-    const search = window.location.search.toLowerCase();
-    const hash = window.location.hash.toLowerCase();
-    if (search.includes('code=') || search.includes('openhouse') || search.includes('vip') || hash.includes('openhouse')) {
-      setCurrentPage('secret-openhouse');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }, []);
 
   // Load saved passes from localStorage
   useEffect(() => {
@@ -78,9 +68,9 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [currentPage]);
 
-  const handleNavigate = (page: 'home' | 'social' | 'schedule' | 'review' | 'referral' | 'secret-openhouse', sectionId?: string) => {
+  const handleNavigate = (page: 'home' | 'social' | 'schedule' | 'review' | 'referral', sectionId?: string) => {
     setCurrentPage(page);
-    if (page === 'social' || page === 'schedule' || page === 'review' || page === 'referral' || page === 'secret-openhouse') {
+    if (page === 'social' || page === 'schedule' || page === 'review' || page === 'referral') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       if (sectionId) {
@@ -169,7 +159,7 @@ export default function App() {
               onOpenBooking={handleOpenBooking}
               onNavigateToHome={() => handleNavigate('home')}
             />
-            <Footer onNavigateToSecret={() => handleNavigate('secret-openhouse')} />
+            <Footer />
           </div>
         ) : currentPage === 'schedule' ? (
           <div className="pt-20 sm:pt-24 min-h-[80vh]">
@@ -177,22 +167,14 @@ export default function App() {
               onOpenBooking={handleOpenBooking}
               onNavigate={handleNavigate}
             />
-            <Footer onNavigateToSecret={() => handleNavigate('secret-openhouse')} />
-          </div>
-        ) : currentPage === 'secret-openhouse' ? (
-          <div className="pt-20 sm:pt-24 min-h-[80vh]">
-            <SecretSpecialPage
-              onOpenBooking={handleOpenBooking}
-              onNavigateHome={() => handleNavigate('home')}
-            />
-            <Footer onNavigateToSecret={() => handleNavigate('secret-openhouse')} />
+            <Footer />
           </div>
         ) : currentPage === 'review' ? (
           <div className="pt-20 sm:pt-24 min-h-[80vh]">
             <ReviewPage
               onOpenBooking={handleOpenBooking}
             />
-            <Footer onNavigateToSecret={() => handleNavigate('secret-openhouse')} />
+            <Footer />
           </div>
         ) : currentPage === 'referral' ? (
           <div className="pt-20 sm:pt-24 min-h-[80vh]">
@@ -200,7 +182,7 @@ export default function App() {
               onOpenBooking={handleOpenBooking}
               onNavigateHome={() => handleNavigate('home')}
             />
-            <Footer onNavigateToSecret={() => handleNavigate('secret-openhouse')} />
+            <Footer />
           </div>
         ) : (
           <>
@@ -227,7 +209,7 @@ export default function App() {
             <FAQSection />
 
             {/* Footer */}
-            <Footer onNavigateToSecret={() => handleNavigate('secret-openhouse')} />
+            <Footer />
           </>
         )}
       </div>
@@ -263,6 +245,10 @@ export default function App() {
         savedPasses={savedPasses}
         onOpenBooking={handleOpenBooking}
       />
+
+      {/* Nudge for social-app in-app browsers (Instagram, etc.) where wallet
+          checkout misbehaves — prompts opening in a real browser. */}
+      <InAppBrowserNotice />
 
     </div>
   );

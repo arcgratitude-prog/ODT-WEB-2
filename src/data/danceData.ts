@@ -112,25 +112,6 @@ export const SOCIAL_PASS_OPTION: PassOption = {
   type: 'drop_in_1'
 };
 
-export const SECRET_OPEN_HOUSE_PASS: PassOption = {
-  id: 'secret-open-house-120',
-  name: 'Open House VIP $120 Cycle Pass',
-  price: 120,
-  originalPrice: 200,
-  savings: 'SAVE $80 • EXCLUSIVE ON-SITE RATE',
-  tagline: 'On-Site Open House Special: Full 4-Week Progressive Cycle (12 Classes)',
-  classesCount: 12,
-  popular: true,
-  features: [
-    'Exclusive $120 Rate (Save $80 Off Reg. $200)',
-    'Full 4-Week Cycle Access (All 12 Classes: 7PM, 8PM & 9PM)',
-    'Progressive Urban Bachata Curriculum & Video Recaps',
-    'Valid for On-Site Open House Scans Only',
-    'Digital Ticket Pass with Instant Check-In'
-  ],
-  type: 'cycle_4week'
-};
-
 export const PASS_OPTIONS: PassOption[] = [
   {
     id: 'track-foundations',

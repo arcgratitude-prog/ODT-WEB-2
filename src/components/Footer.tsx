@@ -3,11 +3,7 @@ import { Crown, MapPin, Instagram, Sparkles, Heart, MessageCircle } from 'lucide
 import { STUDIO_INFO } from '../data/danceData';
 import { AiUrbanoLogo } from './AiUrbanoLogo';
 
-interface FooterProps {
-  onNavigateToSecret?: () => void;
-}
-
-export const Footer: React.FC<FooterProps> = ({ onNavigateToSecret }) => {
+export const Footer: React.FC = () => {
   return (
     <footer className="relative z-10 border-t border-white/10 bg-[#0a0a0c]/90 backdrop-blur-xl pt-12 pb-28 md:pb-12 px-4 sm:px-6 lg:px-8">
       
@@ -104,17 +100,6 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateToSecret }) => {
             <span>Crafted for Urban Bachata Dancers</span>
             <Heart className="w-3 h-3 text-red-500 fill-red-500" />
           </div>
-          {onNavigateToSecret && (
-            <div className="pt-1">
-              <button
-                onClick={onNavigateToSecret}
-                className="text-[10px] text-slate-400 hover:text-red-400 font-mono transition-colors opacity-70 hover:opacity-100 flex items-center md:justify-end gap-1"
-                title="Organizer / On-Site Open House Secret Page"
-              >
-                <span>Open House Secret Scan ($120)</span>
-              </button>
-            </div>
-          )}
         </div>
 
       </div>

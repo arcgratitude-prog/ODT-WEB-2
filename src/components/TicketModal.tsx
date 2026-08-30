@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Sparkles, CheckCircle2, Calendar, MapPin, Download, QrCode, Ticket, ShieldCheck, User, Mail, Phone, ArrowRight } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { PASS_OPTIONS, SOCIAL_PASS_OPTION, BACHATA_INVASION_PASS_OPTION, SECRET_OPEN_HOUSE_PASS, STUDIO_INFO } from '../data/danceData';
+import { PASS_OPTIONS, SOCIAL_PASS_OPTION, BACHATA_INVASION_PASS_OPTION, STUDIO_INFO } from '../data/danceData';
 import { TicketPass, CheckoutTheme } from '../types';
 import { CustomStripeCheckout } from './CustomStripeCheckout';
 
@@ -120,7 +120,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
 
   if (!isOpen) return null;
 
-  const allAvailablePasses = [BACHATA_INVASION_PASS_OPTION, SOCIAL_PASS_OPTION, SECRET_OPEN_HOUSE_PASS, ...PASS_OPTIONS];
+  const allAvailablePasses = [BACHATA_INVASION_PASS_OPTION, SOCIAL_PASS_OPTION, ...PASS_OPTIONS];
   const currentPassOption = allAvailablePasses.find(p => p.id === selectedPassId) || PASS_OPTIONS[0];
   const isPaidPass = currentPassOption.price > 0;
   const theme = THEME_CLASSES[getCheckoutTheme(currentPassOption.id)];
