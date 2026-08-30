@@ -42,7 +42,12 @@ export default async function handler(req, res) {
   }
 
   const sig = req.headers['stripe-signature'];
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  // .trim() guards against a common copy/paste gotcha: an accidental
+  // leading/trailing space or newline in the Vercel env var value breaks
+  // Stripe's signature verification with a cryptic 400 error, even though
+  // the secret "looks" correct. Trimming here fixes it without needing to
+  // re-save the Vercel value.
+  const webhookSecret = (process.env.STRIPE_WEBHOOK_SECRET || '').trim();
 
   let event;
   try {
