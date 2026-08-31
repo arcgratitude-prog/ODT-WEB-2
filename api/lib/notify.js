@@ -136,6 +136,18 @@ function buildOrderReceiptEmail(order) {
   }
 
   const eventTitle = isLocura ? 'Bachata Locura' : isInvasion ? 'Bachata Invasion' : order.passName;
+
+  // Accent colors match the live checkout's actual theme per category
+  // (see ACCENT_CLASSES in CustomStripeCheckout.tsx) — red for classes,
+  // fuchsia for Invasion, silver/slate for Locura — so the confirmation
+  // email visually matches whatever the customer just checked out from,
+  // instead of always looking the same regardless of what they bought.
+  const accent = isLocura
+    ? { main: '#cbd5e1', badgeBg: '#1e293b', border30: 'rgba(203,213,225,0.3)', border50: 'rgba(203,213,225,0.5)', dateText: '#e2e8f0', dateTextDim: 'rgba(226,232,240,0.8)' }
+    : isInvasion
+    ? { main: '#e879f9', badgeBg: '#3b0a52', border30: 'rgba(232,121,249,0.3)', border50: 'rgba(232,121,249,0.5)', dateText: '#f0abfc', dateTextDim: 'rgba(240,171,252,0.8)' }
+    : { main: '#f87171', badgeBg: '#450a0a', border30: 'rgba(248,113,113,0.3)', border50: 'rgba(248,113,113,0.5)', dateText: '#fecaca', dateTextDim: 'rgba(254,202,202,0.8)' };
+
   const venueName = 'Dance Factory Tampa';
   const venueAddress = '334 Westshore Plaza A10';
   const cityState = 'Tampa, FL 33609';
@@ -189,18 +201,18 @@ function buildOrderReceiptEmail(order) {
     }
 
     return `
-    <table width="100%" cellpadding="0" cellspacing="0" bgcolor="#1a0f30" style="background:#1a0f30;border-radius:16px;padding:18px;border:1px solid rgba(232,121,249,0.3);${ticketNumber > 1 ? 'margin-top:12px;' : ''}">
+    <table width="100%" cellpadding="0" cellspacing="0" bgcolor="#1a0f30" style="background:#1a0f30;border-radius:16px;padding:18px;border:1px solid ${accent.border30};${ticketNumber > 1 ? 'margin-top:12px;' : ''}">
       <tr><td>
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;"><tr>
           <td style="vertical-align:top;">
             <span style="font-size:9px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;color:#34d399;">&#10003; Order #${escapeHtml(ticketId)}</span>
-            ${quantity > 1 ? `<br><span style="font-size:9px;font-weight:700;color:#f0abfc;">Ticket ${ticketNumber} of ${quantity}</span>` : ''}
+            ${quantity > 1 ? `<br><span style="font-size:9px;font-weight:700;color:${accent.dateText};">Ticket ${ticketNumber} of ${quantity}</span>` : ''}
           </td>
           <td align="right" style="vertical-align:top;">
-            <table cellpadding="0" cellspacing="0" bgcolor="#3b0a52" style="background:#3b0a52;border:1px solid rgba(232,121,249,0.5);border-radius:10px;"><tr>
+            <table cellpadding="0" cellspacing="0" bgcolor="${accent.badgeBg}" style="background:${accent.badgeBg};border:1px solid ${accent.border50};border-radius:10px;"><tr>
               <td align="center" style="padding:5px 10px;">
-                <span style="display:block;font-size:15px;font-weight:900;color:#f0abfc;line-height:1;white-space:nowrap;">${escapeHtml(dateBig)}</span>
-                <span style="display:block;font-size:7px;font-weight:700;letter-spacing:0.1em;color:rgba(240,171,252,0.8);text-transform:uppercase;margin-top:2px;">${escapeHtml(dateSmall)}</span>
+                <span style="display:block;font-size:15px;font-weight:900;color:${accent.dateText};line-height:1;white-space:nowrap;">${escapeHtml(dateBig)}</span>
+                <span style="display:block;font-size:7px;font-weight:700;letter-spacing:0.1em;color:${accent.dateTextDim};text-transform:uppercase;margin-top:2px;">${escapeHtml(dateSmall)}</span>
               </td>
             </tr></table>
           </td>
@@ -239,7 +251,7 @@ function buildOrderReceiptEmail(order) {
   <tr><td bgcolor="#14102a" style="background:#14102a;border-radius:20px;padding:24px;border:1px solid rgba(255,255,255,0.08);">
 
     <!-- Greeting -->
-    <p style="margin:0 0 4px;font-size:22px;font-weight:800;color:#ffffff;line-height:1.2;">Get ready to dance, <span style="color:#e879f9;">${escapeHtml(firstName)}</span>!</p>
+    <p style="margin:0 0 4px;font-size:22px;font-weight:800;color:#ffffff;line-height:1.2;">Get ready to dance, <span style="color:${accent.main};">${escapeHtml(firstName)}</span>!</p>
     <p style="margin:0 0 18px;font-size:12px;color:rgba(255,255,255,0.55);">Your pass${quantity > 1 ? `es (${quantity} tickets)` : ''} for <strong style="color:#ffffff;">${escapeHtml(order.passName)}</strong> ${quantity > 1 ? 'are' : 'is'} confirmed.</p>
 
     <!-- Ticket(s) -->
@@ -249,7 +261,7 @@ function buildOrderReceiptEmail(order) {
     <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:16px;"><tr>
       <td>
         <p style="margin:0;font-size:9px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.45);">Paid${quantity > 1 ? ` (${quantity} tickets)` : ''}</p>
-        <p style="margin:0;font-size:15px;font-weight:800;color:#f472b6;font-family:monospace;">$${totalAmount}</p>
+        <p style="margin:0;font-size:15px;font-weight:800;color:${accent.main};font-family:monospace;">$${totalAmount}</p>
       </td>
       <td align="right" style="vertical-align:top;">
         <p style="margin:0;font-size:9px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.45);">Card via Stripe</p>

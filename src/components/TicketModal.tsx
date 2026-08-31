@@ -17,6 +17,20 @@ interface TicketModalProps {
 // Checkout theme — matches whatever section the customer is booking from,
 // instead of always showing the same red. Weekly classes/tiers/drop-ins
 // keep the site's red accent; the two social events get their own colors.
+// What to show for "classes included" when the customer didn't pick
+// specific class times (only tiers requiring 1-2 picks collect those —
+// see TRACK_PICK_COUNTS in PricingSection.tsx). A bare "12 Class
+// Session(s)" reads like a countdown rather than what it actually is:
+// full, unlimited access to every class each week. Only the Unlimited
+// tier and any pass explicitly needing no picks gets this framing —
+// specific drop-in counts (e.g. "3 Class Session(s)") still make sense
+// as a literal count since those really are a fixed number of visits.
+const getClassesIncludedLabel = (passOption: { id: string; classesCount: number }, classTimes: string[]): string => {
+  if (classTimes.length > 0) return classTimes.join(', ');
+  if (passOption.id === 'track-unlimited') return 'All Classes Included — Full Weekly Access';
+  return `${passOption.classesCount} Class Session(s)`;
+};
+
 const getCheckoutTheme = (passId: string): CheckoutTheme => {
   if (passId.startsWith('social-invasion')) return 'fuchsia'; // Bachata Invasion
   if (passId.startsWith('social-presale')) return 'silver'; // Bachata Locura
@@ -94,6 +108,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   onPassCreated
 }) => {
   const [selectedPassId, setSelectedPassId] = useState<string>(initialPassTypeId);
+  const [quantity, setQuantity] = useState<number>(Math.max(1, initialQuantity));
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -116,8 +131,10 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       setContactConfirmed(false);
+      setQuantity(Math.max(1, initialQuantity));
       ticketIdRef.current = `UB-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -126,11 +143,12 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   const currentPassOption = allAvailablePasses.find(p => p.id === selectedPassId) || PASS_OPTIONS[0];
   const isPaidPass = currentPassOption.price > 0;
   const theme = THEME_CLASSES[getCheckoutTheme(currentPassOption.id)];
-  // Quantity only ever applies to the two social events (Invasion/Locura)
-  // right now — everything else always books qty 1, so this multiplies
-  // out to the same price as before for those.
-  const quantity = Math.max(1, initialQuantity);
-  const totalPrice = currentPassOption.price * quantity;
+  // Buying more than one only makes sense for the two social events right
+  // now (a "party of 3" is a real thing for Invasion/Locura; buying 3 of
+  // the same weekly class tier isn't). Everything else stays locked to 1.
+  const canPickQuantity = currentPassOption.id === 'social-invasion-10' || currentPassOption.id === 'social-presale';
+  const effectiveQuantity = canPickQuantity ? quantity : 1;
+  const totalPrice = currentPassOption.price * effectiveQuantity;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -155,9 +173,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
         passName: currentPassOption.name,
         passType: currentPassOption.type,
         price: totalPrice,
-        classesIncluded: initialClassTimes.length > 0
-          ? initialClassTimes.join(', ')
-          : `${currentPassOption.classesCount} Class Session(s)`,
+        classesIncluded: getClassesIncludedLabel(currentPassOption, initialClassTimes),
         eventDate: 'Wednesday, August 5th (7:00 PM - 10:00 PM)',
         location: 'Dance Factory - WestShore Plaza Mall, Tampa, FL',
         purchaseTimestamp: Date.now(),
@@ -188,9 +204,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
       passName: currentPassOption.name,
       passType: currentPassOption.type,
       price: totalPrice,
-      classesIncluded: initialClassTimes.length > 0
-        ? initialClassTimes.join(', ')
-        : `${currentPassOption.classesCount} Class Session(s)`,
+      classesIncluded: getClassesIncludedLabel(currentPassOption, initialClassTimes),
       eventDate: 'Wednesday, August 5th (7:00 PM - 10:00 PM)',
       location: 'Dance Factory - WestShore Plaza Mall, Tampa, FL',
       purchaseTimestamp: Date.now(),
@@ -236,16 +250,11 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                     {totalPrice === 0 ? 'FREE PASS CHECKOUT' : `CHECKOUT: $${totalPrice}`}
                   </span>
                   <h4 className="text-lg font-black text-white uppercase mt-1">
-                    {currentPassOption.name}{quantity > 1 ? ` × ${quantity}` : ''}
+                    {currentPassOption.name}{effectiveQuantity > 1 ? ` × ${effectiveQuantity}` : ''}
                   </h4>
                   <p className="text-xs text-slate-300 font-medium">
                     {currentPassOption.tagline}
                   </p>
-                  {quantity > 1 && (
-                    <p className="text-[10px] text-slate-400 font-mono mt-0.5">
-                      {quantity} tickets &middot; ${currentPassOption.price} each
-                    </p>
-                  )}
                 </div>
                 <div className="text-right shrink-0">
                   <div className={`text-xl sm:text-2xl font-mono font-black ${theme.priceText}`}>
@@ -253,6 +262,42 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                   </div>
                 </div>
               </div>
+
+              {/* Quantity picker — only for the two social events, where
+                  buying for a group is a real thing. Locked to checkout
+                  once payment is underway so the charge can't shift under
+                  a half-submitted payment. */}
+              {canPickQuantity && !contactConfirmed && (
+                <div className="flex items-center justify-between pt-1">
+                  <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wide">How many tickets?</span>
+                  <div className="flex items-center gap-3 bg-black/30 rounded-full px-3 py-1.5 border border-white/10">
+                    <button
+                      type="button"
+                      onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                      disabled={quantity <= 1}
+                      aria-label="Decrease ticket quantity"
+                      className="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed text-white font-bold flex items-center justify-center transition-colors"
+                    >
+                      &minus;
+                    </button>
+                    <span className="text-white font-black text-sm w-4 text-center font-mono">{quantity}</span>
+                    <button
+                      type="button"
+                      onClick={() => setQuantity((q) => Math.min(6, q + 1))}
+                      disabled={quantity >= 6}
+                      aria-label="Increase ticket quantity"
+                      className="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed text-white font-bold flex items-center justify-center transition-colors"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              )}
+              {effectiveQuantity > 1 && (
+                <p className="text-[10px] text-slate-400 font-mono">
+                  {effectiveQuantity} tickets &middot; ${currentPassOption.price} each
+                </p>
+              )}
 
               {initialClassTimes.length > 0 && (
                 <div className="pt-1">
@@ -280,12 +325,10 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                   customerEmail={email}
                   customerPhone={phone}
                   classesIncluded={
-                    initialClassTimes.length > 0
-                      ? initialClassTimes.join(', ')
-                      : `${currentPassOption.classesCount} Class Session(s)`
+                    getClassesIncludedLabel(currentPassOption, initialClassTimes)
                   }
                   ticketId={ticketIdRef.current}
-                  quantity={quantity}
+                  quantity={effectiveQuantity}
                   theme={getCheckoutTheme(currentPassOption.id)}
                 />
               ) : (

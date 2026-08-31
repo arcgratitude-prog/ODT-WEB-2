@@ -17,9 +17,6 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
   const [activeTab, setActiveTab] = useState<'invasion' | 'locura'>('invasion');
   const [copiedInvasionAddress, setCopiedInvasionAddress] = useState(false);
   const [copiedLocuraAddress, setCopiedLocuraAddress] = useState(false);
-  const [invasionQty, setInvasionQty] = useState(1);
-  const [locuraQty, setLocuraQty] = useState(1);
-  const MAX_TICKETS_PER_ORDER = 6;
 
   const handleCopyInvasionAddress = () => {
     navigator.clipboard.writeText("334 Westshore Plaza Unit A10, Tampa, FL 33609");
@@ -147,39 +144,14 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
               </div>
             </div>
 
-            {/* Quantity + Get Ticket CTA */}
-            <div className="flex flex-col items-center gap-4 mb-8">
-              <div className="flex items-center gap-4 px-4 py-2 rounded-2xl bg-black/40 border border-fuchsia-500/20">
-                <span className="text-[10px] text-purple-300 font-bold uppercase tracking-wider">Tickets</span>
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setInvasionQty((q) => Math.max(1, q - 1))}
-                    disabled={invasionQty <= 1}
-                    aria-label="Decrease ticket quantity"
-                    className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed text-white font-bold flex items-center justify-center transition-colors"
-                  >
-                    &minus;
-                  </button>
-                  <span className="text-white font-black text-sm w-4 text-center font-mono">{invasionQty}</span>
-                  <button
-                    type="button"
-                    onClick={() => setInvasionQty((q) => Math.min(MAX_TICKETS_PER_ORDER, q + 1))}
-                    disabled={invasionQty >= MAX_TICKETS_PER_ORDER}
-                    aria-label="Increase ticket quantity"
-                    className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed text-white font-bold flex items-center justify-center transition-colors"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-
+            {/* Get Ticket CTA — quantity is picked in the checkout modal */}
+            <div className="flex justify-center mb-8">
               <button
-                onClick={() => onOpenBooking('social-invasion-10', invasionQty)}
+                onClick={() => onOpenBooking('social-invasion-10')}
                 className="px-8 py-4 rounded-2xl bg-gradient-to-r from-pink-500 via-fuchsia-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 text-white font-black text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl shadow-fuchsia-600/40 transition-all transform hover:scale-[1.03] border border-pink-300/40"
               >
                 <Ticket className="w-4 h-4 text-white" />
-                <span>Get {invasionQty > 1 ? `${invasionQty} Tickets — $${invasionQty * 12}` : '$12 Ticket'}</span>
+                <span>Get $12 Ticket</span>
                 <ArrowRight className="w-4 h-4 text-white" />
               </button>
             </div>
@@ -302,7 +274,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                 {/* Pre-Sale — the featured, purchasable option. Glows/pulses
                     so it visually reads as the one to tap. */}
                 <button
-                  onClick={() => onOpenBooking('social-presale', locuraQty)}
+                  onClick={() => onOpenBooking('social-presale')}
                   className="flex flex-col items-center gap-1.5 group relative"
                 >
                   {/* Save $5 banner */}
@@ -315,9 +287,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                     <span className="text-[9px] font-bold text-fuchsia-100 uppercase tracking-wide">Pre-Sale</span>
                     <span className="text-xl sm:text-2xl font-black text-white font-mono">$15</span>
                   </div>
-                  <span className="text-[10px] font-bold text-white uppercase tracking-wide">
-                    {locuraQty > 1 ? `Get ${locuraQty} — $${locuraQty * 15} →` : 'Tap to Get →'}
-                  </span>
+                  <span className="text-[10px] font-bold text-white uppercase tracking-wide">Tap to Get →</span>
                 </button>
 
                 {/* At the Door — door only */}
@@ -328,35 +298,6 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                   <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wide">At Door</span>
                 </div>
 
-              </div>
-
-              {/* Quantity stepper — Pre-Sale only, since Student/At Door are
-                  door-only and not purchased here. */}
-              <div className="flex justify-center mt-4">
-                <div className="flex items-center gap-4 px-4 py-2 rounded-2xl bg-black/40 border border-fuchsia-500/20">
-                  <span className="text-[10px] text-purple-300 font-bold uppercase tracking-wider">Pre-Sale Tickets</span>
-                  <div className="flex items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setLocuraQty((q) => Math.max(1, q - 1))}
-                      disabled={locuraQty <= 1}
-                      aria-label="Decrease ticket quantity"
-                      className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed text-white font-bold flex items-center justify-center transition-colors"
-                    >
-                      &minus;
-                    </button>
-                    <span className="text-white font-black text-sm w-4 text-center font-mono">{locuraQty}</span>
-                    <button
-                      type="button"
-                      onClick={() => setLocuraQty((q) => Math.min(MAX_TICKETS_PER_ORDER, q + 1))}
-                      disabled={locuraQty >= MAX_TICKETS_PER_ORDER}
-                      aria-label="Increase ticket quantity"
-                      className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed text-white font-bold flex items-center justify-center transition-colors"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
               </div>
 
               <p className="text-center text-[10px] text-slate-500 mt-3">
