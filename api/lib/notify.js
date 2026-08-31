@@ -137,16 +137,17 @@ function buildOrderReceiptEmail(order) {
 
   const eventTitle = isLocura ? 'Bachata Locura' : isInvasion ? 'Bachata Invasion' : order.passName;
 
-  // Accent colors match the live checkout's actual theme per category
-  // (see ACCENT_CLASSES in CustomStripeCheckout.tsx) — red for classes,
-  // fuchsia for Invasion, silver/slate for Locura — so the confirmation
-  // email visually matches whatever the customer just checked out from,
-  // instead of always looking the same regardless of what they bought.
+  // Accent colors, made deliberately bold and distinct per category:
+  //   Invasion  → neon purple
+  //   Locura    → deep "red velvet" maroon/rose
+  //   Classes   → the site's actual bright red brand color (red-600/500)
+  // Kept as three genuinely different colors rather than shades that look
+  // similar against the same dark background.
   const accent = isLocura
-    ? { main: '#cbd5e1', badgeBg: '#1e293b', border30: 'rgba(203,213,225,0.3)', border50: 'rgba(203,213,225,0.5)', dateText: '#e2e8f0', dateTextDim: 'rgba(226,232,240,0.8)' }
+    ? { main: '#fb7185', badgeBg: '#4c0519', border30: 'rgba(251,113,133,0.35)', border50: 'rgba(251,113,133,0.55)', dateText: '#fda4af', dateTextDim: 'rgba(253,164,175,0.85)', cardBg: '#2a0a14', insetBg: '#1a0510' }
     : isInvasion
-    ? { main: '#e879f9', badgeBg: '#3b0a52', border30: 'rgba(232,121,249,0.3)', border50: 'rgba(232,121,249,0.5)', dateText: '#f0abfc', dateTextDim: 'rgba(240,171,252,0.8)' }
-    : { main: '#f87171', badgeBg: '#450a0a', border30: 'rgba(248,113,113,0.3)', border50: 'rgba(248,113,113,0.5)', dateText: '#fecaca', dateTextDim: 'rgba(254,202,202,0.8)' };
+    ? { main: '#c084fc', badgeBg: '#3b0764', border30: 'rgba(192,132,252,0.35)', border50: 'rgba(192,132,252,0.55)', dateText: '#d8b4fe', dateTextDim: 'rgba(216,180,254,0.85)', cardBg: '#230845', insetBg: '#160530' }
+    : { main: '#ef4444', badgeBg: '#450a0a', border30: 'rgba(239,68,68,0.35)', border50: 'rgba(239,68,68,0.55)', dateText: '#fca5a5', dateTextDim: 'rgba(252,165,165,0.85)', cardBg: '#2a0a0a', insetBg: '#1a0505' };
 
   const venueName = 'Dance Factory Tampa';
   const venueAddress = '334 Westshore Plaza A10';
@@ -162,7 +163,7 @@ function buildOrderReceiptEmail(order) {
     : [];
 
   const classListHtml = classList.length > 0 ? `
-        <table width="100%" cellpadding="0" cellspacing="0" bgcolor="#0f0821" style="background:#0f0821;border-radius:12px;padding:12px;margin-bottom:12px;"><tr><td>
+        <table width="100%" cellpadding="0" cellspacing="0" bgcolor="${accent.insetBg}" style="background:${accent.insetBg};border-radius:12px;padding:12px;margin-bottom:12px;"><tr><td>
           <p style="margin:0 0 6px;font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.45);">Classes Selected</p>
           ${classList.map((c) => `<p style="margin:0 0 3px;font-size:12px;font-weight:700;color:#ffffff;">&#9642; ${escapeHtml(c)}</p>`).join('')}
         </td></tr></table>` : '';
@@ -201,7 +202,7 @@ function buildOrderReceiptEmail(order) {
     }
 
     return `
-    <table width="100%" cellpadding="0" cellspacing="0" bgcolor="#1a0f30" style="background:#1a0f30;border-radius:16px;padding:18px;border:1px solid ${accent.border30};${ticketNumber > 1 ? 'margin-top:12px;' : ''}">
+    <table width="100%" cellpadding="0" cellspacing="0" bgcolor="${accent.cardBg}" style="background:${accent.cardBg};border-radius:16px;padding:18px;border:1px solid ${accent.border30};${ticketNumber > 1 ? 'margin-top:12px;' : ''}">
       <tr><td>
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;"><tr>
           <td style="vertical-align:top;">
@@ -221,7 +222,7 @@ function buildOrderReceiptEmail(order) {
         <p style="margin:0 0 12px;font-size:22px;font-weight:900;color:#ffffff;text-transform:uppercase;letter-spacing:0.01em;text-align:center;">${escapeHtml(eventTitle)}</p>
 
         ${classListHtml}
-        <table width="100%" cellpadding="0" cellspacing="0" bgcolor="#0f0821" style="background:#0f0821;border-radius:12px;padding:12px;margin-bottom:12px;">${infoGridHtml}</table>
+        <table width="100%" cellpadding="0" cellspacing="0" bgcolor="${accent.insetBg}" style="background:${accent.insetBg};border-radius:12px;padding:12px;margin-bottom:12px;">${infoGridHtml}</table>
 
         <table width="100%" cellpadding="0" cellspacing="0" style="border-top:1px dashed rgba(255,255,255,0.2);padding-top:12px;"><tr>
           <td width="60" style="vertical-align:top;">

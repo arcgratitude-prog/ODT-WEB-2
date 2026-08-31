@@ -146,7 +146,12 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   // Buying more than one only makes sense for the two social events right
   // now (a "party of 3" is a real thing for Invasion/Locura; buying 3 of
   // the same weekly class tier isn't). Everything else stays locked to 1.
-  const canPickQuantity = currentPassOption.id === 'social-invasion-10' || currentPassOption.id === 'social-presale';
+  // Buying more than one makes sense for Invasion/Locura (a "party of N")
+  // and now also the weekly tiers — e.g. a couple signing up for the same
+  // Tier 2 track together. Drop-ins aren't included here since those
+  // already have their own 1/2/3-class-count picker in PricingSection.
+  const QUANTITY_ELIGIBLE_IDS = ['social-invasion-10', 'social-presale', 'track-foundations', 'track-progression', 'track-unlimited'];
+  const canPickQuantity = QUANTITY_ELIGIBLE_IDS.includes(currentPassOption.id);
   const effectiveQuantity = canPickQuantity ? quantity : 1;
   const totalPrice = currentPassOption.price * effectiveQuantity;
 
@@ -269,7 +274,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                   a half-submitted payment. */}
               {canPickQuantity && !contactConfirmed && (
                 <div className="flex items-center justify-between pt-1">
-                  <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wide">How many tickets?</span>
+                  <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wide">How many passes?</span>
                   <div className="flex items-center gap-3 bg-black/30 rounded-full px-3 py-1.5 border border-white/10">
                     <button
                       type="button"
@@ -295,7 +300,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
               )}
               {effectiveQuantity > 1 && (
                 <p className="text-[10px] text-slate-400 font-mono">
-                  {effectiveQuantity} tickets &middot; ${currentPassOption.price} each
+                  {effectiveQuantity} passes &middot; ${currentPassOption.price} each
                 </p>
               )}
 
