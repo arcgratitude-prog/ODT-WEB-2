@@ -7,7 +7,7 @@ import coupleImg from '../assets/images/albina_isaac_directors.jpg';
 import studioHeroImg from '../assets/images/urban_studio_hero_1784906979054.jpg';
 
 interface HeroProps {
-  onOpenBooking: (passTypeId?: string) => void;
+  onOpenBooking: (passTypeId?: string, quantity?: number) => void;
 }
 
 export const Hero: React.FC<HeroProps> = ({

@@ -17,6 +17,8 @@ interface Booking {
   pass_type: string | null;
   amount_cents: number;
   classes_included: string | null;
+  ticket_number: number;
+  ticket_count: number;
   checked_in: boolean;
   checked_in_at: string | null;
   created_at: string;
@@ -227,7 +229,14 @@ export const AdminCheckIn: React.FC = () => {
               }`}
             >
               <div className="min-w-0">
-                <div className="font-bold text-sm truncate">{b.customer_name}</div>
+                <div className="font-bold text-sm truncate flex items-center gap-2">
+                  {b.customer_name}
+                  {b.ticket_count > 1 && (
+                    <span className="shrink-0 px-1.5 py-0.5 rounded bg-fuchsia-500/20 border border-fuchsia-500/40 text-fuchsia-300 text-[9px] font-bold uppercase tracking-wide">
+                      Ticket {b.ticket_number} of {b.ticket_count}
+                    </span>
+                  )}
+                </div>
                 <div className="text-xs text-slate-400 truncate">{b.pass_name} · ${(b.amount_cents / 100).toFixed(2)}</div>
                 {b.classes_included && (
                   <div className="text-[11px] text-slate-500 truncate">{b.classes_included}</div>

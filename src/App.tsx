@@ -26,6 +26,7 @@ export default function App() {
   const [isBookingOpen, setIsBookingOpen] = useState<boolean>(false);
   const [bookingPassTypeId, setBookingPassTypeId] = useState<string>('social-presale');
   const [bookingClassTimes, setBookingClassTimes] = useState<string[]>([]);
+  const [bookingQuantity, setBookingQuantity] = useState<number>(1);
   const [isSavedPassesOpen, setIsSavedPassesOpen] = useState<boolean>(false);
   const [isStudentPortalOpen, setIsStudentPortalOpen] = useState<boolean>(false);
   const [isStoryModalOpen, setIsStoryModalOpen] = useState<boolean>(false);
@@ -89,9 +90,10 @@ export default function App() {
     }
   };
 
-  const handleOpenBooking = (passTypeId: string = 'dropin-1') => {
+  const handleOpenBooking = (passTypeId: string = 'dropin-1', quantity: number = 1) => {
     setBookingPassTypeId(passTypeId);
     setBookingClassTimes([]);
+    setBookingQuantity(quantity);
     setIsBookingOpen(true);
   };
 
@@ -100,6 +102,7 @@ export default function App() {
   const handleOpenDropInBooking = (passTypeId: string, classTimes: string[]) => {
     setBookingPassTypeId(passTypeId);
     setBookingClassTimes(classTimes);
+    setBookingQuantity(1);
     setIsBookingOpen(true);
   };
 
@@ -232,6 +235,7 @@ export default function App() {
         onClose={() => setIsBookingOpen(false)}
         initialPassTypeId={bookingPassTypeId}
         initialClassTimes={bookingClassTimes}
+        initialQuantity={bookingQuantity}
         onPassCreated={handlePassCreated}
       />
 

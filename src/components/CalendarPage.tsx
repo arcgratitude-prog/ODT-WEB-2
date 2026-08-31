@@ -3,7 +3,7 @@ import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Filter, Sparkles, 
 import { STUDIO_INFO, CLASSES_DATA } from '../data/danceData';
 
 interface CalendarPageProps {
-  onOpenBooking: (passTypeId?: string) => void;
+  onOpenBooking: (passTypeId?: string, quantity?: number) => void;
   onNavigate: (page: 'home' | 'social' | 'schedule', sectionId?: string) => void;
 }
 

@@ -67,66 +67,106 @@ export default async function handler(req, res) {
   const paymentIntent = event.data.object;
   const metadata = paymentIntent.metadata || {};
 
-  const booking = {
-    ticketId: metadata.ticketId || `UB-${paymentIntent.id.slice(-8).toUpperCase()}`,
+  // Quantity comes from checkout metadata (see api/create-payment-intent.js).
+  // Clamped defensively in case of a bad/missing value — 1 to 10 covers any
+  // realistic group purchase without letting a malformed value create an
+  // absurd number of rows.
+  const rawQuantity = parseInt(metadata.quantity, 10);
+  const quantity = Number.isFinite(rawQuantity) ? Math.min(Math.max(rawQuantity, 1), 10) : 1;
+
+  const baseTicketId = metadata.ticketId || `UB-${paymentIntent.id.slice(-8).toUpperCase()}`;
+  const perTicketAmountCents = Math.round(paymentIntent.amount / quantity);
+
+  const commonFields = {
     customerName: metadata.customerName || 'Unknown',
     customerEmail: metadata.customerEmail || 'unknown@example.com',
     customerPhone: metadata.customerPhone || null,
     passName: metadata.passName || paymentIntent.description || 'Unknown Pass',
     passType: metadata.passType || null,
-    amountCents: paymentIntent.amount,
     classesIncluded: metadata.classesIncluded || null,
     stripePaymentIntentId: paymentIntent.id,
   };
 
-  let isNewBooking = true;
+  // One booking row per ticket — the 2nd, 3rd, etc. ticket in a
+  // multi-ticket order needs its OWN row, its OWN ticket_id, and its OWN
+  // QR code so each admission can be scanned and checked in
+  // independently. A single shared row/QR for a "2 tickets" purchase
+  // would mean only one of the two people could ever actually get in.
+  const ticketRows = Array.from({ length: quantity }, (_, i) => {
+    const n = i + 1;
+    return {
+      ...commonFields,
+      ticketId: n === 1 ? baseTicketId : `${baseTicketId}-${n}`,
+      ticketNumber: n,
+      ticketCount: quantity,
+      amountCents: perTicketAmountCents,
+    };
+  });
+
+  let isNewOrder = true;
 
   try {
     await ensureBookingsTable();
 
-    // RETURNING lets us tell a genuinely new booking apart from Stripe
-    // redelivering an event we already fully processed (it retries
-    // successful webhooks too, e.g. if our response was slow). If the
-    // row already existed, ON CONFLICT DO NOTHING returns zero rows —
-    // that's our signal to skip re-sending every notification below,
-    // so a redelivery never emails the customer their confirmation twice.
-    const result = await sql`
-      INSERT INTO bookings (
-        ticket_id, customer_name, customer_email, customer_phone,
-        pass_name, pass_type, amount_cents, classes_included,
-        stripe_payment_intent_id
-      ) VALUES (
-        ${booking.ticketId}, ${booking.customerName}, ${booking.customerEmail}, ${booking.customerPhone},
-        ${booking.passName}, ${booking.passType}, ${booking.amountCents}, ${booking.classesIncluded},
-        ${booking.stripePaymentIntentId}
-      )
-      ON CONFLICT (stripe_payment_intent_id) DO NOTHING
-      RETURNING ticket_id;
+    // Idempotency check happens BEFORE inserting the batch, rather than
+    // relying on a single INSERT...ON CONFLICT like a single-ticket order
+    // would: with multiple rows sharing one payment_intent_id (see the
+    // schema migration in db.js), there's no single unique row to detect
+    // a conflict against. Checking first, then inserting the whole batch,
+    // keeps a Stripe retry from creating duplicate tickets.
+    const existing = await sql`
+      SELECT 1 FROM bookings WHERE stripe_payment_intent_id = ${paymentIntent.id} LIMIT 1;
     `;
-    isNewBooking = result.length > 0;
+    isNewOrder = existing.length === 0;
+
+    if (isNewOrder) {
+      for (const row of ticketRows) {
+        await sql`
+          INSERT INTO bookings (
+            ticket_id, customer_name, customer_email, customer_phone,
+            pass_name, pass_type, amount_cents, classes_included,
+            stripe_payment_intent_id, ticket_number, ticket_count
+          ) VALUES (
+            ${row.ticketId}, ${row.customerName}, ${row.customerEmail}, ${row.customerPhone},
+            ${row.passName}, ${row.passType}, ${row.amountCents}, ${row.classesIncluded},
+            ${row.stripePaymentIntentId}, ${row.ticketNumber}, ${row.ticketCount}
+          )
+          ON CONFLICT (ticket_id) DO NOTHING;
+        `;
+      }
+    }
   } catch (err) {
     console.error('Failed to save booking to database:', err);
     // Still alert the admin even though the DB save failed — better a
     // human gets a heads-up than nothing at all. We deliberately do NOT
     // send the customer confirmation here: since we don't know whether
-    // this booking was actually recorded, sending it now risks a
-    // duplicate once the DB save succeeds on a later retry. Return 500
-    // so Stripe retries the save on its next attempt.
-    await sendBookingAlertEmail(booking);
-    await sendBookingPushNotification(booking);
+    // this order was actually recorded, sending it now risks a duplicate
+    // once the DB save succeeds on a later retry. Return 500 so Stripe
+    // retries the save on its next attempt.
+    const order = { ...commonFields, ticketIds: ticketRows.map((r) => r.ticketId), quantity, totalAmountCents: paymentIntent.amount, ticketId: baseTicketId };
+    await sendBookingAlertEmail(order);
+    await sendBookingPushNotification(order);
     return res.status(500).json({ error: 'Database save failed' });
   }
 
-  if (isNewBooking) {
+  const order = {
+    ...commonFields,
+    ticketIds: ticketRows.map((r) => r.ticketId),
+    quantity,
+    totalAmountCents: paymentIntent.amount,
+    ticketId: baseTicketId, // kept for backward-compat fields that expect a single ticketId
+  };
+
+  if (isNewOrder) {
     // Fire all three notification channels — none of them block each
     // other or the webhook response.
     await Promise.all([
-      sendBookingAlertEmail(booking),
-      sendBookingPushNotification(booking),
-      sendCustomerConfirmationEmail(booking),
+      sendBookingAlertEmail(order),
+      sendBookingPushNotification(order),
+      sendCustomerConfirmationEmail(order),
     ]);
   } else {
-    console.log(`Skipping notifications — booking ${booking.stripePaymentIntentId} was already processed.`);
+    console.log(`Skipping notifications — order ${paymentIntent.id} was already processed.`);
   }
 
   res.status(200).json({ received: true });

@@ -3,7 +3,7 @@ import { Sparkles, Calendar, Gift, ArrowRight, ShieldCheck, Flame, Users } from 
 import { SPECIAL_EVENTS } from '../data/danceData';
 
 interface SpecialEventsSectionProps {
-  onOpenBooking: (passTypeId?: string) => void;
+  onOpenBooking: (passTypeId?: string, quantity?: number) => void;
 }
 
 export const SpecialEventsSection: React.FC<SpecialEventsSectionProps> = ({ onOpenBooking }) => {

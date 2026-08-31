@@ -26,6 +26,7 @@ interface CustomStripeCheckoutProps {
   customerPhone?: string;
   classesIncluded?: string;
   ticketId?: string;
+  quantity?: number;
   theme?: CheckoutTheme;
 }
 
@@ -404,6 +405,7 @@ export const CustomStripeCheckout: React.FC<CustomStripeCheckoutProps> = ({
   customerPhone,
   classesIncluded,
   ticketId,
+  quantity = 1,
   theme = 'red',
 }) => {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
@@ -430,6 +432,7 @@ export const CustomStripeCheckout: React.FC<CustomStripeCheckoutProps> = ({
         customerPhone,
         classesIncluded,
         ticketId,
+        quantity,
       }),
     })
       .then((res) => res.json())

@@ -4,7 +4,7 @@ import confetti from 'canvas-confetti';
 import { STUDIO_INFO } from '../data/danceData';
 
 interface ReviewPageProps {
-  onOpenBooking: (passTypeId?: string) => void;
+  onOpenBooking: (passTypeId?: string, quantity?: number) => void;
 }
 
 interface DancerReview {

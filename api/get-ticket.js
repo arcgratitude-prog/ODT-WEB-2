@@ -26,6 +26,7 @@ export default async function handler(req, res) {
       SELECT
         ticket_id, customer_name, customer_email,
         pass_name, pass_type, amount_cents, classes_included,
+        ticket_number, ticket_count,
         checked_in, created_at
       FROM bookings
       WHERE ticket_id = ${ticketId}
@@ -45,6 +46,8 @@ export default async function handler(req, res) {
       passType: b.pass_type,
       amountCents: b.amount_cents,
       classesIncluded: b.classes_included,
+      ticketNumber: b.ticket_number,
+      ticketCount: b.ticket_count,
       checkedIn: b.checked_in,
       createdAt: b.created_at,
     });

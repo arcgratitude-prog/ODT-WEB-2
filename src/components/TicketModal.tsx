@@ -10,6 +10,7 @@ interface TicketModalProps {
   onClose: () => void;
   initialPassTypeId?: string;
   initialClassTimes?: string[];
+  initialQuantity?: number;
   onPassCreated: (pass: TicketPass) => void;
 }
 
@@ -89,6 +90,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   onClose,
   initialPassTypeId = 'dropin-1',
   initialClassTimes = [],
+  initialQuantity = 1,
   onPassCreated
 }) => {
   const [selectedPassId, setSelectedPassId] = useState<string>(initialPassTypeId);
@@ -124,6 +126,11 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   const currentPassOption = allAvailablePasses.find(p => p.id === selectedPassId) || PASS_OPTIONS[0];
   const isPaidPass = currentPassOption.price > 0;
   const theme = THEME_CLASSES[getCheckoutTheme(currentPassOption.id)];
+  // Quantity only ever applies to the two social events (Invasion/Locura)
+  // right now — everything else always books qty 1, so this multiplies
+  // out to the same price as before for those.
+  const quantity = Math.max(1, initialQuantity);
+  const totalPrice = currentPassOption.price * quantity;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,7 +154,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
         userPhone: phone || 'N/A',
         passName: currentPassOption.name,
         passType: currentPassOption.type,
-        price: currentPassOption.price,
+        price: totalPrice,
         classesIncluded: initialClassTimes.length > 0
           ? initialClassTimes.join(', ')
           : `${currentPassOption.classesCount} Class Session(s)`,
@@ -180,7 +187,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
       userPhone: phone.trim() || 'N/A',
       passName: currentPassOption.name,
       passType: currentPassOption.type,
-      price: currentPassOption.price,
+      price: totalPrice,
       classesIncluded: initialClassTimes.length > 0
         ? initialClassTimes.join(', ')
         : `${currentPassOption.classesCount} Class Session(s)`,
@@ -226,18 +233,23 @@ export const TicketModal: React.FC<TicketModalProps> = ({
               <div className="flex items-start justify-between gap-3 border-b border-white/10 pb-3">
                 <div>
                   <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold ${theme.chipBg} ${theme.chipText} border ${theme.chipBorder} uppercase tracking-wider`}>
-                    {currentPassOption.price === 0 ? 'FREE PASS CHECKOUT' : `CHECKOUT: $${currentPassOption.price}`}
+                    {totalPrice === 0 ? 'FREE PASS CHECKOUT' : `CHECKOUT: $${totalPrice}`}
                   </span>
                   <h4 className="text-lg font-black text-white uppercase mt-1">
-                    {currentPassOption.name}
+                    {currentPassOption.name}{quantity > 1 ? ` × ${quantity}` : ''}
                   </h4>
                   <p className="text-xs text-slate-300 font-medium">
                     {currentPassOption.tagline}
                   </p>
+                  {quantity > 1 && (
+                    <p className="text-[10px] text-slate-400 font-mono mt-0.5">
+                      {quantity} tickets &middot; ${currentPassOption.price} each
+                    </p>
+                  )}
                 </div>
                 <div className="text-right shrink-0">
                   <div className={`text-xl sm:text-2xl font-mono font-black ${theme.priceText}`}>
-                    {currentPassOption.price === 0 ? 'FREE' : `$${currentPassOption.price}`}
+                    {totalPrice === 0 ? 'FREE' : `$${totalPrice}`}
                   </div>
                 </div>
               </div>
@@ -261,7 +273,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                 /* Custom minimal payment UI — handles card, Apple Pay, Google Pay */
                 <CustomStripeCheckout
                   passName={currentPassOption.name}
-                  priceInDollars={currentPassOption.price}
+                  priceInDollars={totalPrice}
                   onSuccess={handlePaymentSuccess}
                   passType={currentPassOption.type}
                   customerName={name}
@@ -273,6 +285,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                       : `${currentPassOption.classesCount} Class Session(s)`
                   }
                   ticketId={ticketIdRef.current}
+                  quantity={quantity}
                   theme={getCheckoutTheme(currentPassOption.id)}
                 />
               ) : (

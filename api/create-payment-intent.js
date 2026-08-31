@@ -23,11 +23,18 @@ export default async function handler(req, res) {
       customerPhone,
       classesIncluded,
       ticketId,
+      quantity,
     } = req.body;
 
     if (!passName || typeof priceInCents !== 'number' || priceInCents < 50) {
       return res.status(400).json({ error: 'Invalid request' });
     }
+
+    // Clamp defensively — matches the same 1–10 range enforced again in
+    // the webhook when it actually creates the booking rows, so a bad or
+    // tampered client value can't create an absurd number of tickets.
+    const rawQty = parseInt(quantity, 10);
+    const qty = Number.isFinite(rawQty) ? Math.min(Math.max(rawQty, 1), 10) : 1;
 
     // Look up or create a Stripe Customer so the buyer's name/email shows
     // front-and-center in the Stripe Dashboard (payment list + detail view),
@@ -57,8 +64,8 @@ export default async function handler(req, res) {
     // Dashboard's payment list — put the customer's name AND what they
     // bought right there so nothing is buried in metadata.
     const description = customerName
-      ? `${customerName} — ${passName}`
-      : passName;
+      ? `${customerName} — ${passName}${qty > 1 ? ` x${qty}` : ''}`
+      : `${passName}${qty > 1 ? ` x${qty}` : ''}`;
 
     // These ride along on the PaymentIntent as metadata so the webhook
     // (api/stripe-webhook.js) can read them back once payment succeeds —
@@ -77,6 +84,7 @@ export default async function handler(req, res) {
         customerPhone: customerPhone || '',
         classesIncluded: classesIncluded || '',
         ticketId: ticketId || '',
+        quantity: String(qty),
       },
     });
 

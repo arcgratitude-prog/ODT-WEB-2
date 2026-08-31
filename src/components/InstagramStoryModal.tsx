@@ -9,7 +9,7 @@ import { STUDIO_INFO } from '../data/danceData';
 interface InstagramStoryModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onOpenBooking: (passId?: string) => void;
+  onOpenBooking: (passId?: string, quantity?: number) => void;
 }
 
 interface StoryItem {

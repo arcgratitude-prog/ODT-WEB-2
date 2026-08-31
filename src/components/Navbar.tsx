@@ -4,7 +4,7 @@ import { STUDIO_INFO } from '../data/danceData';
 import { AiUrbanoLogo } from './AiUrbanoLogo';
 
 interface NavbarProps {
-  onOpenBooking: (passTypeId?: string) => void;
+  onOpenBooking: (passTypeId?: string, quantity?: number) => void;
   onOpenSavedPasses: () => void;
   savedPassesCount: number;
   currentPage: 'home' | 'social' | 'schedule' | 'review' | 'referral';

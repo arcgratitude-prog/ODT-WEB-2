@@ -3,7 +3,7 @@ import { Clock, Footprints, Zap, Flame, CheckCircle, ChevronDown, ChevronUp } fr
 import { CLASSES_DATA } from '../data/danceData';
 
 interface ScheduleSectionProps {
-  onOpenBooking: (passTypeId?: string) => void;
+  onOpenBooking: (passTypeId?: string, quantity?: number) => void;
 }
 
 export const ScheduleSection: React.FC<ScheduleSectionProps> = ({ onOpenBooking }) => {

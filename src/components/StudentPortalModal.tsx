@@ -11,7 +11,7 @@ interface StudentPortalModalProps {
   isOpen: boolean;
   onClose: () => void;
   savedPasses: TicketPass[];
-  onOpenBooking: (passTypeId?: string) => void;
+  onOpenBooking: (passTypeId?: string, quantity?: number) => void;
 }
 
 const DEFAULT_DEMO_MEMBER: MemberUser = {

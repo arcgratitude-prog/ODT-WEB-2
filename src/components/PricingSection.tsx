@@ -3,7 +3,7 @@ import { Ticket, Sparkles, Check, ChevronDown, ChevronUp } from 'lucide-react';
 import { PASS_OPTIONS, CLASSES_DATA } from '../data/danceData';
 
 interface PricingSectionProps {
-  onOpenBooking: (passTypeId?: string) => void;
+  onOpenBooking: (passTypeId?: string, quantity?: number) => void;
   onOpenDropInBooking: (passTypeId: string, classTimes: string[]) => void;
 }
 
