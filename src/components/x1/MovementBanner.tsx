@@ -22,13 +22,13 @@ export const MovementBanner: React.FC = () => {
       </div>
 
       {/* Overlay: TRAIN. MOVE. EVOLVE. */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-12 w-full">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 xs:px-6 sm:px-12 w-full">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.9, staggerChildren: 0.15 }}
-          className="flex flex-col space-y-2 sm:space-y-4 font-display font-black text-6xl sm:text-8xl md:text-9xl lg:text-[11rem] tracking-tight text-white uppercase leading-none select-none"
+          className="flex flex-col space-y-1.5 sm:space-y-4 font-display font-black text-4xl xs:text-5xl sm:text-7xl md:text-9xl lg:text-[11rem] tracking-tight text-white uppercase leading-none select-none"
         >
           <motion.span
             initial={{ opacity: 0, y: 20 }}

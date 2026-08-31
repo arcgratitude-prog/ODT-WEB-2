@@ -26,25 +26,30 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenJoin }) => {
       </div>
 
       {/* Hero Core Content - Strictly Centered, High Impact */}
-      <div className="relative z-10 max-w-5xl mx-auto px-6 sm:px-12 text-center flex flex-col items-center justify-center pt-36">
+      <div className="relative z-10 max-w-5xl mx-auto px-4 xs:px-6 sm:px-12 text-center flex flex-col items-center justify-center pt-36">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col items-center"
+          className="flex flex-col items-center w-full"
         >
-          {/* Monolithic X1 */}
-          <div
-            id="hero-main-title"
-            className="font-display text-8xl sm:text-9xl md:text-[11rem] lg:text-[13rem] font-black tracking-tighter text-white leading-none select-none"
-          >
-            X1
+          {/* Sleek Liquid Chrome & Ambient Glow X1 */}
+          <div className="relative flex items-center justify-center max-w-full">
+            {/* Ambient diffused back-glow */}
+            <div className="absolute inset-0 blur-3xl bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-full pointer-events-none scale-125" />
+
+            <div
+              id="hero-main-title"
+              className="relative z-10 font-brand text-6xl xs:text-7xl sm:text-9xl md:text-[10rem] lg:text-[12rem] font-bold tracking-wider sm:tracking-widest text-chrome drop-shadow-[0_0_35px_rgba(255,255,255,0.35)] leading-none select-none"
+            >
+              X1
+            </div>
           </div>
 
           {/* Subheading: BACHATA X1 */}
           <h1
             id="hero-subheading"
-            className="mt-6 sm:mt-8 text-xs sm:text-sm md:text-base font-semibold tracking-[0.35em] text-neutral-300 uppercase font-mono"
+            className="mt-4 sm:mt-8 text-[11px] xs:text-xs sm:text-sm md:text-base font-semibold tracking-[0.25em] sm:tracking-[0.35em] text-neutral-300 uppercase font-mono"
           >
             BACHATA X1
           </h1>
@@ -52,24 +57,24 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenJoin }) => {
           {/* Tagline */}
           <p
             id="hero-tagline"
-            className="mt-4 text-sm sm:text-base md:text-lg text-neutral-400 font-light tracking-wide max-w-md"
+            className="mt-3 sm:mt-4 text-xs xs:text-sm sm:text-base md:text-lg text-neutral-400 font-light tracking-wide max-w-md px-2"
           >
             For dancers committed to improving.
           </p>
 
-          {/* Sleek CTA Button */}
+          {/* Sleek CTA Glass Button */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.7 }}
-            className="mt-10 sm:mt-12"
+            className="mt-8 sm:mt-12"
           >
             <button
               id="hero-join-x1-btn"
               onClick={onOpenJoin}
-              className="px-8 py-3 text-xs font-semibold tracking-[0.25em] uppercase text-black bg-white hover:bg-neutral-200 border border-white transition-all duration-300 rounded-none cursor-pointer active:scale-95"
+              className="group relative px-8 sm:px-10 py-3 sm:py-3.5 text-[11px] sm:text-xs font-semibold tracking-[0.2em] sm:tracking-[0.25em] uppercase text-white bg-gradient-to-b from-white/15 via-white/[0.08] to-white/[0.03] hover:from-white/25 hover:via-white/15 hover:to-white/[0.06] active:from-white/30 border border-white/25 hover:border-white/50 transition-all duration-300 rounded-lg backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),0_10px_30px_rgba(0,0,0,0.8)] cursor-pointer active:scale-95 hover:scale-[1.02]"
             >
-              JOIN X1
+              <span className="relative z-10">JOIN X1</span>
             </button>
           </motion.div>
         </motion.div>

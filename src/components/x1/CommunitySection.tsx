@@ -22,18 +22,18 @@ export const CommunitySection: React.FC = () => {
       </div>
 
       {/* Typography: Small heading ONE ROOM. Large heading ONE STANDARD. */}
-      <div className="relative z-10 max-w-6xl mx-auto px-6 sm:px-12 w-full text-center flex flex-col items-center justify-center">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 xs:px-6 sm:px-12 w-full text-center flex flex-col items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="space-y-4 sm:space-y-6"
+          className="space-y-3 sm:space-y-6 w-full"
         >
           {/* Small heading: ONE ROOM. */}
           <p
             id="community-small-heading"
-            className="text-xs sm:text-sm md:text-base font-mono tracking-[0.35em] text-neutral-400 uppercase font-medium"
+            className="text-[11px] sm:text-sm md:text-base font-mono tracking-[0.25em] sm:tracking-[0.35em] text-neutral-400 uppercase font-medium"
           >
             ONE ROOM.
           </p>
@@ -41,7 +41,7 @@ export const CommunitySection: React.FC = () => {
           {/* Large heading: ONE STANDARD. */}
           <h2
             id="community-large-heading"
-            className="font-display text-6xl sm:text-8xl md:text-9xl lg:text-[10rem] font-black tracking-tight text-white uppercase leading-none select-none"
+            className="font-display text-3xl xs:text-4xl sm:text-7xl md:text-9xl lg:text-[10rem] font-black tracking-tight text-white uppercase leading-tight sm:leading-none select-none break-words"
           >
             ONE STANDARD.
           </h2>
