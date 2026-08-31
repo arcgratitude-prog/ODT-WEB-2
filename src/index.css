@@ -260,3 +260,11 @@
 .animate-scale-up {
   animation: passScaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* ============================================================
+   Bachata X1 page — Space Grotesk display font utility, ported
+   from the X1 design's own index.css.
+   ============================================================ */
+.font-display {
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+}

@@ -7,8 +7,8 @@ interface NavbarProps {
   onOpenBooking: (passTypeId?: string, quantity?: number) => void;
   onOpenSavedPasses: () => void;
   savedPassesCount: number;
-  currentPage: 'home' | 'social' | 'schedule' | 'review' | 'referral';
-  onNavigate: (page: 'home' | 'social' | 'schedule' | 'review' | 'referral', sectionId?: string) => void;
+  currentPage: 'home' | 'social' | 'schedule' | 'review' | 'referral' | 'x1';
+  onNavigate: (page: 'home' | 'social' | 'schedule' | 'review' | 'referral' | 'x1', sectionId?: string) => void;
   activeSection: string;
   onOpenStoryModal?: () => void;
   onOpenStudentPortal?: () => void;
@@ -28,7 +28,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
 
-  const handleNavClick = (page: 'home' | 'social' | 'schedule' | 'review' | 'referral', sectionId?: string) => {
+  const handleNavClick = (page: 'home' | 'social' | 'schedule' | 'review' | 'referral' | 'x1', sectionId?: string) => {
     setMobileMenuOpen(false);
     setMoreDropdownOpen(false);
     onNavigate(page, sectionId);
@@ -112,6 +112,20 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <Ticket className={`w-3.5 h-3.5 ${currentPage === 'home' ? 'text-white' : 'text-rose-400'}`} />
               <span>Classes</span>
+            </button>
+
+            {/* X1 Tab — Bachata X1 private training with Isaac & Albina */}
+            <button
+              onClick={() => handleNavClick('x1')}
+              id="nav-link-x1"
+              className={`px-3 sm:px-4 py-1.5 rounded-full text-xs font-bold tracking-wide transition-all duration-200 flex items-center gap-1.5 ${
+                currentPage === 'x1'
+                  ? 'bg-white text-black font-black shadow-[0_0_15px_rgba(255,255,255,0.4)] scale-105'
+                  : 'text-slate-200 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <Flame className={`w-3.5 h-3.5 ${currentPage === 'x1' ? 'text-black' : 'text-rose-400'}`} />
+              <span>X1</span>
             </button>
 
             {/* Desktop Only: More Dropdown */}

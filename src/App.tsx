@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { BachataLocuraSocialSection } from './components/BachataLocuraSocialSection';
+import { BachataX1Page } from './components/BachataX1Page';
 import { SpecialEventsSection } from './components/SpecialEventsSection';
 import { ScheduleSection } from './components/ScheduleSection';
 import { PricingSection } from './components/PricingSection';
@@ -21,7 +22,7 @@ import { DigitalPassPage } from './components/DigitalPassPage';
 import { TicketPass } from './types';
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<'home' | 'social' | 'schedule' | 'review' | 'referral'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'social' | 'schedule' | 'review' | 'referral' | 'x1'>('home');
   const [savedPasses, setSavedPasses] = useState<TicketPass[]>([]);
   const [isBookingOpen, setIsBookingOpen] = useState<boolean>(false);
   const [bookingPassTypeId, setBookingPassTypeId] = useState<string>('social-presale');
@@ -70,9 +71,9 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [currentPage]);
 
-  const handleNavigate = (page: 'home' | 'social' | 'schedule' | 'review' | 'referral', sectionId?: string) => {
+  const handleNavigate = (page: 'home' | 'social' | 'schedule' | 'review' | 'referral' | 'x1', sectionId?: string) => {
     setCurrentPage(page);
-    if (page === 'social' || page === 'schedule' || page === 'review' || page === 'referral') {
+    if (page === 'social' || page === 'schedule' || page === 'review' || page === 'referral' || page === 'x1') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       if (sectionId) {
@@ -142,6 +143,32 @@ export default function App() {
     if (ticketId) {
       return <DigitalPassPage ticketId={ticketId} />;
     }
+  }
+
+  // Bachata X1 has its own complete navigation and stark black visual
+  // language — rendered standalone rather than nested inside the main
+  // site's Navbar/red-glow-background wrapper, same reasoning as the
+  // digital pass page above.
+  if (currentPage === 'x1') {
+    return (
+      <>
+        <BachataX1Page
+          onOpenBooking={handleOpenBooking}
+          onBackToSite={() => handleNavigate('home')}
+        />
+        {/* Same real checkout modal the rest of the site uses — without
+            this, X1's booking buttons would set state with nothing
+            mounted to respond to it. */}
+        <TicketModal
+          isOpen={isBookingOpen}
+          onClose={() => setIsBookingOpen(false)}
+          initialPassTypeId={bookingPassTypeId}
+          initialClassTimes={bookingClassTimes}
+          initialQuantity={bookingQuantity}
+          onPassCreated={handlePassCreated}
+        />
+      </>
+    );
   }
 
   return (

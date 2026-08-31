@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Sparkles, CheckCircle2, Calendar, MapPin, Download, QrCode, Ticket, ShieldCheck, User, Mail, Phone, ArrowRight } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { PASS_OPTIONS, SOCIAL_PASS_OPTION, BACHATA_INVASION_PASS_OPTION, STUDIO_INFO } from '../data/danceData';
+import { PASS_OPTIONS, SOCIAL_PASS_OPTION, BACHATA_INVASION_PASS_OPTION, X1_MONTHLY_PASS_OPTION, X1_DROPIN_PASS_OPTION, STUDIO_INFO } from '../data/danceData';
 import { TicketPass, CheckoutTheme } from '../types';
 import { CustomStripeCheckout } from './CustomStripeCheckout';
 
@@ -34,6 +34,7 @@ const getClassesIncludedLabel = (passOption: { id: string; classesCount: number 
 const getCheckoutTheme = (passId: string): CheckoutTheme => {
   if (passId.startsWith('social-invasion')) return 'fuchsia'; // Bachata Invasion
   if (passId.startsWith('social-presale')) return 'silver'; // Bachata Locura
+  if (passId.startsWith('x1-')) return 'silver'; // Bachata X1 — closest match to its black/white look
   return 'red'; // weekly tiers, drop-ins, open house, 4-week cycle
 };
 
@@ -139,7 +140,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
 
   if (!isOpen) return null;
 
-  const allAvailablePasses = [BACHATA_INVASION_PASS_OPTION, SOCIAL_PASS_OPTION, ...PASS_OPTIONS];
+  const allAvailablePasses = [BACHATA_INVASION_PASS_OPTION, SOCIAL_PASS_OPTION, X1_MONTHLY_PASS_OPTION, X1_DROPIN_PASS_OPTION, ...PASS_OPTIONS];
   const currentPassOption = allAvailablePasses.find(p => p.id === selectedPassId) || PASS_OPTIONS[0];
   const isPaidPass = currentPassOption.price > 0;
   const theme = THEME_CLASSES[getCheckoutTheme(currentPassOption.id)];
@@ -150,7 +151,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   // and now also the weekly tiers — e.g. a couple signing up for the same
   // Tier 2 track together. Drop-ins aren't included here since those
   // already have their own 1/2/3-class-count picker in PricingSection.
-  const QUANTITY_ELIGIBLE_IDS = ['social-invasion-10', 'social-presale', 'track-foundations', 'track-progression', 'track-unlimited'];
+  const QUANTITY_ELIGIBLE_IDS = ['social-invasion-10', 'social-presale', 'track-foundations', 'track-progression', 'track-unlimited', 'x1-dropin', 'x1-monthly'];
   const canPickQuantity = QUANTITY_ELIGIBLE_IDS.includes(currentPassOption.id);
   const effectiveQuantity = canPickQuantity ? quantity : 1;
   const totalPrice = currentPassOption.price * effectiveQuantity;
