@@ -145,32 +145,6 @@ export default function App() {
     }
   }
 
-  // Bachata X1 has its own complete navigation and stark black visual
-  // language — rendered standalone rather than nested inside the main
-  // site's Navbar/red-glow-background wrapper, same reasoning as the
-  // digital pass page above.
-  if (currentPage === 'x1') {
-    return (
-      <>
-        <BachataX1Page
-          onOpenBooking={handleOpenBooking}
-          onBackToSite={() => handleNavigate('home')}
-        />
-        {/* Same real checkout modal the rest of the site uses — without
-            this, X1's booking buttons would set state with nothing
-            mounted to respond to it. */}
-        <TicketModal
-          isOpen={isBookingOpen}
-          onClose={() => setIsBookingOpen(false)}
-          initialPassTypeId={bookingPassTypeId}
-          initialClassTimes={bookingClassTimes}
-          initialQuantity={bookingQuantity}
-          onPassCreated={handlePassCreated}
-        />
-      </>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-[#0a0a0c] text-slate-100 relative selection:bg-red-600 selection:text-white overflow-x-hidden pb-24 md:pb-0">
       
@@ -200,6 +174,13 @@ export default function App() {
             <BachataLocuraSocialSection
               onOpenBooking={handleOpenBooking}
               onNavigateToHome={() => handleNavigate('home')}
+            />
+            <Footer />
+          </div>
+        ) : currentPage === 'x1' ? (
+          <div className="min-h-[80vh]">
+            <BachataX1Page
+              onOpenBooking={handleOpenBooking}
             />
             <Footer />
           </div>
