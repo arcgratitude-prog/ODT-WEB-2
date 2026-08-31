@@ -10,7 +10,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenJoin }) => {
   return (
     <section
       id="hero-section"
-      className="relative w-full min-h-[85vh] flex items-start justify-center overflow-hidden bg-black text-white"
+      className="relative w-full flex items-start justify-center overflow-hidden bg-black text-white pb-16"
     >
       {/* Background Cinematic Photo with Pure Black Overlays */}
       <div className="absolute inset-0 z-0 select-none">
@@ -26,7 +26,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenJoin }) => {
       </div>
 
       {/* Hero Core Content - Strictly Centered, High Impact */}
-      <div className="relative z-10 max-w-5xl mx-auto px-6 sm:px-12 text-center flex flex-col items-center justify-center pt-24">
+      <div className="relative z-10 max-w-5xl mx-auto px-6 sm:px-12 text-center flex flex-col items-center justify-center pt-32">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
