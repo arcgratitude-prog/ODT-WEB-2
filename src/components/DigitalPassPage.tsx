@@ -30,7 +30,9 @@ function bookingToTicketData(b: RawBooking): TicketData {
   const passNameLower = (b.passName || '').toLowerCase();
   const isLocura = passNameLower.includes('locura');
   const isInvasion = passNameLower.includes('invasion');
+  const isX1 = passNameLower.includes('x1');
   const isSocialEvent = isLocura || isInvasion;
+  const instructors = isX1 ? 'Albina & Antonio' : 'Albina & Isaac';
 
   let date: string, time: string, doorsOpen: string, schedule: TicketData['schedule'], dj: string, subtitle: string, category: TicketData['category'], passColorTheme: TicketData['passColorTheme'], curriculum: string[] | undefined;
 
@@ -62,6 +64,20 @@ function bookingToTicketData(b: RawBooking): TicketData {
       { time: '9:00 PM', title: 'Social Dancing Begins', description: 'Music by DJ JR.' },
       { time: '1:00 AM', title: 'Event Ends', description: '' },
     ];
+  } else if (isX1) {
+    // Private 90-minute session, recurring weekly for the Monthly pass or
+    // a single one-time session for the Drop-In — no single event date.
+    date = passNameLower.includes('monthly') ? 'Weekly — Private Session' : 'One-Time Private Session';
+    time = b.classesIncluded || '90 Minutes';
+    doorsOpen = 'N/A';
+    dj = '';
+    subtitle = '90-Minute Private Training';
+    category = 'VIP';
+    passColorTheme = 'gold';
+    curriculum = ['Warm Up, Mobility, Isolation', 'Train, Concept, Movement, Apply'];
+    schedule = [
+      { time: '90 min', title: 'Private Session with Albina & Antonio', description: 'Dance Factory Tampa' },
+    ];
   } else {
     // Weekly class pass (tier or drop-in) — recurring, no single event date.
     date = 'Ongoing — Weekly';
@@ -81,6 +97,8 @@ function bookingToTicketData(b: RawBooking): TicketData {
     ? ['4 PM presocial class with Albina & Isaac', 'Full night of social dancing, 4–9 PM', 'Music by DJ JR', 'Pink & Purple dress theme']
     : isInvasion
     ? ['8–9 PM class with Albina & Isaac', 'Social dancing 9 PM–1 AM', 'Music by DJ JR']
+    : isX1
+    ? ['90 minutes of direct one-on-one coaching', 'Warm Up, Mobility, Isolation, Train, Concept, Movement, Apply', 'Personalized to your goals']
     : ['Structured Urban Bachata curriculum', 'Video recaps after each class', ...(b.classesIncluded ? [`Classes: ${b.classesIncluded}`] : [])];
 
   // Deterministic pseudo-barcode from the ticket ID — decorative only
@@ -102,7 +120,7 @@ function bookingToTicketData(b: RawBooking): TicketData {
     venueName: 'Dance Factory Tampa',
     venueAddress: '334 Westshore Plaza A10',
     cityState: 'Tampa, FL 33609',
-    instructors: ['Albina & Isaac'],
+    instructors: [instructors],
     dj,
     price: b.amountCents / 100,
     quantity: 1,

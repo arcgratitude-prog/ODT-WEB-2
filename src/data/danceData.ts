@@ -210,18 +210,18 @@ export const PASS_OPTIONS: PassOption[] = [
 ];
 
 // Bachata X1 — private/semi-private 90-minute training sessions with
-// Isaac & Albina. Kept separate from PASS_OPTIONS (the weekly group
+// Albina & Antonio. Kept separate from PASS_OPTIONS (the weekly group
 // tiers) since this is a distinct offering with its own page.
 export const X1_MONTHLY_PASS_OPTION: PassOption = {
   id: 'x1-monthly',
   name: 'Bachata X1 Monthly',
   price: 100,
-  tagline: '90-minute private training sessions with Isaac & Albina',
+  tagline: '90-minute private training sessions with Albina & Antonio',
   classesCount: 4,
   popular: true,
   features: [
     'Weekly 90-minute private session',
-    'Direct coaching from Isaac & Albina',
+    'Direct coaching from Albina & Antonio',
     'Warm Up, Mobility, Isolation, Train, Concept, Movement, Apply',
     'Digital Ticket on your phone'
   ],
@@ -232,11 +232,11 @@ export const X1_DROPIN_PASS_OPTION: PassOption = {
   id: 'x1-dropin',
   name: 'Bachata X1 Drop-In',
   price: 30,
-  tagline: 'One 90-minute private session with Isaac & Albina',
+  tagline: 'One 90-minute private session with Albina & Antonio',
   classesCount: 1,
   features: [
     'One 90-minute private session',
-    'Direct coaching from Isaac & Albina',
+    'Direct coaching from Albina & Antonio',
     'Digital Ticket on your phone'
   ],
   type: 'drop_in_1'

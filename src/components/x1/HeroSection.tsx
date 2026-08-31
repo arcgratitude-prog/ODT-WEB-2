@@ -10,7 +10,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenJoin }) => {
   return (
     <section
       id="hero-section"
-      className="relative w-full min-h-screen flex items-start justify-center overflow-hidden bg-black text-white"
+      className="relative w-full min-h-[70vh] sm:min-h-[75vh] flex items-start justify-center overflow-hidden bg-black text-white"
     >
       {/* Background Cinematic Photo with Pure Black Overlays */}
       <div className="absolute inset-0 z-0 select-none">

@@ -109,6 +109,7 @@ function buildOrderReceiptEmail(order) {
   const passNameLower = (order.passName || '').toLowerCase();
   const isLocura = passNameLower.includes('locura');
   const isInvasion = passNameLower.includes('invasion');
+  const isX1 = passNameLower.includes('x1');
   const totalAmount = (order.totalAmountCents / 100).toFixed(2);
   const ticketIds = order.ticketIds && order.ticketIds.length > 0 ? order.ticketIds : [order.ticketId];
   const quantity = ticketIds.length;
@@ -128,6 +129,11 @@ function buildOrderReceiptEmail(order) {
     dateBig = nextFriday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase();
     dateSmall = 'FRIDAY';
     dj = 'DJ JR';
+  } else if (isX1) {
+    timeLabel = order.classesIncluded || '90 Minutes';
+    dateBig = 'PRIVATE';
+    dateSmall = passNameLower.includes('monthly') ? 'WEEKLY' : 'ONE-TIME';
+    dj = null;
   } else {
     timeLabel = order.classesIncluded || 'See schedule';
     dateBig = 'WEEKLY';
@@ -136,17 +142,21 @@ function buildOrderReceiptEmail(order) {
   }
 
   const eventTitle = isLocura ? 'Bachata Locura' : isInvasion ? 'Bachata Invasion' : order.passName;
+  const instructors = isX1 ? 'Albina & Antonio' : 'Albina & Isaac';
 
   // Accent colors, made deliberately bold and distinct per category:
   //   Invasion  → neon purple
   //   Locura    → deep "red velvet" maroon/rose
+  //   X1        → premium gold, matching its black/white brand identity
   //   Classes   → the site's actual bright red brand color (red-600/500)
-  // Kept as three genuinely different colors rather than shades that look
+  // Kept as genuinely different colors rather than shades that look
   // similar against the same dark background.
   const accent = isLocura
     ? { main: '#fb7185', badgeBg: '#4c0519', border30: 'rgba(251,113,133,0.35)', border50: 'rgba(251,113,133,0.55)', dateText: '#fda4af', dateTextDim: 'rgba(253,164,175,0.85)', cardBg: '#2a0a14', insetBg: '#1a0510' }
     : isInvasion
     ? { main: '#c084fc', badgeBg: '#3b0764', border30: 'rgba(192,132,252,0.35)', border50: 'rgba(192,132,252,0.55)', dateText: '#d8b4fe', dateTextDim: 'rgba(216,180,254,0.85)', cardBg: '#230845', insetBg: '#160530' }
+    : isX1
+    ? { main: '#fbbf24', badgeBg: '#451a03', border30: 'rgba(251,191,36,0.35)', border50: 'rgba(251,191,36,0.55)', dateText: '#fde68a', dateTextDim: 'rgba(253,230,138,0.85)', cardBg: '#1c1a10', insetBg: '#100e08' }
     : { main: '#ef4444', badgeBg: '#450a0a', border30: 'rgba(239,68,68,0.35)', border50: 'rgba(239,68,68,0.55)', dateText: '#fca5a5', dateTextDim: 'rgba(252,165,165,0.85)', cardBg: '#2a0a0a', insetBg: '#1a0505' };
 
   const venueName = 'Dance Factory Tampa';
@@ -158,7 +168,7 @@ function buildOrderReceiptEmail(order) {
   // (Skills and Drills)") get their own prominent list rather than being
   // crammed into a compact grid cell — that's the whole point of showing
   // the customer exactly which classes they picked.
-  const classList = (!isLocura && !isInvasion && order.classesIncluded)
+  const classList = (!isLocura && !isInvasion && !isX1 && order.classesIncluded)
     ? order.classesIncluded.split(',').map((s) => s.trim()).filter(Boolean)
     : [];
 
@@ -182,7 +192,7 @@ function buildOrderReceiptEmail(order) {
       ...(classList.length === 0 ? [{ label: 'Time', value: timeLabel }] : []),
       { label: 'Venue', value: venueName },
       ...(dj ? [{ label: 'DJ', value: dj }] : []),
-      { label: 'Instructors', value: 'Albina & Isaac' },
+      { label: 'Instructors', value: instructors },
     ];
     let infoGridHtml = '';
     for (let i = 0; i < infoCells.length; i += 2) {

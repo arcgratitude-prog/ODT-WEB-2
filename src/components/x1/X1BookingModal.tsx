@@ -51,7 +51,7 @@ export const X1BookingModal: React.FC<X1BookingModalProps> = ({ isOpen, onClose,
                   <span className="font-display text-lg font-black text-white uppercase tracking-tight">Monthly</span>
                   <span className="text-[9px] font-mono tracking-widest text-black bg-white px-2 py-0.5 uppercase">Best Value</span>
                 </div>
-                <p className="text-xs text-neutral-400 font-light">Weekly 90-minute private session with Isaac &amp; Albina.</p>
+                <p className="text-xs text-neutral-400 font-light">Weekly 90-minute private session with Albina &amp; Antonio.</p>
               </div>
               <ArrowRight className="w-4 h-4 text-neutral-500 group-hover:text-white group-hover:translate-x-0.5 transition-all shrink-0 mt-1" />
             </div>
@@ -65,7 +65,7 @@ export const X1BookingModal: React.FC<X1BookingModalProps> = ({ isOpen, onClose,
             <div className="flex items-start justify-between gap-4">
               <div>
                 <span className="font-display text-lg font-black text-white uppercase tracking-tight">Drop-In</span>
-                <p className="text-xs text-neutral-400 font-light mt-1">One 90-minute private session with Isaac &amp; Albina.</p>
+                <p className="text-xs text-neutral-400 font-light mt-1">One 90-minute private session with Albina &amp; Antonio.</p>
               </div>
               <ArrowRight className="w-4 h-4 text-neutral-500 group-hover:text-white group-hover:translate-x-0.5 transition-all shrink-0 mt-1" />
             </div>
