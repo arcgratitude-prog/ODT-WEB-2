@@ -6,7 +6,7 @@ export const MovementBanner: React.FC = () => {
   return (
     <section
       id="movement-banner-section"
-      className="relative w-full min-h-[80vh] sm:min-h-screen flex items-center justify-center overflow-hidden bg-black"
+      className="relative w-full min-h-[50vh] sm:min-h-[60vh] flex items-center justify-center overflow-hidden bg-black"
     >
       {/* Large Cinematic Image of Dancers Training */}
       <div className="absolute inset-0 z-0 select-none">

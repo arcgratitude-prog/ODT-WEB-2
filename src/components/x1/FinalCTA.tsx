@@ -10,7 +10,7 @@ export const FinalCTA: React.FC<FinalCTAProps> = ({ onOpenJoin }) => {
   return (
     <section
       id="final-cta-section"
-      className="relative w-full min-h-[80vh] flex flex-col items-center justify-between bg-black px-6 sm:px-12 pt-32 pb-16 border-t border-white/10"
+      className="relative w-full min-h-[50vh] flex flex-col items-center justify-between bg-black px-6 sm:px-12 pt-16 pb-12 border-t border-white/10"
     >
       {/* Center Statement & Button */}
       <div className="relative z-10 max-w-5xl mx-auto w-full text-center flex flex-col items-center my-auto">

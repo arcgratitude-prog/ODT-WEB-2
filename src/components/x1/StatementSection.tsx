@@ -5,7 +5,7 @@ export const StatementSection: React.FC = () => {
   return (
     <section
       id="statement-section"
-      className="relative w-full min-h-[50vh] sm:min-h-[60vh] flex items-center justify-center bg-black px-6 sm:px-12 py-28 sm:py-36 border-t border-b border-white/10"
+      className="relative w-full min-h-0 flex items-center justify-center bg-black px-6 sm:px-12 py-16 sm:py-20 border-t border-b border-white/10"
     >
       <div className="relative z-10 max-w-5xl mx-auto text-center flex flex-col items-center justify-center">
         <motion.div

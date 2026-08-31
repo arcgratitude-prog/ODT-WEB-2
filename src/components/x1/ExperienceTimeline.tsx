@@ -15,7 +15,7 @@ export const ExperienceTimeline: React.FC = () => {
   return (
     <section
       id="experience-timeline-section"
-      className="relative w-full bg-black px-6 sm:px-12 py-28 sm:py-36 border-t border-b border-white/10"
+      className="relative w-full bg-black px-6 sm:px-12 py-16 sm:py-20 border-t border-b border-white/10"
     >
       <div className="max-w-4xl mx-auto">
         {/* Section title */}
