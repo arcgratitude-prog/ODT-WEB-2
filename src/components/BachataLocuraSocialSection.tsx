@@ -124,6 +124,9 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
               <p className="text-xs text-purple-300">
                 8–9 PM Class with <span className="text-white font-semibold">Albina & Isaac</span> · Social Dancing with <span className="text-white font-semibold">DJ JR</span>
               </p>
+              <p className="text-[10px] text-purple-400 uppercase tracking-wider font-bold">
+                90% Bachata · 10% Salsa
+              </p>
             </div>
 
             {/* Essentials — schedule + price in one row */}
