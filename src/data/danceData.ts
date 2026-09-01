@@ -81,7 +81,7 @@ export const BACHATA_INVASION_PASS_OPTION: PassOption = {
   id: 'social-invasion-10',
   name: 'Bachata Invasion Social Pass',
   price: 12,
-  tagline: 'Every 2nd Friday @ Dance Factory Tampa (8:00 PM - 1:00 AM)',
+  tagline: 'Friday, September 11th @ Dance Factory Tampa (8:00 PM - 1:00 AM)',
   classesCount: 1,
   popular: true,
   features: [
@@ -100,7 +100,7 @@ export const SOCIAL_PASS_OPTION: PassOption = {
   price: 15,
   originalPrice: 20,
   savings: 'Save $5 Pre-Sale',
-  tagline: 'Sunday, September 13th @ Westshore Plaza Mall (Presocial Class + Social)',
+  tagline: 'Sunday, September 20th @ Westshore Plaza Mall (Presocial Class + Social)',
   classesCount: 1,
   popular: true,
   features: [

@@ -8,47 +8,26 @@ import { TicketData } from '../types/digitalPass';
 // events that have an actual calendar date (weekly class passes don't —
 // there's no single date to add to a calendar for those).
 function resolveEventDateRange(ticket: TicketData): { start: Date; end: Date } | null {
-  const now = new Date();
   const eventLower = ticket.eventName.toLowerCase();
 
   if (eventLower.includes('locura')) {
-    // Sunday, September 13, 2026 — 4:00 PM to 9:00 PM. Update here
+    // Sunday, September 20, 2026 — 4:00 PM to 9:00 PM. Update here
     // alongside BachataLocuraSocialSection.tsx if the date ever changes.
-    const start = new Date(2026, 8, 13, 16, 0, 0); // month is 0-indexed: 8 = September
-    const end = new Date(2026, 8, 13, 21, 0, 0);
+    const start = new Date(2026, 8, 20, 16, 0, 0); // month is 0-indexed: 8 = September
+    const end = new Date(2026, 8, 20, 21, 0, 0);
     return { start, end };
   }
 
   if (eventLower.includes('invasion')) {
-    // Recurring "every 2nd Friday" — resolve to the next upcoming 2nd
-    // Friday of the month from today, 8 PM–1 AM.
-    const start = getNextSecondFriday(now);
-    start.setHours(20, 0, 0, 0);
-    const end = new Date(start.getTime() + 5 * 3600 * 1000); // 8 PM + 5h = 1 AM
+    // Friday, September 11, 2026 — 8:00 PM to 1:00 AM. Update here
+    // alongside BachataLocuraSocialSection.tsx if the date ever changes.
+    const start = new Date(2026, 8, 11, 20, 0, 0);
+    const end = new Date(2026, 8, 12, 1, 0, 0);
     return { start, end };
   }
 
   // Weekly class passes have no single date — nothing to add to a calendar.
   return null;
-}
-
-function getNextSecondFriday(from: Date): Date {
-  const d = new Date(from.getFullYear(), from.getMonth(), 1);
-  let fridayCount = 0;
-  while (fridayCount < 2) {
-    if (d.getDay() === 5) fridayCount++;
-    if (fridayCount < 2) d.setDate(d.getDate() + 1);
-  }
-  if (d < from) {
-    // This month's 2nd Friday already passed — resolve next month's instead.
-    d.setMonth(d.getMonth() + 1, 1);
-    fridayCount = 0;
-    while (fridayCount < 2) {
-      if (d.getDay() === 5) fridayCount++;
-      if (fridayCount < 2) d.setDate(d.getDate() + 1);
-    }
-  }
-  return d;
 }
 
 export function downloadCalendarEvent(ticket: TicketData): boolean {

@@ -15,6 +15,12 @@ export const FoundationSection: React.FC = () => {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="space-y-4 sm:space-y-8 w-full"
         >
+          {/* Eyebrow tag — same design system as every other section. */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-white/[0.03] border border-white/10 backdrop-blur-md rounded-full text-[9px] xs:text-[10px] sm:text-xs font-mono tracking-[0.25em] sm:tracking-[0.3em] uppercase text-neutral-300 mb-2 sm:mb-4">
+            <span className="w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.9)] animate-pulse" />
+            [ 03 — FOUNDATION ]
+          </div>
+
           {/* Main Statement */}
           <div className="space-y-1.5 sm:space-y-3">
             <h2

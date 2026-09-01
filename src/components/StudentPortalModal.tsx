@@ -56,7 +56,7 @@ const DEFAULT_DEMO_MEMBER: MemberUser = {
       startDate: 'July 2026',
       currentWeek: 1,
       totalWeeks: 4,
-      nextClassDate: 'Friday, Aug 14 (8:00 PM)',
+      nextClassDate: 'Friday, Sept 11 (8:00 PM)',
       instructors: 'Albina & Isaac',
       status: 'Active'
     }

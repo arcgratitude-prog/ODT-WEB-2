@@ -37,7 +37,7 @@ function bookingToTicketData(b: RawBooking): TicketData {
   let date: string, time: string, doorsOpen: string, schedule: TicketData['schedule'], dj: string, subtitle: string, category: TicketData['category'], passColorTheme: TicketData['passColorTheme'], curriculum: string[] | undefined;
 
   if (isLocura) {
-    date = 'Sunday, September 13, 2026';
+    date = 'Sunday, September 20, 2026';
     time = '4:00 PM – 9:00 PM EDT';
     doorsOpen = '4:00 PM';
     dj = 'DJ JR';
@@ -51,7 +51,7 @@ function bookingToTicketData(b: RawBooking): TicketData {
       { time: '9:00 PM', title: 'Event Ends', description: '' },
     ];
   } else if (isInvasion) {
-    date = 'Every 2nd Friday';
+    date = 'Friday, September 11, 2026';
     time = '8:00 PM – 1:00 AM EDT';
     doorsOpen = '8:00 PM';
     dj = 'DJ JR';

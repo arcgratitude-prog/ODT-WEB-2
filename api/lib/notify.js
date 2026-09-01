@@ -81,28 +81,6 @@ export async function sendBookingAlertEmail(order) {
 //     specific card brand/last4, since that data isn't captured here.
 //   - No promo/discount or processing-fee line items, since the current
 //     checkout has no such concepts — the total is just the pass price.
-// Resolves "every 2nd Friday" to the actual next occurrence date, so the
-// email shows a real date instead of just the recurring pattern. Same
-// logic as getNextSecondFriday in src/utils/passCalendar.ts — duplicated
-// here since this file runs server-side. Keep both in sync.
-function getNextSecondFriday(from) {
-  let d = new Date(from.getFullYear(), from.getMonth(), 1);
-  let fridayCount = 0;
-  while (fridayCount < 2) {
-    if (d.getDay() === 5) fridayCount++;
-    if (fridayCount < 2) d.setDate(d.getDate() + 1);
-  }
-  if (d < from) {
-    d = new Date(from.getFullYear(), from.getMonth() + 1, 1);
-    fridayCount = 0;
-    while (fridayCount < 2) {
-      if (d.getDay() === 5) fridayCount++;
-      if (fridayCount < 2) d.setDate(d.getDate() + 1);
-    }
-  }
-  return d;
-}
-
 function buildOrderReceiptEmail(order) {
   const name = (order.customerName || 'there').trim();
   const firstName = name.split(/\s+/)[0] || name;
@@ -120,13 +98,12 @@ function buildOrderReceiptEmail(order) {
   let timeLabel, dateBig, dateSmall, dj;
   if (isLocura) {
     timeLabel = '4–9 PM EDT';
-    dateBig = 'SEPT 13';
+    dateBig = 'SEPT 20';
     dateSmall = 'SUNDAY';
     dj = 'DJ JR';
   } else if (isInvasion) {
     timeLabel = '8 PM–1 AM EDT';
-    const nextFriday = getNextSecondFriday(new Date());
-    dateBig = nextFriday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase();
+    dateBig = 'SEPT 11';
     dateSmall = 'FRIDAY';
     dj = 'DJ JR';
   } else if (isX1) {

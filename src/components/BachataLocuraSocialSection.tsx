@@ -56,7 +56,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                 : 'bg-slate-900 text-pink-300 border border-pink-500/30'
             }`}>
               <Calendar className="w-2.5 h-2.5 text-pink-300" />
-              <span>2nd Fri • Aug 14</span>
+              <span>Fri • Sept 11</span>
             </span>
             <div className="flex items-center gap-1.5">
               <Flame className="w-4 h-4 text-pink-400 shrink-0" />
@@ -79,7 +79,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                 : 'bg-slate-900 text-amber-300 border border-amber-500/30'
             }`}>
               <Calendar className="w-2.5 h-2.5 text-amber-400" />
-              <span>Sun • Sept 13</span>
+              <span>Sun • Sept 20</span>
             </span>
             <div className="flex items-center gap-1.5">
               <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
@@ -119,7 +119,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                 Bachata <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-fuchsia-400 to-purple-400">Invasion</span>
               </h2>
               <p className="text-sm text-purple-100">
-                Every 2nd Friday · 8 PM–1 AM · <span className="font-bold text-white">$12</span>
+                Friday, September 11th · 8 PM–1 AM · <span className="font-bold text-white">$12</span>
               </p>
               <p className="text-xs text-purple-300">
                 8–9 PM Class with <span className="text-white font-semibold">Albina & Isaac</span> · Social Dancing with <span className="text-white font-semibold">DJ JR</span>
@@ -212,7 +212,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
               <div className="relative rounded-2xl overflow-hidden border border-slate-300/50 shadow-[0_0_45px_rgba(255,255,255,0.15)]">
                 <img
                   src={locuraFlyer}
-                  alt="Bachata Locura — Tropical Midnight Edition, September 13th"
+                  alt="Bachata Locura — Tropical Midnight Edition, September 20th"
                   className="w-full h-auto block"
                 />
                 <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#08080a] via-transparent to-transparent" />
@@ -227,7 +227,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                 Bachata <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-100 via-slate-300 to-slate-500">Locura</span>
               </h2>
               <p className="text-sm text-slate-300">
-                Sunday, September 13th · 4–9 PM · Dress: Pink & Purple
+                Sunday, September 20th · 4–9 PM · Dress: Pink & Purple
               </p>
               <p className="text-xs text-slate-400">
                 Presocial Class at 4 PM with <span className="text-white font-semibold">Albina & Isaac</span> · Music by <span className="text-white font-semibold">DJ JR</span>

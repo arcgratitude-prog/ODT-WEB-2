@@ -15,6 +15,15 @@ export const StatementSection: React.FC = () => {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="space-y-4 sm:space-y-8 w-full"
         >
+          {/* Eyebrow tag — matches the same visual system used across
+              every section (see HolisticSection's "[ THE X1 SYSTEM ]"),
+              so sections read as one cohesive design instead of isolated
+              floating text on wide screens. */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-white/[0.03] border border-white/10 backdrop-blur-md rounded-full text-[9px] xs:text-[10px] sm:text-xs font-mono tracking-[0.25em] sm:tracking-[0.3em] uppercase text-neutral-300 mb-4 sm:mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.9)] animate-pulse" />
+            [ 01 — PHILOSOPHY ]
+          </div>
+
           {/* Huge text: NOT JUST A CLASS. */}
           <h2
             id="statement-huge-title"
