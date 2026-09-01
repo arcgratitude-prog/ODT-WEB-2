@@ -41,7 +41,7 @@ export const CommunitySection: React.FC = () => {
           {/* Large heading: ONE STANDARD. */}
           <h2
             id="community-large-heading"
-            className="font-display text-3xl xs:text-4xl sm:text-7xl md:text-9xl lg:text-[10rem] font-black tracking-tight text-white uppercase leading-tight sm:leading-none select-none break-words"
+            className="font-display text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-white uppercase leading-tight sm:leading-none select-none break-words"
           >
             ONE STANDARD.
           </h2>

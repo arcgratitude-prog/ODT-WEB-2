@@ -24,7 +24,7 @@ export const FinalCTA: React.FC<FinalCTAProps> = ({ onOpenJoin }) => {
           {/* Huge: YOUR NEXT VERSION STARTS HERE. */}
           <h2
             id="final-cta-huge-title"
-            className="font-display text-2xl xs:text-3xl sm:text-6xl md:text-8xl lg:text-[7.5rem] font-black tracking-tight text-white leading-tight sm:leading-[0.95] uppercase select-none break-words"
+            className="font-display text-2xl xs:text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-white leading-tight sm:leading-[0.95] uppercase select-none break-words"
           >
             YOUR NEXT VERSION
             <br />

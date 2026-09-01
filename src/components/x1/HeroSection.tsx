@@ -40,7 +40,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenJoin }) => {
 
             <div
               id="hero-main-title"
-              className="relative z-10 font-brand text-6xl xs:text-7xl sm:text-9xl md:text-[10rem] lg:text-[12rem] font-bold tracking-wider sm:tracking-widest text-chrome drop-shadow-[0_0_35px_rgba(255,255,255,0.35)] leading-none select-none"
+              className="relative z-10 font-brand text-6xl xs:text-7xl sm:text-8xl md:text-8xl lg:text-9xl font-bold tracking-wider sm:tracking-widest text-chrome drop-shadow-[0_0_35px_rgba(255,255,255,0.35)] leading-none select-none"
             >
               X1
             </div>

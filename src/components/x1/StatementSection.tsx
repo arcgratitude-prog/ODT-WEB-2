@@ -18,7 +18,7 @@ export const StatementSection: React.FC = () => {
           {/* Huge text: NOT JUST A CLASS. */}
           <h2
             id="statement-huge-title"
-            className="font-display text-2xl xs:text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-black tracking-tight text-white leading-tight sm:leading-none uppercase select-none break-words"
+            className="font-display text-2xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-white leading-tight sm:leading-none uppercase select-none break-words"
           >
             NOT JUST A CLASS.
           </h2>

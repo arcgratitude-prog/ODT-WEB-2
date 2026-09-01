@@ -19,7 +19,7 @@ export const FoundationSection: React.FC = () => {
           <div className="space-y-1.5 sm:space-y-3">
             <h2
               id="foundation-heading-main"
-              className="font-display text-3xl xs:text-5xl sm:text-7xl md:text-9xl lg:text-[10rem] font-black tracking-tight text-white uppercase leading-none select-none break-words"
+              className="font-display text-3xl xs:text-5xl sm:text-6xl md:text-6xl lg:text-7xl font-black tracking-tight text-white uppercase leading-none select-none break-words"
             >
               MOVEMENT
             </h2>
