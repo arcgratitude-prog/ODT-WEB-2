@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Calendar, MapPin, Ticket, ExternalLink, Flame, ArrowRight, Copy, Check } from 'lucide-react';
+import { Sparkles, Calendar, MapPin, ExternalLink, Flame, Copy, Check } from 'lucide-react';
 import { STUDIO_INFO } from '../data/danceData';
 import invasionFlyer from '../assets/images/bachata_invasion_flyer.jpg';
 import locuraFlyer from '../assets/images/bachata_locura_flyer.jpg';
@@ -167,18 +167,6 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                   <span className="text-[8px] text-slate-500 uppercase tracking-wide -mt-1">DJ JR</span>
                 </div>
               </div>
-            </div>
-
-            {/* Get Ticket CTA — quantity is picked in the checkout modal */}
-            <div className="flex justify-center mb-8">
-              <button
-                onClick={() => onOpenBooking('social-invasion-10')}
-                className="px-8 py-4 rounded-2xl bg-gradient-to-r from-pink-500 via-fuchsia-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 text-white font-black text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl shadow-fuchsia-600/40 transition-all transform hover:scale-[1.03] border border-pink-300/40"
-              >
-                <Ticket className="w-4 h-4 text-white" />
-                <span>Get $12 Ticket</span>
-                <ArrowRight className="w-4 h-4 text-white" />
-              </button>
             </div>
 
             {/* Location & Directions */}
