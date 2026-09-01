@@ -304,7 +304,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
               </div>
 
               <p className="text-center text-[10px] text-slate-500 mt-3">
-                Pre-sale ends 10/11 · Students show ID at the door · At the door, pay in person
+                Pre-sale ends 9/19 · Students show ID at the door · At the door, pay in person
               </p>
             </div>
 

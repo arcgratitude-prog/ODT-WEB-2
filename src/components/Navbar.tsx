@@ -3,6 +3,11 @@ import { Sparkles, Calendar, Ticket, MapPin, Crown, Menu, X, CheckCircle2, Messa
 import { STUDIO_INFO } from '../data/danceData';
 import { AiUrbanoLogo } from './AiUrbanoLogo';
 
+// X1 isn't ready to launch yet — hides the nav tab entirely rather than
+// showing a disabled/"coming soon" state. Flip to true (and flip
+// X1_IS_LIVE in BachataX1Page.tsx) when it's time to bring X1 live.
+const SHOW_X1_TAB = false;
+
 interface NavbarProps {
   onOpenBooking: (passTypeId?: string, quantity?: number) => void;
   onOpenSavedPasses: () => void;
@@ -114,19 +119,26 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span>Classes</span>
             </button>
 
-            {/* X1 Tab — Bachata X1 private training with Isaac & Albina */}
-            <button
-              onClick={() => handleNavClick('x1')}
-              id="nav-link-x1"
-              className={`px-3 sm:px-4 py-1.5 rounded-full text-xs font-bold tracking-wide transition-all duration-200 flex items-center gap-1.5 ${
-                currentPage === 'x1'
-                  ? 'bg-white text-black font-black shadow-[0_0_15px_rgba(255,255,255,0.4)] scale-105'
-                  : 'text-slate-200 hover:text-white hover:bg-white/10'
-              }`}
-            >
-              <Flame className={`w-3.5 h-3.5 ${currentPage === 'x1' ? 'text-black' : 'text-rose-400'}`} />
-              <span>X1</span>
-            </button>
+            {/* X1 Tab — hidden until it's ready to launch (see SHOW_X1_TAB) */}
+            {SHOW_X1_TAB && (
+              <button
+                onClick={() => handleNavClick('x1')}
+                id="nav-link-x1"
+                className={`px-3 sm:px-4 py-1.5 rounded-full text-xs font-bold tracking-wide transition-all duration-200 flex items-center gap-1.5 ${
+                  currentPage === 'x1'
+                    ? 'bg-white text-black font-black shadow-[0_0_15px_rgba(255,255,255,0.4)] scale-105'
+                    : 'text-slate-200 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <Flame className={`w-3.5 h-3.5 ${currentPage === 'x1' ? 'text-black' : 'text-rose-400'}`} />
+                <span>X1</span>
+                <span className={`text-[7px] font-black px-1 py-0.5 rounded-full leading-none ${
+                  currentPage === 'x1' ? 'bg-black text-white' : 'bg-white/15 text-slate-300'
+                }`}>
+                  SOON
+                </span>
+              </button>
+            )}
 
             {/* Desktop Only: More Dropdown */}
             <div className="relative hidden md:block">

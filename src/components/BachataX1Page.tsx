@@ -8,6 +8,12 @@ import { ExperienceTimeline } from './x1/ExperienceTimeline';
 import { CommunitySection } from './x1/CommunitySection';
 import { FinalCTA } from './x1/FinalCTA';
 import { X1BookingModal } from './x1/X1BookingModal';
+import { X1ComingSoon } from './x1/X1ComingSoon';
+
+// Flip this to true to bring X1 fully live (real page, real booking).
+// Everything below stays fully built and ready — this is the only line
+// that needs to change when it's time to launch.
+const X1_IS_LIVE = false;
 
 interface BachataX1PageProps {
   onOpenBooking: (passTypeId?: string, quantity?: number) => void;
@@ -24,6 +30,10 @@ export const BachataX1Page: React.FC<BachataX1PageProps> = ({ onOpenBooking }) =
     setIsBookingOpen(false);
     onOpenBooking(passId);
   };
+
+  if (!X1_IS_LIVE) {
+    return <X1ComingSoon />;
+  }
 
   return (
     <div className="bg-black text-[#ededed] selection:bg-white selection:text-black antialiased overflow-x-hidden">
