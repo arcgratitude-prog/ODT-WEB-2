@@ -21,6 +21,7 @@ export default async function handler(req, res) {
       customerName,
       customerEmail,
       customerPhone,
+      referredBy,
       classesIncluded,
       ticketId,
       quantity,
@@ -60,12 +61,22 @@ export default async function handler(req, res) {
       }
     }
 
+    // Shortens verbose pass names for the Stripe payment description —
+    // "Bachata Locura Social Pass" reads better as just "Bachata Locura",
+    // and "Tier 2: Grindin'" as just "Tier 2", when it's sitting next to
+    // the customer's name in a payment list. The full name is still kept
+    // everywhere else (metadata, database, emails) — this only affects
+    // what's readable at a glance in the Stripe Dashboard.
+    const shortPassName = (passName || '')
+      .replace(/^(Tier \d+):.*$/, '$1')
+      .replace(/\s+Social Pass$/i, '');
+
     // The description is what shows front-and-center in the Stripe
-    // Dashboard's payment list — put the customer's name AND what they
-    // bought right there so nothing is buried in metadata.
+    // Dashboard's payment list — pass name first, then customer, so a
+    // glance at the list reads "what" before "who".
     const description = customerName
-      ? `${customerName} — ${passName}${qty > 1 ? ` x${qty}` : ''}`
-      : `${passName}${qty > 1 ? ` x${qty}` : ''}`;
+      ? `${shortPassName} - ${customerName}${qty > 1 ? ` x${qty}` : ''}`
+      : `${shortPassName}${qty > 1 ? ` x${qty}` : ''}`;
 
     // These ride along on the PaymentIntent as metadata so the webhook
     // (api/stripe-webhook.js) can read them back once payment succeeds —
@@ -82,6 +93,7 @@ export default async function handler(req, res) {
         customerName: customerName || '',
         customerEmail: customerEmail || '',
         customerPhone: customerPhone || '',
+        referredBy: referredBy || '',
         classesIncluded: classesIncluded || '',
         ticketId: ticketId || '',
         quantity: String(qty),

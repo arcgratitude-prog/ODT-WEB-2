@@ -71,8 +71,8 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
 }) => {
   const [user, setUser] = useState<MemberUser | null>(null);
   const [selectedView, setSelectedView] = useState<
-    'tickets' | 'socials' | 'referrals' | 'cycles' | 'achievements' | 'profile'
-  >('socials');
+    'tickets' | 'referrals' | 'cycles' | 'profile'
+  >('tickets');
   
   // Login / Signup Form State
   const [isSignUp, setIsSignUp] = useState(false);
@@ -86,7 +86,6 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
   const [selectedPassForQr, setSelectedPassForQr] = useState<TicketPass | null>(null);
   
   // Simulated punch card check-in state
-  const [checkInSuccessMsg, setCheckInSuccessMsg] = useState<string | null>(null);
 
   // Load user from localStorage
   useEffect(() => {
@@ -128,30 +127,6 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem('ai_urbano_member_user');
-  };
-
-  const handlePunchCheckIn = () => {
-    if (!user) return;
-    const newCount = user.socialsAttendedCount + 1;
-    const isFreeEarned = newCount >= user.socialPunchGoal;
-
-    const updatedUser: MemberUser = {
-      ...user,
-      socialsAttendedCount: newCount,
-      freeSocialRewardEarned: isFreeEarned || user.freeSocialRewardEarned,
-      attendanceCount: user.attendanceCount + 1
-    };
-
-    setUser(updatedUser);
-    localStorage.setItem('ai_urbano_member_user', JSON.stringify(updatedUser));
-
-    if (newCount === 5) {
-      setCheckInSuccessMsg("🎉 STAMP #5 ADDED! You unlocked 1 FREE Social Pass!");
-    } else {
-      setCheckInSuccessMsg(`✨ Stamp #${newCount} recorded! ${user.socialPunchGoal - newCount} more for a FREE social!`);
-    }
-
-    setTimeout(() => setCheckInSuccessMsg(null), 4000);
   };
 
   const refLink = user 
@@ -219,9 +194,6 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                 onChange={(e) => setSelectedView(e.target.value as any)}
                 className="w-full appearance-none px-4 py-2.5 pr-10 rounded-xl bg-gradient-to-r from-red-950/60 via-slate-900 to-slate-950 border border-red-500/40 text-xs font-extrabold text-white uppercase tracking-wide focus:outline-none focus:border-red-400 cursor-pointer shadow-md"
               >
-                <option value="socials" className="bg-slate-950 text-white">
-                  💃 Socials Tracker & 5-Punch Loyalty Pass ({user.socialsAttendedCount}/5 Attended)
-                </option>
                 <option value="tickets" className="bg-slate-950 text-white">
                   🎟️ My Tickets & Purchased Passes ({savedPasses.length} Saved)
                 </option>
@@ -230,9 +202,6 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                 </option>
                 <option value="cycles" className="bg-slate-950 text-white">
                   📅 Enrolled Wednesday Cycles & Schedule ({user.enrolledCycles.length} Enrolled)
-                </option>
-                <option value="achievements" className="bg-slate-950 text-white">
-                  🏆 Member Badges & Dance Achievements ({user.achievements.length} Unlocked)
                 </option>
                 <option value="profile" className="bg-slate-950 text-white">
                   👤 Profile, Role & Preferences
@@ -258,7 +227,7 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                   {isSignUp ? 'Create Your Member Account' : 'Member Portal Login'}
                 </h4>
                 <p className="text-xs text-slate-400">
-                  Track tickets bought, check social attendance stamps (5th social FREE!), invite friends, and view cycle schedules.
+                  Track tickets bought, invite friends, and view cycle schedules.
                 </p>
               </div>
 
@@ -432,121 +401,6 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                   </button>
                 </div>
               </div>
-
-              {/* SECTION 1: SOCIALS TRACKER & LOYALTY PUNCH CARD */}
-              {selectedView === 'socials' && (
-                <div className="space-y-4">
-                  <div className="bg-gradient-to-br from-red-950/70 via-slate-950 to-purple-950/70 p-5 rounded-3xl border border-red-500/40 shadow-2xl space-y-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-3">
-                      <div>
-                        <span className="px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold bg-pink-500/20 text-pink-300 border border-pink-500/30 uppercase">
-                          LOYALTY REWARDS CARD
-                        </span>
-                        <h5 className="text-xl font-black text-white mt-1 uppercase tracking-tight">
-                          Socials Attendance Punch Card
-                        </h5>
-                        <p className="text-xs text-slate-300">
-                          Attend 5 Bachata Invasion or Locura Socials = Get 1 FREE Social Pass!
-                        </p>
-                      </div>
-
-                      <div className="text-right shrink-0">
-                        <span className="text-2xl font-black font-mono text-pink-400">
-                          {user.socialsAttendedCount} / {user.socialPunchGoal}
-                        </span>
-                        <p className="text-[10px] text-slate-400">Socials Attended</p>
-                      </div>
-                    </div>
-
-                    {/* Check-In Success Banner */}
-                    {checkInSuccessMsg && (
-                      <div className="p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-xs font-bold text-center animate-bounce">
-                        {checkInSuccessMsg}
-                      </div>
-                    )}
-
-                    {/* Visual 5 Punch Card Stamps */}
-                    <div className="grid grid-cols-5 gap-2 sm:gap-3 py-2">
-                      {[1, 2, 3, 4, 5].map((stampNum) => {
-                        const isStamped = user.socialsAttendedCount >= stampNum;
-                        const isRewardStamp = stampNum === 5;
-
-                        return (
-                          <div
-                            key={stampNum}
-                            className={`p-3 sm:p-4 rounded-2xl border text-center flex flex-col items-center justify-center gap-1.5 transition-all ${
-                              isStamped
-                                ? isRewardStamp
-                                  ? 'bg-gradient-to-br from-yellow-500/30 to-amber-600/40 border-yellow-400 text-yellow-300 shadow-lg shadow-yellow-500/20 scale-105'
-                                  : 'bg-gradient-to-br from-red-600/30 to-pink-600/40 border-red-500 text-white shadow-md'
-                                : 'bg-slate-900/60 border-slate-800 text-slate-600'
-                            }`}
-                          >
-                            <div className="text-xs font-mono font-bold uppercase text-slate-400">
-                              #{stampNum}
-                            </div>
-
-                            {isStamped ? (
-                              <div className="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center shadow-md">
-                                <CheckCircle2 className="w-5 h-5 text-white" />
-                              </div>
-                            ) : (
-                              <div className="w-8 h-8 rounded-full border-2 border-dashed border-slate-700 flex items-center justify-center text-xs font-bold text-slate-500">
-                                {stampNum}
-                              </div>
-                            )}
-
-                            <span className="text-[9px] font-bold uppercase tracking-tight">
-                              {isRewardStamp ? 'FREE PASS' : isStamped ? 'PUNCHED' : 'STAMP'}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    {/* Interactive Action Controls */}
-                    <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-white/10">
-                      <div className="text-xs text-slate-300">
-                        {user.socialsAttendedCount >= 5 ? (
-                          <span className="text-yellow-300 font-extrabold flex items-center gap-1">
-                            <Sparkles className="w-4 h-4 text-yellow-300" />
-                            CONGRATS! You unlocked a 100% FREE Social Pass!
-                          </span>
-                        ) : (
-                          <span>
-                            Only <strong className="text-white">{5 - user.socialsAttendedCount} more social(s)</strong> until your free admission pass!
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="flex items-center gap-2 w-full sm:w-auto">
-                        <button
-                          type="button"
-                          onClick={handlePunchCheckIn}
-                          className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-pink-600/30 flex items-center justify-center gap-1.5 transition-all"
-                        >
-                          <Flame className="w-4 h-4 text-pink-300" />
-                          <span>Check In Today (+1 Stamp)</span>
-                        </button>
-
-                        {user.socialsAttendedCount >= 5 && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              onClose();
-                              onOpenBooking('social-presale');
-                            }}
-                            className="px-4 py-2.5 rounded-xl bg-yellow-500 hover:bg-yellow-400 text-black font-extrabold text-xs uppercase tracking-wider shadow-lg shadow-yellow-500/30 flex items-center justify-center gap-1.5 transition-all"
-                          >
-                            <Gift className="w-4 h-4 text-black" />
-                            <span>Claim Free Pass</span>
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
 
               {/* SECTION 2: MY TICKETS & BOUGHT PASSES */}
               {selectedView === 'tickets' && (
@@ -740,39 +594,6 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                       </div>
                     </div>
                   ))}
-                </div>
-              )}
-
-              {/* SECTION 5: ACHIEVEMENTS & DANCE BADGES */}
-              {selectedView === 'achievements' && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h5 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                      <Trophy className="w-4 h-4 text-amber-400" />
-                      <span>Unlocked Dance Badges ({user.achievements.length})</span>
-                    </h5>
-                    <span className="text-xs font-mono text-amber-400 font-bold">VIP Status</span>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {user.achievements.map((ach) => (
-                      <div
-                        key={ach.id}
-                        className="p-3.5 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 flex items-start gap-3"
-                      >
-                        <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 text-2xl flex items-center justify-center shrink-0">
-                          {ach.icon}
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h6 className="text-xs font-extrabold text-white">{ach.title}</h6>
-                            {ach.date && <span className="text-[9px] font-mono text-amber-400">{ach.date}</span>}
-                          </div>
-                          <p className="text-[11px] text-slate-400 mt-0.5">{ach.desc}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
                 </div>
               )}
 

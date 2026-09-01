@@ -23,6 +23,7 @@ export async function ensureBookingsTable() {
       pass_type TEXT,
       amount_cents INTEGER NOT NULL,
       classes_included TEXT,
+      referred_by TEXT,
       stripe_payment_intent_id TEXT,
       ticket_number INTEGER NOT NULL DEFAULT 1,
       ticket_count INTEGER NOT NULL DEFAULT 1,
@@ -41,6 +42,7 @@ export async function ensureBookingsTable() {
   await sql`ALTER TABLE bookings DROP CONSTRAINT IF EXISTS bookings_stripe_payment_intent_id_key;`;
   await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS ticket_number INTEGER NOT NULL DEFAULT 1;`;
   await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS ticket_count INTEGER NOT NULL DEFAULT 1;`;
+  await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS referred_by TEXT;`;
   await sql`
     CREATE INDEX IF NOT EXISTS idx_bookings_created_at ON bookings (created_at DESC);
   `;

@@ -24,6 +24,7 @@ interface CustomStripeCheckoutProps {
   customerName?: string;
   customerEmail?: string;
   customerPhone?: string;
+  referredBy?: string;
   classesIncluded?: string;
   ticketId?: string;
   quantity?: number;
@@ -403,6 +404,7 @@ export const CustomStripeCheckout: React.FC<CustomStripeCheckoutProps> = ({
   customerName,
   customerEmail,
   customerPhone,
+  referredBy,
   classesIncluded,
   ticketId,
   quantity = 1,
@@ -430,6 +432,7 @@ export const CustomStripeCheckout: React.FC<CustomStripeCheckoutProps> = ({
         customerName,
         customerEmail,
         customerPhone,
+        referredBy,
         classesIncluded,
         ticketId,
         quantity,
@@ -452,7 +455,7 @@ export const CustomStripeCheckout: React.FC<CustomStripeCheckoutProps> = ({
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [passName, priceInDollars, customerName, customerEmail, customerPhone]);
+  }, [passName, priceInDollars, customerName, customerEmail, customerPhone, referredBy]);
 
   if (loadError) {
     return <div className="text-center py-8 text-sm text-red-400">{loadError}</div>;

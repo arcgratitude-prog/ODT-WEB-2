@@ -23,7 +23,7 @@ export default async function handler(req, res) {
     const rows = await sql`
       SELECT id, ticket_id, customer_name, customer_email, customer_phone,
              pass_name, pass_type, amount_cents, classes_included,
-             ticket_number, ticket_count,
+             ticket_number, ticket_count, referred_by,
              checked_in, checked_in_at, created_at
       FROM bookings
       ORDER BY created_at DESC

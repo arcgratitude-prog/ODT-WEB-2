@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Sparkles, CheckCircle2, Calendar, MapPin, Download, QrCode, Ticket, ShieldCheck, User, Mail, Phone, ArrowRight } from 'lucide-react';
+import { X, Sparkles, CheckCircle2, Calendar, MapPin, Download, QrCode, Ticket, ShieldCheck, User, Mail, Phone, ArrowRight, Users } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { PASS_OPTIONS, SOCIAL_PASS_OPTION, BACHATA_INVASION_PASS_OPTION, X1_MONTHLY_PASS_OPTION, X1_DROPIN_PASS_OPTION, STUDIO_INFO } from '../data/danceData';
 import { TicketPass, CheckoutTheme } from '../types';
@@ -113,6 +113,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [referredBy, setReferredBy] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [generatedPass, setGeneratedPass] = useState<TicketPass | null>(null);
   // Paid passes need a name + email up front too — Stripe alone doesn't
@@ -330,6 +331,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                   customerName={name}
                   customerEmail={email}
                   customerPhone={phone}
+                  referredBy={referredBy}
                   classesIncluded={
                     getClassesIncludedLabel(currentPassOption, initialClassTimes)
                   }
@@ -394,6 +396,22 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                         placeholder="e.g. (813) 555-0199"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
+                        className={`w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none ${theme.focusBorder} transition-colors`}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-slate-300 mb-1">
+                      Referred By (Optional)
+                    </label>
+                    <div className="relative">
+                      <Users className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                      <input
+                        type="text"
+                        placeholder="e.g. a friend's name"
+                        value={referredBy}
+                        onChange={(e) => setReferredBy(e.target.value)}
                         className={`w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none ${theme.focusBorder} transition-colors`}
                       />
                     </div>

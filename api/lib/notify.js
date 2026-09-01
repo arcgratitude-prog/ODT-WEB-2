@@ -35,6 +35,7 @@ export async function sendBookingAlertEmail(order) {
           <tr><td style="color:#9ca3af; padding:6px 0;">Pass</td><td style="text-align:right; font-weight:700; color:#fff;">${escapeHtml(order.passName)}${qty > 1 ? ` &times; ${qty}` : ''}</td></tr>
           <tr><td style="color:#9ca3af; padding:6px 0;">Amount</td><td style="text-align:right; font-weight:700; color:#34d399;">$${amount}</td></tr>
           ${order.classesIncluded ? `<tr><td style="color:#9ca3af; padding:6px 0;">Classes</td><td style="text-align:right; font-weight:700; color:#fff;">${escapeHtml(order.classesIncluded)}</td></tr>` : ''}
+          ${order.referredBy ? `<tr><td style="color:#9ca3af; padding:6px 0;">Referred By</td><td style="text-align:right; font-weight:700; color:#34d399;">${escapeHtml(order.referredBy)}</td></tr>` : ''}
           <tr><td style="color:#9ca3af; padding:6px 0;">Ticket ID${qty > 1 ? 's' : ''}</td><td style="text-align:right; font-weight:700; color:#fff; font-family:monospace; font-size:12px;">${ticketIds.map(escapeHtml).join('<br>')}</td></tr>
         </table>
       </div>

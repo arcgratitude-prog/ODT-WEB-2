@@ -84,6 +84,7 @@ export default async function handler(req, res) {
     passName: metadata.passName || paymentIntent.description || 'Unknown Pass',
     passType: metadata.passType || null,
     classesIncluded: metadata.classesIncluded || null,
+    referredBy: metadata.referredBy || null,
     stripePaymentIntentId: paymentIntent.id,
   };
 
@@ -125,11 +126,11 @@ export default async function handler(req, res) {
           INSERT INTO bookings (
             ticket_id, customer_name, customer_email, customer_phone,
             pass_name, pass_type, amount_cents, classes_included,
-            stripe_payment_intent_id, ticket_number, ticket_count
+            referred_by, stripe_payment_intent_id, ticket_number, ticket_count
           ) VALUES (
             ${row.ticketId}, ${row.customerName}, ${row.customerEmail}, ${row.customerPhone},
             ${row.passName}, ${row.passType}, ${row.amountCents}, ${row.classesIncluded},
-            ${row.stripePaymentIntentId}, ${row.ticketNumber}, ${row.ticketCount}
+            ${row.referredBy}, ${row.stripePaymentIntentId}, ${row.ticketNumber}, ${row.ticketCount}
           )
           ON CONFLICT (ticket_id) DO NOTHING;
         `;

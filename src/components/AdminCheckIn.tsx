@@ -17,6 +17,7 @@ interface Booking {
   pass_type: string | null;
   amount_cents: number;
   classes_included: string | null;
+  referred_by: string | null;
   ticket_number: number;
   ticket_count: number;
   checked_in: boolean;
@@ -240,6 +241,9 @@ export const AdminCheckIn: React.FC = () => {
                 <div className="text-xs text-slate-400 truncate">{b.pass_name} · ${(b.amount_cents / 100).toFixed(2)}</div>
                 {b.classes_included && (
                   <div className="text-[11px] text-slate-500 truncate">{b.classes_included}</div>
+                )}
+                {b.referred_by && (
+                  <div className="text-[11px] text-emerald-500 truncate">Referred by: {b.referred_by}</div>
                 )}
               </div>
               <button
