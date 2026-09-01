@@ -50,7 +50,7 @@ const DEFAULT_DEMO_MEMBER: MemberUser = {
     },
     {
       id: 'social-invasion-pass',
-      title: 'Bachata Invasion Monthly Pass',
+      title: 'Bachata Invasion',
       schedule: '2nd Fridays @ 8:00 PM',
       location: 'Dance Factory Tampa',
       startDate: 'July 2026',

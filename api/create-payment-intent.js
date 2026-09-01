@@ -4,6 +4,8 @@
 // The secret key never leaves this server-side file.
 
 import Stripe from 'stripe';
+import { sql, ensureMembersTable } from './lib/db.js';
+import { verifyPassword } from './lib/password.js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -25,6 +27,8 @@ export default async function handler(req, res) {
       classesIncluded,
       ticketId,
       quantity,
+      memberEmail,
+      memberPassword,
     } = req.body;
 
     if (!passName || typeof priceInCents !== 'number' || priceInCents < 50) {
@@ -36,6 +40,47 @@ export default async function handler(req, res) {
     // tampered client value can't create an absurd number of tickets.
     const rawQty = parseInt(quantity, 10);
     const qty = Number.isFinite(rawQty) ? Math.min(Math.max(rawQty, 1), 10) : 1;
+
+    // Active-member discount: 20% off, but only ever on ONE ticket per
+    // order — buying 3 tickets doesn't mean 3 discounts, it means 2 full
+    // price + 1 discounted. This entire block ignores whatever the
+    // client suggested the price should be; it independently verifies
+    // the member's password against the real database and recomputes
+    // the charge from scratch, so nobody can just edit a number in their
+    // browser (or hand their login to a friend mid-purchase) to get a
+    // discount that wasn't actually earned. Only applies to the two
+    // social events — Locura and Invasion — not weekly Tiers/drop-ins.
+    let finalPriceInCents = priceInCents;
+    let memberDiscountApplied = false;
+    const isDiscountEligibleEvent = /Locura|Invasion/i.test(passName);
+
+    if (isDiscountEligibleEvent && memberEmail && memberPassword) {
+      await ensureMembersTable();
+      const normalizedMemberEmail = String(memberEmail).trim().toLowerCase();
+      const memberRows = await sql`
+        SELECT password_hash, password_salt, membership_expires_at
+        FROM members WHERE LOWER(email) = ${normalizedMemberEmail} LIMIT 1;
+      `;
+      if (memberRows.length > 0) {
+        const isCorrectPassword = await verifyPassword(
+          memberPassword, memberRows[0].password_hash, memberRows[0].password_salt
+        );
+        const isActiveMember = new Date(memberRows[0].membership_expires_at) > new Date();
+        if (isCorrectPassword && isActiveMember) {
+          // Recompute from the pass's real per-ticket price rather than
+          // trusting any client math — priceInCents here is expected to
+          // be the FULL undiscounted total (base price × qty).
+          const perTicketCents = Math.round(priceInCents / qty);
+          const discountedFirstTicket = Math.round(perTicketCents * 0.8);
+          finalPriceInCents = discountedFirstTicket + perTicketCents * (qty - 1);
+          memberDiscountApplied = true;
+        }
+        // Wrong password or expired membership: silently fall back to
+        // full price rather than erroring out the whole checkout — the
+        // customer still gets to complete their purchase, just without
+        // the discount they didn't actually qualify for.
+      }
+    }
 
     // Look up or create a Stripe Customer so the buyer's name/email shows
     // front-and-center in the Stripe Dashboard (payment list + detail view),
@@ -82,10 +127,10 @@ export default async function handler(req, res) {
     // (api/stripe-webhook.js) can read them back once payment succeeds —
     // Stripe is the source of truth here, not the customer's browser.
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: priceInCents,
+      amount: finalPriceInCents,
       currency: 'usd',
       automatic_payment_methods: { enabled: true },
-      description,
+      description: memberDiscountApplied ? `${description} (Member Discount)` : description,
       ...(customerId ? { customer: customerId } : {}),
       metadata: {
         passName,
@@ -97,10 +142,11 @@ export default async function handler(req, res) {
         classesIncluded: classesIncluded || '',
         ticketId: ticketId || '',
         quantity: String(qty),
+        memberDiscountApplied: memberDiscountApplied ? 'true' : 'false',
       },
     });
 
-    res.status(200).json({ clientSecret: paymentIntent.client_secret });
+    res.status(200).json({ clientSecret: paymentIntent.client_secret, memberDiscountApplied });
   } catch (err) {
     console.error('Stripe PaymentIntent error:', err);
     res.status(500).json({ error: 'Something went wrong creating payment.' });

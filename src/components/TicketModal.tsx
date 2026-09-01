@@ -118,6 +118,10 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   const [confirmPassword, setConfirmPassword] = useState('');
   const [accountError, setAccountError] = useState<string | null>(null);
   const [isCheckingAccount, setIsCheckingAccount] = useState(false);
+  const [isClaimingDiscount, setIsClaimingDiscount] = useState(false);
+  const [memberEmail, setMemberEmail] = useState('');
+  const [memberPassword, setMemberPassword] = useState('');
+  const [discountConfirmed, setDiscountConfirmed] = useState<boolean | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [generatedPass, setGeneratedPass] = useState<TicketPass | null>(null);
   // Paid passes need a name + email up front too — Stripe alone doesn't
@@ -141,6 +145,10 @@ export const TicketModal: React.FC<TicketModalProps> = ({
       setPassword('');
       setConfirmPassword('');
       setAccountError(null);
+      setIsClaimingDiscount(false);
+      setMemberEmail('');
+      setMemberPassword('');
+      setDiscountConfirmed(null);
       ticketIdRef.current = `UB-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -166,6 +174,9 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   // Real weekly Tiers only — not drop-ins, not X1 (a separate program
   // that happens to share the same underlying "type" value).
   const isTierPass = ['track-foundations', 'track-progression', 'track-unlimited'].includes(currentPassOption.id);
+  // Active-member 20% discount is only offered on the two social events —
+  // matches the actual server-side check in create-payment-intent.js.
+  const isDiscountEligible = ['social-invasion-10', 'social-presale'].includes(currentPassOption.id);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -332,23 +343,41 @@ export const TicketModal: React.FC<TicketModalProps> = ({
 
             {isPaidPass ? (
               contactConfirmed ? (
-                /* Custom minimal payment UI — handles card, Apple Pay, Google Pay */
-                <CustomStripeCheckout
-                  passName={currentPassOption.name}
-                  priceInDollars={totalPrice}
-                  onSuccess={handlePaymentSuccess}
-                  passType={currentPassOption.type}
-                  customerName={name}
-                  customerEmail={email}
-                  customerPhone={phone}
-                  referredBy={referredBy}
-                  classesIncluded={
-                    getClassesIncludedLabel(currentPassOption, initialClassTimes)
-                  }
-                  ticketId={ticketIdRef.current}
+                <>
+                  {discountConfirmed !== null && (
+                    <div className={`mb-3 p-3 rounded-2xl border text-center ${
+                      discountConfirmed
+                        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                        : 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+                    }`}>
+                      <p className="text-xs font-bold">
+                        {discountConfirmed
+                          ? '✓ Member discount applied to 1 ticket'
+                          : 'Discount not applied — check your email/password'}
+                      </p>
+                    </div>
+                  )}
+                  {/* Custom minimal payment UI — handles card, Apple Pay, Google Pay */}
+                  <CustomStripeCheckout
+                    passName={currentPassOption.name}
+                    priceInDollars={totalPrice}
+                    onSuccess={handlePaymentSuccess}
+                    passType={currentPassOption.type}
+                    customerName={name}
+                    customerEmail={email}
+                    customerPhone={phone}
+                    referredBy={referredBy}
+                    memberEmail={isClaimingDiscount ? memberEmail : undefined}
+                    memberPassword={isClaimingDiscount ? memberPassword : undefined}
+                    onDiscountResult={setDiscountConfirmed}
+                    classesIncluded={
+                      getClassesIncludedLabel(currentPassOption, initialClassTimes)
+                    }
+                    ticketId={ticketIdRef.current}
                   quantity={effectiveQuantity}
                   theme={getCheckoutTheme(currentPassOption.id)}
                 />
+                </>
               ) : (
                 /* Collect name + email before payment so we always have real
                    contact info for the booking record and admin alert — card
@@ -459,11 +488,58 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                     </div>
                   </div>
 
+                  {isDiscountEligible && (
+                    <div className="p-3 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 space-y-3">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={isClaimingDiscount}
+                          onChange={(e) => {
+                            setIsClaimingDiscount(e.target.checked);
+                            setDiscountConfirmed(null);
+                          }}
+                          className="w-4 h-4 rounded accent-emerald-500"
+                        />
+                        <span className="text-xs font-bold text-emerald-300">
+                          I'm an active Tier member — apply my 20% discount
+                        </span>
+                      </label>
+
+                      {isClaimingDiscount && (
+                        <>
+                          <p className="text-[10px] text-slate-400">
+                            Log in to verify. The discount only applies to one ticket, even if you're buying more than one.
+                          </p>
+                          <div className="relative">
+                            <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                            <input
+                              type="email"
+                              placeholder="Member email"
+                              value={memberEmail}
+                              onChange={(e) => setMemberEmail(e.target.value)}
+                              className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none focus:border-emerald-400 transition-colors"
+                            />
+                          </div>
+                          <div className="relative">
+                            <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                            <input
+                              type="password"
+                              placeholder="Member password"
+                              value={memberPassword}
+                              onChange={(e) => setMemberPassword(e.target.value)}
+                              className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none focus:border-emerald-400 transition-colors"
+                            />
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )}
+
                   {isTierPass && (
                     <>
                       <div className="p-3 rounded-2xl bg-white/5 border border-white/10">
                         <p className="text-[11px] text-slate-300 leading-relaxed">
-                          <span className="font-bold text-white">Tiers include a free member account</span> — track your active status and get member perks (like discounted socials). Set a password below.
+                          <span className="font-bold text-white">A member account is required to purchase a Tier</span> — this tracks your active status and unlocks member perks (like discounted socials). Set a password below.
                         </p>
                       </div>
 

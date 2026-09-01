@@ -25,6 +25,9 @@ interface CustomStripeCheckoutProps {
   customerEmail?: string;
   customerPhone?: string;
   referredBy?: string;
+  memberEmail?: string;
+  memberPassword?: string;
+  onDiscountResult?: (applied: boolean) => void;
   classesIncluded?: string;
   ticketId?: string;
   quantity?: number;
@@ -405,6 +408,9 @@ export const CustomStripeCheckout: React.FC<CustomStripeCheckoutProps> = ({
   customerEmail,
   customerPhone,
   referredBy,
+  memberEmail,
+  memberPassword,
+  onDiscountResult,
   classesIncluded,
   ticketId,
   quantity = 1,
@@ -433,6 +439,8 @@ export const CustomStripeCheckout: React.FC<CustomStripeCheckoutProps> = ({
         customerEmail,
         customerPhone,
         referredBy,
+        memberEmail,
+        memberPassword,
         classesIncluded,
         ticketId,
         quantity,
@@ -443,6 +451,7 @@ export const CustomStripeCheckout: React.FC<CustomStripeCheckoutProps> = ({
         if (cancelled) return;
         if (data.clientSecret) {
           setClientSecret(data.clientSecret);
+          onDiscountResult?.(!!data.memberDiscountApplied);
         } else {
           setLoadError(data.error || 'Could not start checkout.');
         }
@@ -455,7 +464,7 @@ export const CustomStripeCheckout: React.FC<CustomStripeCheckoutProps> = ({
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [passName, priceInDollars, customerName, customerEmail, customerPhone, referredBy]);
+  }, [passName, priceInDollars, customerName, customerEmail, customerPhone, referredBy, memberEmail, memberPassword]);
 
   if (loadError) {
     return <div className="text-center py-8 text-sm text-red-400">{loadError}</div>;
