@@ -17,6 +17,7 @@ import { ReferralProgramSection } from './components/ReferralProgramSection';
 import { InstagramStoryModal } from './components/InstagramStoryModal';
 import { StudentPortalModal } from './components/StudentPortalModal';
 import { AdminCheckIn } from './components/AdminCheckIn';
+import { AdminMembers } from './components/AdminMembers';
 import { InAppBrowserNotice } from './components/InAppBrowserNotice';
 import { DigitalPassPage } from './components/DigitalPassPage';
 import { TicketPass } from './types';
@@ -132,6 +133,12 @@ export default function App() {
   // the public site's Navbar/Footer/background entirely.
   if (typeof window !== 'undefined' && window.location.search.toLowerCase().includes('admin=checkin')) {
     return <AdminCheckIn />;
+  }
+
+  // Private staff tool — reached directly at yoursite.com/?admin=members.
+  // Same reasoning as admin=checkin above.
+  if (typeof window !== 'undefined' && window.location.search.toLowerCase().includes('admin=members')) {
+    return <AdminMembers />;
   }
 
   // Interactive 3D digital pass — reached via the "View Your Digital

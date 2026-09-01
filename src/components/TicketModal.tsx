@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Sparkles, CheckCircle2, Calendar, MapPin, Download, QrCode, Ticket, ShieldCheck, User, Mail, Phone, ArrowRight, Users } from 'lucide-react';
+import { X, Sparkles, CheckCircle2, Calendar, MapPin, Download, QrCode, Ticket, ShieldCheck, User, Mail, Phone, ArrowRight, Users, Lock, AlertCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { PASS_OPTIONS, SOCIAL_PASS_OPTION, BACHATA_INVASION_PASS_OPTION, X1_MONTHLY_PASS_OPTION, X1_DROPIN_PASS_OPTION, STUDIO_INFO } from '../data/danceData';
 import { TicketPass, CheckoutTheme } from '../types';
@@ -114,6 +114,10 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [referredBy, setReferredBy] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [accountError, setAccountError] = useState<string | null>(null);
+  const [isCheckingAccount, setIsCheckingAccount] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [generatedPass, setGeneratedPass] = useState<TicketPass | null>(null);
   // Paid passes need a name + email up front too — Stripe alone doesn't
@@ -134,6 +138,9 @@ export const TicketModal: React.FC<TicketModalProps> = ({
     if (isOpen) {
       setContactConfirmed(false);
       setQuantity(Math.max(1, initialQuantity));
+      setPassword('');
+      setConfirmPassword('');
+      setAccountError(null);
       ticketIdRef.current = `UB-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -156,6 +163,9 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   const canPickQuantity = QUANTITY_ELIGIBLE_IDS.includes(currentPassOption.id);
   const effectiveQuantity = canPickQuantity ? quantity : 1;
   const totalPrice = currentPassOption.price * effectiveQuantity;
+  // Real weekly Tiers only — not drop-ins, not X1 (a separate program
+  // that happens to share the same underlying "type" value).
+  const isTierPass = ['track-foundations', 'track-progression', 'track-unlimited'].includes(currentPassOption.id);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -344,9 +354,41 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                    contact info for the booking record and admin alert — card
                    payments don't hand this over the way wallet payments do. */
                 <form
-                  onSubmit={(e) => {
+                  onSubmit={async (e) => {
                     e.preventDefault();
                     if (!name.trim() || !email.trim()) return;
+                    setAccountError(null);
+
+                    if (isTierPass) {
+                      if (password.length < 6) {
+                        setAccountError('Password must be at least 6 characters.');
+                        return;
+                      }
+                      if (password !== confirmPassword) {
+                        setAccountError('Passwords do not match.');
+                        return;
+                      }
+                      setIsCheckingAccount(true);
+                      try {
+                        const res = await fetch('/api/member-signup', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ name, email, phone, password }),
+                        });
+                        const data = await res.json();
+                        if (!res.ok) {
+                          setAccountError(data.error || 'Could not create your account. Please try again.');
+                          setIsCheckingAccount(false);
+                          return;
+                        }
+                      } catch {
+                        setAccountError('Could not reach the server. Check your connection and try again.');
+                        setIsCheckingAccount(false);
+                        return;
+                      }
+                      setIsCheckingAccount(false);
+                    }
+
                     setContactConfirmed(true);
                   }}
                   className="space-y-4"
@@ -417,13 +459,68 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                     </div>
                   </div>
 
+                  {isTierPass && (
+                    <>
+                      <div className="p-3 rounded-2xl bg-white/5 border border-white/10">
+                        <p className="text-[11px] text-slate-300 leading-relaxed">
+                          <span className="font-bold text-white">Tiers include a free member account</span> — track your active status and get member perks (like discounted socials). Set a password below.
+                        </p>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold uppercase text-slate-300 mb-1">
+                          Create Password *
+                        </label>
+                        <div className="relative">
+                          <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                          <input
+                            type="password"
+                            required
+                            minLength={6}
+                            placeholder="At least 6 characters"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className={`w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none ${theme.focusBorder} transition-colors`}
+                          />
+                        </div>
+                        <p className="text-[10px] text-slate-500 mt-1">Already a member? Enter your existing password to renew.</p>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold uppercase text-slate-300 mb-1">
+                          Confirm Password *
+                        </label>
+                        <div className="relative">
+                          <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                          <input
+                            type="password"
+                            required
+                            minLength={6}
+                            placeholder="Re-enter password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            className={`w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none ${theme.focusBorder} transition-colors`}
+                          />
+                        </div>
+                      </div>
+
+                      {accountError && (
+                        <div className="p-3 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-start gap-2">
+                          <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                          <p className="text-[11px] text-red-300">{accountError}</p>
+                        </div>
+                      )}
+                    </>
+                  )}
+
                   <div className="pt-2">
                     <button
                       type="submit"
-                      className={`w-full py-4 rounded-2xl border ${theme.btnBorder} ${theme.btnGradient} text-xs font-black text-white uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl ${theme.btnShadow} transition-all active:scale-95`}
+                      disabled={isCheckingAccount}
+                      className={`w-full py-4 rounded-2xl border ${theme.btnBorder} ${theme.btnGradient} text-xs font-black text-white uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl ${theme.btnShadow} transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed`}
                     >
                       <Sparkles className="w-4 h-4 text-yellow-300" />
-                      <span>Continue to Payment</span>
+                      <span>{isCheckingAccount ? 'Setting Up Account...' : 'Continue to Payment'}</span>
                     </button>
                   </div>
                 </form>

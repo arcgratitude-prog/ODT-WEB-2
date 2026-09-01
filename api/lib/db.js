@@ -53,4 +53,33 @@ export async function ensureBookingsTable() {
   `;
 }
 
+// Members are a separate concept from bookings: a booking is one purchase
+// (any pass type), a member is a real account with a password, created
+// only when someone buys a weekly Tier pass (not drop-ins). Membership
+// auto-expires 28 days after the purchase that created/renewed it — no
+// manual toggle, "active" is always just "membership_expires_at > now".
+export async function ensureMembersTable() {
+  await sql`
+    CREATE TABLE IF NOT EXISTS members (
+      id SERIAL PRIMARY KEY,
+      email TEXT UNIQUE NOT NULL,
+      password_hash TEXT NOT NULL,
+      password_salt TEXT NOT NULL,
+      name TEXT NOT NULL,
+      phone TEXT,
+      last_pass_name TEXT,
+      last_ticket_id TEXT,
+      membership_expires_at TIMESTAMPTZ NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_members_email ON members (LOWER(email));
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_members_expires_at ON members (membership_expires_at DESC);
+  `;
+}
+
 export { sql };

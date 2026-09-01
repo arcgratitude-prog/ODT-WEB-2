@@ -105,6 +105,12 @@ export interface MemberUser {
   freeSocialRewardEarned: boolean;
   enrolledCycles: EnrolledCycle[];
   achievements: { id: string; title: string; desc: string; icon: string; date?: string }[];
+  // Real fields from the actual members backend (api/member-login.js) —
+  // optional since a not-yet-logged-in or legacy demo user won't have
+  // them. This is what actually reflects whether their Tier membership
+  // is currently active, computed server-side from membership_expires_at.
+  isActive?: boolean;
+  membershipExpiresAt?: string;
 }
 
 export type StudentUser = MemberUser; // Backward compatibility alias

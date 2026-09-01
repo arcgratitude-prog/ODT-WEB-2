@@ -13,7 +13,7 @@
 //      STRIPE_WEBHOOK_SECRET
 
 import Stripe from 'stripe';
-import { ensureBookingsTable, sql } from './lib/db.js';
+import { ensureBookingsTable, ensureMembersTable, sql } from './lib/db.js';
 import { sendBookingAlertEmail, sendBookingPushNotification, sendCustomerConfirmationEmail } from './lib/notify.js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -157,6 +157,41 @@ export default async function handler(req, res) {
     totalAmountCents: paymentIntent.amount,
     ticketId: baseTicketId, // kept for backward-compat fields that expect a single ticketId
   };
+
+  // Membership activation — only for real weekly Tiers (Tier 1/2/3), not
+  // drop-ins, not X1 Monthly (a completely separate program that happens
+  // to share the same "cycle_4week" passType). Matching on the pass name
+  // itself ("Tier 1: ...", "Tier 2: ...") is the reliable way to tell
+  // them apart. Fully automatic: always resets to exactly 28 days from
+  // *this* successful payment, no manual override, no stacking.
+  const isTierPurchase = isNewOrder && /^Tier \d+:/.test(order.passName || '');
+  if (isTierPurchase) {
+    try {
+      await ensureMembersTable();
+      const normalizedEmail = (order.customerEmail || '').trim().toLowerCase();
+      if (normalizedEmail && normalizedEmail !== 'unknown@example.com') {
+        const expiresAt = new Date(Date.now() + 28 * 24 * 60 * 60 * 1000).toISOString();
+        await sql`
+          UPDATE members
+          SET membership_expires_at = ${expiresAt},
+              last_pass_name = ${order.passName},
+              last_ticket_id = ${baseTicketId},
+              updated_at = NOW()
+          WHERE LOWER(email) = ${normalizedEmail};
+        `;
+        // If no account exists yet (e.g. the signup call failed/was
+        // skipped client-side), we don't silently create one here without
+        // a password — that would leave an unusable, password-less
+        // account. Log it so it's visible in Vercel's function logs
+        // rather than a booking quietly not becoming a membership.
+        console.log(`Membership extended to ${expiresAt} for ${normalizedEmail} (or no matching account existed).`);
+      }
+    } catch (err) {
+      // Never let a membership hiccup block the actual booking/notifications
+      // that already succeeded — just log it for follow-up.
+      console.error('Failed to activate/extend membership:', err);
+    }
+  }
 
   if (isNewOrder) {
     // Fire all three notification channels — none of them block each

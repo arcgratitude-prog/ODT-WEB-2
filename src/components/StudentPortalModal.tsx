@@ -78,6 +78,8 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
   const [isSignUp, setIsSignUp] = useState(false);
   const [emailInput, setEmailInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [nameInput, setNameInput] = useState('');
   const [phoneInput, setPhoneInput] = useState('');
   const [roleInput, setRoleInput] = useState<'Lead' | 'Follow' | 'Both' | 'Social Dancer / Enthusiast'>('Lead');
@@ -101,22 +103,45 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!emailInput.trim()) return;
+    if (!emailInput.trim() || !passwordInput.trim()) return;
+    setLoginError(null);
+    setIsLoggingIn(true);
 
-    const loggedInUser: MemberUser = {
-      ...DEFAULT_DEMO_MEMBER,
-      name: nameInput.trim() || emailInput.split('@')[0],
-      email: emailInput.trim(),
-      phone: phoneInput.trim() || DEFAULT_DEMO_MEMBER.phone,
-      danceRole: roleInput,
-      level: levelInput,
-      referralCode: (nameInput.trim() || emailInput.split('@')[0]).toLowerCase().replace(/\s+/g, '')
-    };
+    try {
+      const res = await fetch('/api/member-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: emailInput.trim(), password: passwordInput }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setLoginError(data.error || 'Could not log in. Please try again.');
+        setIsLoggingIn(false);
+        return;
+      }
 
-    setUser(loggedInUser);
-    localStorage.setItem('ai_urbano_member_user', JSON.stringify(loggedInUser));
+      // Real account data (name/email/membership status) merged with the
+      // cosmetic demo fields (role/level/achievements/etc.) that don't
+      // have a real backend yet — those stay as placeholders for now,
+      // only the membership status itself is real.
+      const loggedInUser: MemberUser = {
+        ...DEFAULT_DEMO_MEMBER,
+        id: String(data.id),
+        name: data.name,
+        email: data.email,
+        phone: data.phone || DEFAULT_DEMO_MEMBER.phone,
+        isActive: data.isActive,
+        membershipExpiresAt: data.membershipExpiresAt,
+      };
+      setUser(loggedInUser);
+      localStorage.setItem('ai_urbano_member_user', JSON.stringify(loggedInUser));
+    } catch {
+      setLoginError('Could not reach the server. Check your connection and try again.');
+    } finally {
+      setIsLoggingIn(false);
+    }
   };
 
   const handleDemoLogin = () => {
@@ -179,6 +204,29 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
           </button>
         </div>
 
+        {/* Real membership status — only shows once we actually have it
+            from the backend (isActive is undefined for older/demo user
+            objects that predate this). This is the actual, computed
+            "is your Tier membership active right now" status. */}
+        {user && user.isActive !== undefined && (
+          <div className={`px-4 py-2.5 flex items-center justify-between gap-3 border-b border-white/10 ${
+            user.isActive ? 'bg-emerald-500/10' : 'bg-red-500/10'
+          }`}>
+            <div className="flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full ${user.isActive ? 'bg-emerald-400' : 'bg-red-400'}`} />
+              <span className={`text-xs font-bold uppercase tracking-wide ${user.isActive ? 'text-emerald-300' : 'text-red-300'}`}>
+                {user.isActive ? 'Active Member' : 'Membership Expired'}
+              </span>
+            </div>
+            {user.membershipExpiresAt && (
+              <span className="text-[11px] text-slate-400">
+                {user.isActive ? 'Renews/expires ' : 'Expired '}
+                {new Date(user.membershipExpiresAt).toLocaleDateString()}
+              </span>
+            )}
+          </div>
+        )}
+
         {/* Navigation Selector Bar when Logged In */}
         {user && (
           <div className="px-4 py-3 bg-slate-950 border-b border-white/10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shrink-0">
@@ -224,33 +272,20 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                   <span>DANCER & MEMBER PORTAL</span>
                 </div>
                 <h4 className="text-2xl font-extrabold text-white">
-                  {isSignUp ? 'Create Your Member Account' : 'Member Portal Login'}
+                  Member Portal Login
                 </h4>
                 <p className="text-xs text-slate-400">
-                  Track tickets bought, invite friends, and view cycle schedules.
+                  Check your Tier membership status and track tickets bought.
                 </p>
               </div>
 
-              {/* Login/Signup Toggle */}
-              <div className="flex rounded-xl bg-slate-900 p-1 border border-slate-800">
-                <button
-                  type="button"
-                  onClick={() => setIsSignUp(false)}
-                  className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
-                    !isSignUp ? 'bg-red-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
-                  }`}
-                >
-                  Log In
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsSignUp(true)}
-                  className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
-                    isSignUp ? 'bg-red-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
-                  }`}
-                >
-                  New Member Account
-                </button>
+              {/* Accounts only come from buying a Tier pass now — no free
+                  signup here, since membership status needs to be tied to
+                  a real purchase. */}
+              <div className="p-3 rounded-2xl bg-white/5 border border-white/10 text-center">
+                <p className="text-[11px] text-slate-400">
+                  Don't have an account yet? <span className="text-white font-bold">Buy any Tier pass</span> and one is created automatically.
+                </p>
               </div>
 
               {/* Form */}
@@ -334,12 +369,19 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                   </div>
                 )}
 
+                {loginError && (
+                  <div className="p-3 rounded-2xl bg-red-500/10 border border-red-500/30">
+                    <p className="text-[11px] text-red-300">{loginError}</p>
+                  </div>
+                )}
+
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-pink-600 hover:from-red-500 hover:to-pink-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-red-600/30 flex items-center justify-center gap-2 transition-all"
+                  disabled={isLoggingIn}
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-pink-600 hover:from-red-500 hover:to-pink-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-red-600/30 flex items-center justify-center gap-2 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {isSignUp ? <UserPlus className="w-4 h-4" /> : <LogIn className="w-4 h-4" />}
-                  <span>{isSignUp ? 'Complete Member Setup' : 'Log In to Member Portal'}</span>
+                  <span>{isLoggingIn ? 'Logging In...' : isSignUp ? 'Complete Member Setup' : 'Log In to Member Portal'}</span>
                 </button>
               </form>
 
