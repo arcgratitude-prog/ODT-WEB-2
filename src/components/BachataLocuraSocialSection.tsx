@@ -129,23 +129,43 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
               </p>
             </div>
 
-            {/* Essentials — schedule + price in one row */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 max-w-2xl mx-auto">
-              <div className="p-4 rounded-2xl bg-black/40 border border-fuchsia-500/20 text-center">
-                <span className="text-[10px] text-pink-300 font-mono uppercase tracking-widest block mb-1">8–9 PM</span>
-                <span className="text-sm text-white font-bold block">Class</span>
-                <span className="text-xs text-purple-200 mt-0.5 block">Albina & Isaac</span>
-              </div>
-              <div className="p-4 rounded-2xl bg-black/40 border border-fuchsia-500/20 text-center">
-                <span className="text-[10px] text-pink-300 font-mono uppercase tracking-widest block mb-1">9 PM–1 AM</span>
-                <span className="text-sm text-white font-bold block">Social Dancing</span>
-                <span className="text-xs text-purple-200 mt-0.5 block">DJ JR</span>
-              </div>
-              <div className="p-4 rounded-2xl bg-pink-500/10 border border-pink-500/40 text-center flex flex-col items-center justify-center gap-1.5">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-b from-fuchsia-500 via-purple-600 to-slate-900 border-2 border-fuchsia-200/80 shadow-lg shadow-fuchsia-500/50 flex items-center justify-center">
-                  <span className="text-sm sm:text-base font-black text-white font-mono">$12</span>
+            {/* Ticket Option — same visual system as Locura's circle row:
+                the price is the big, featured, clickable circle in the
+                middle; Class/Social Dancing are small info circles on
+                either side (not separate purchasable tiers, just context). */}
+            <div className="mb-8">
+              <div className="flex items-center justify-center gap-4 sm:gap-6">
+
+                {/* Class — info only */}
+                <div className="flex flex-col items-center gap-1.5 opacity-70">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-zinc-900 border border-fuchsia-500/20 flex items-center justify-center">
+                    <span className="text-[10px] sm:text-xs font-black text-purple-200 font-mono">8–9</span>
+                  </div>
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Class</span>
+                  <span className="text-[8px] text-slate-500 uppercase tracking-wide -mt-1">Albina & Isaac</span>
                 </div>
-                <span className="text-[10px] text-pink-300 font-mono uppercase tracking-widest">Full Night</span>
+
+                {/* $12 — the featured, purchasable option. Glows/pulses so
+                    it visually reads as the one to tap. */}
+                <button
+                  onClick={() => onOpenBooking('social-invasion-10')}
+                  className="flex flex-col items-center gap-1.5 group relative"
+                >
+                  <span className="absolute top-0 w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-fuchsia-400/40 blur-md animate-pulse pointer-events-none" />
+                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-b from-fuchsia-500 via-purple-600 to-slate-900 border-2 border-fuchsia-200/80 shadow-lg shadow-fuchsia-500/50 flex flex-col items-center justify-center transition-all group-hover:border-white group-hover:shadow-fuchsia-400/80 group-hover:shadow-xl group-hover:scale-105 group-active:scale-95">
+                    <span className="text-xl sm:text-2xl font-black text-white font-mono">$12</span>
+                  </div>
+                  <span className="text-[10px] font-bold text-white uppercase tracking-wide">Tap to Get →</span>
+                </button>
+
+                {/* Social Dancing — info only */}
+                <div className="flex flex-col items-center gap-1.5 opacity-70">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-zinc-900 border border-fuchsia-500/20 flex items-center justify-center">
+                    <span className="text-[9px] sm:text-[10px] font-black text-purple-200 font-mono">9–1</span>
+                  </div>
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Social</span>
+                  <span className="text-[8px] text-slate-500 uppercase tracking-wide -mt-1">DJ JR</span>
+                </div>
               </div>
             </div>
 
