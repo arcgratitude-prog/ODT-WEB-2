@@ -141,9 +141,11 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                 <span className="text-sm text-white font-bold block">Social Dancing</span>
                 <span className="text-xs text-purple-200 mt-0.5 block">DJ JR</span>
               </div>
-              <div className="p-4 rounded-2xl bg-pink-500/10 border border-pink-500/40 text-center">
-                <span className="text-[10px] text-pink-300 font-mono uppercase tracking-widest block mb-1">Full Night</span>
-                <span className="text-sm text-white font-bold">$12</span>
+              <div className="p-4 rounded-2xl bg-pink-500/10 border border-pink-500/40 text-center flex flex-col items-center justify-center gap-1.5">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-b from-fuchsia-500 via-purple-600 to-slate-900 border-2 border-fuchsia-200/80 shadow-lg shadow-fuchsia-500/50 flex items-center justify-center">
+                  <span className="text-sm sm:text-base font-black text-white font-mono">$12</span>
+                </div>
+                <span className="text-[10px] text-pink-300 font-mono uppercase tracking-widest">Full Night</span>
               </div>
             </div>
 
@@ -272,6 +274,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                     <span className="text-sm sm:text-base font-black text-emerald-400 font-mono">$15</span>
                   </div>
                   <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Student</span>
+                  <span className="text-[8px] text-slate-500 uppercase tracking-wide -mt-1">Present ID at Door</span>
                 </div>
 
                 {/* Pre-Sale — the featured, purchasable option. Glows/pulses
