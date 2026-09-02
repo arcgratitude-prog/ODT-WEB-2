@@ -247,9 +247,9 @@ export const SPECIAL_EVENTS: SpecialEvent[] = [
     id: 'cycle-1',
     title: '4-WEEK URBAN BACHATA TRACKS',
     badge: 'PROGRESSIVE COURSES',
-    dateString: 'August 12th – September 2nd (Every Wednesday)',
-    isoDate: '2026-08-12T19:00:00',
-    description: 'Structured 4-week tracks (Tier 1 Foundations $80, Tier 2 Progression $105, Tier 3 Unlimited $125) designed to elevate your social dancing confidence, technique, connection, and urban flow.',
+    dateString: 'Starts the day you enroll — every Wednesday for 4 weeks',
+    isoDate: '',
+    description: 'Structured 4-week tracks (Tier 1 Foundations $80, Tier 2 Progression $105, Tier 3 Unlimited $125) designed to elevate your social dancing confidence, technique, connection, and urban flow. Your 4 weeks start the moment you enroll — not on a fixed shared schedule.',
     highlightText: '4-Week Tracks • Foundations ($80) • Progression ($105) • Unlimited ($125)',
     isFree: false,
     ctaText: 'Register for 4-Week Tracks'

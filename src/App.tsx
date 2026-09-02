@@ -239,6 +239,7 @@ export default function App() {
             <ReferralProgramSection
               onOpenBooking={handleOpenBooking}
               onNavigateHome={() => handleNavigate('home')}
+              onOpenStudentPortal={() => setIsStudentPortalOpen(true)}
             />
             <Footer onOpenPolicy={() => setIsPolicyOpen(true)} />
           </div>

@@ -49,32 +49,6 @@ export const Hero: React.FC<HeroProps> = ({
       return next;
     });
   };
-  // Countdown to August 5th
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-
-  useEffect(() => {
-    const targetDate = new Date('2026-08-05T19:00:00').getTime();
-
-    const updateCountdown = () => {
-      const now = new Date().getTime();
-      const difference = targetDate - now;
-
-      if (difference > 0) {
-        setTimeLeft({
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-          minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-          seconds: Math.floor((difference % (1000 * 60)) / 1000)
-        });
-      } else {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-      }
-    };
-
-    updateCountdown();
-    const timer = setInterval(updateCountdown, 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   return (
     <section className="relative min-h-[90vh] pt-20 sm:pt-28 pb-12 sm:pb-16 px-3.5 sm:px-6 lg:px-8 flex flex-col justify-center overflow-hidden urban-brick-bg">

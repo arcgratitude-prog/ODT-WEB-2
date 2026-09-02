@@ -35,7 +35,7 @@ export const SpecialEventsSection: React.FC<SpecialEventsSectionProps> = ({ onOp
             <div className="flex items-center gap-2 mb-3">
               <Calendar className="w-4 h-4 text-red-400" />
               <span className="text-xs font-mono font-bold text-red-400 uppercase tracking-widest">
-                AUG 12 – SEPT 2 (4 WEDNESDAYS)
+                STARTS THE DAY YOU ENROLL (4 WEDNESDAYS)
               </span>
             </div>
 
@@ -50,19 +50,19 @@ export const SpecialEventsSection: React.FC<SpecialEventsSectionProps> = ({ onOp
             {/* Cycle Breakdown */}
             <div className="space-y-2 mb-6 bg-black/60 p-4 rounded-2xl border border-red-500/20">
               <div className="flex justify-between text-xs text-slate-300">
-                <span className="font-bold text-red-400">Week 1 (Aug 12):</span>
+                <span className="font-bold text-red-400">Week 1:</span>
                 <span>Frame, Isolations & Smooth Lead/Follow</span>
               </div>
               <div className="flex justify-between text-xs text-slate-300">
-                <span className="font-bold text-red-400">Week 2 (Aug 19):</span>
+                <span className="font-bold text-red-400">Week 2:</span>
                 <span>Pasitos, Footwork Syncopations & Styling</span>
               </div>
               <div className="flex justify-between text-xs text-slate-300">
-                <span className="font-bold text-red-400">Week 3 (Aug 26):</span>
+                <span className="font-bold text-red-400">Week 3:</span>
                 <span>Sensual Body Rolls, Dips & Weight Support</span>
               </div>
               <div className="flex justify-between text-xs text-slate-300">
-                <span className="font-bold text-red-400">Week 4 (Sept 2):</span>
+                <span className="font-bold text-red-400">Week 4:</span>
                 <span>Musicality Accents & Full Urban Combos</span>
               </div>
             </div>
@@ -72,13 +72,7 @@ export const SpecialEventsSection: React.FC<SpecialEventsSectionProps> = ({ onOp
             <div className="text-left shrink-0">
               <span className="text-[10px] text-red-300 uppercase block font-bold">12 Classes Bundle</span>
               <div className="flex items-baseline gap-2">
-                {/* NOTE: this $140 is display copy only — it doesn't match any real
-                    PassOption. The CTA below now books 'track-unlimited', which is
-                    priced at $125 (see danceData.ts). Either update this number to
-                    $125 or add a real $140 pass — right now the modal will show $125
-                    after the customer clicks through, not the $140 advertised here. */}
-                <span className="text-3xl font-black text-red-400 font-mono">$140</span>
-                <span className="text-xs font-bold text-slate-400 line-through">$200</span>
+                <span className="text-3xl font-black text-red-400 font-mono">$125</span>
               </div>
             </div>
 

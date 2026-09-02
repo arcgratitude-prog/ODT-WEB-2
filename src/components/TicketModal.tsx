@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Sparkles, CheckCircle2, Calendar, MapPin, Download, QrCode, Ticket, ShieldCheck, User, Mail, Phone, ArrowRight, Users, Lock, AlertCircle } from 'lucide-react';
+import { X, Sparkles, CheckCircle2, Calendar, MapPin, Download, QrCode, Ticket, ShieldCheck, User, Mail, Phone, ArrowRight, Lock, AlertCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { PASS_OPTIONS, SOCIAL_PASS_OPTION, BACHATA_INVASION_PASS_OPTION, X1_MONTHLY_PASS_OPTION, X1_DROPIN_PASS_OPTION, STUDIO_INFO } from '../data/danceData';
 import { TicketPass, CheckoutTheme } from '../types';
@@ -29,6 +29,21 @@ const getClassesIncludedLabel = (passOption: { id: string; classesCount: number 
   if (classTimes.length > 0) return classTimes.join(', ');
   if (passOption.id === 'track-unlimited') return 'All Classes Included — Full Weekly Access';
   return `${passOption.classesCount} Class Session(s)`;
+};
+
+// The real date/time for whatever was actually purchased — this used to
+// be a single hardcoded string ("Wednesday, August 5th...") applied to
+// EVERY pass regardless of what it was for, meaning a customer buying
+// Bachata Locura would get a ticket saying August 5th at 7-10 PM, which
+// is neither the right date nor the right time for that event. Update
+// the Locura/Invasion dates here if they ever change — same values used
+// in BachataLocuraSocialSection.tsx, danceData.ts, and api/lib/notify.js.
+const getEventDateLabel = (passName: string): string => {
+  if (/Locura/i.test(passName)) return 'Sunday, September 20th (4:00 PM - 9:00 PM)';
+  if (/Invasion/i.test(passName)) return 'Friday, September 11th (8:00 PM - 1:00 AM)';
+  if (/X1/i.test(passName)) return 'Private Session — Scheduled Directly With Albina & Antonio';
+  // Weekly Tiers and class drop-ins: recurring, not a single calendar date.
+  return 'Every Wednesday (See Your Selected Class Time Below)';
 };
 
 const getCheckoutTheme = (passId: string): CheckoutTheme => {
@@ -113,7 +128,6 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [referredBy, setReferredBy] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [accountError, setAccountError] = useState<string | null>(null);
@@ -224,7 +238,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
         passType: currentPassOption.type,
         price: totalPrice,
         classesIncluded: getClassesIncludedLabel(currentPassOption, initialClassTimes),
-        eventDate: 'Wednesday, August 5th (7:00 PM - 10:00 PM)',
+        eventDate: getEventDateLabel(currentPassOption.name),
         location: 'Dance Factory - WestShore Plaza Mall, Tampa, FL',
         purchaseTimestamp: Date.now(),
         status: 'CONFIRMED',
@@ -255,7 +269,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
       passType: currentPassOption.type,
       price: totalPrice,
       classesIncluded: getClassesIncludedLabel(currentPassOption, initialClassTimes),
-      eventDate: 'Wednesday, August 5th (7:00 PM - 10:00 PM)',
+      eventDate: getEventDateLabel(currentPassOption.name),
       location: 'Dance Factory - WestShore Plaza Mall, Tampa, FL',
       purchaseTimestamp: Date.now(),
       status: 'CONFIRMED',
@@ -388,7 +402,6 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                     customerName={name}
                     customerEmail={email}
                     customerPhone={phone}
-                    referredBy={referredBy}
                     memberEmail={isClaimingDiscount ? memberEmail : undefined}
                     memberPassword={isClaimingDiscount ? memberPassword : undefined}
                     memberSessionToken={isClaimingDiscount ? memberSessionToken : undefined}
@@ -494,22 +507,6 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                         placeholder="e.g. (813) 555-0199"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        className={`w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none ${theme.focusBorder} transition-colors`}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold uppercase text-slate-300 mb-1">
-                      Referred By (Optional)
-                    </label>
-                    <div className="relative">
-                      <Users className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
-                      <input
-                        type="text"
-                        placeholder="e.g. a friend's name"
-                        value={referredBy}
-                        onChange={(e) => setReferredBy(e.target.value)}
                         className={`w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none ${theme.focusBorder} transition-colors`}
                       />
                     </div>

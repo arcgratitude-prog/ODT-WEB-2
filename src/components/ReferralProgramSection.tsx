@@ -1,27 +1,54 @@
-import React, { useState } from 'react';
-import { Gift, Users, Award, Sparkles, Share2, Copy, Check, MessageCircle, Heart, Flame, ShieldCheck, Trophy, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Gift, Users, Award, Sparkles, Share2, Copy, Check, MessageCircle, Heart, Flame, ShieldCheck, Trophy, Lock } from 'lucide-react';
 
 interface ReferralProgramSectionProps {
   onOpenBooking?: (passTypeId?: string) => void;
   onNavigateHome?: () => void;
+  onOpenStudentPortal?: () => void;
 }
 
-export const ReferralProgramSection: React.FC<ReferralProgramSectionProps> = ({ onOpenBooking, onNavigateHome }) => {
-  const [userName, setUserName] = useState('');
+export const ReferralProgramSection: React.FC<ReferralProgramSectionProps> = ({ onOpenBooking, onNavigateHome, onOpenStudentPortal }) => {
   const [copiedLink, setCopiedLink] = useState(false);
-  const [referralCount] = useState<number>(0);
+  // Real logged-in member data only — there is no other way to get a
+  // referral link on this page anymore. The old version let ANY visitor
+  // type an arbitrary name or Instagram handle and generate a fake
+  // "?ref=whatevertheytyped" link with zero connection to a real
+  // account or the real referred_by_member_id database relationship.
+  // That's been removed entirely; the Member Portal (api/member-login.js
+  // / api/member-signup.js) is now the only source of a real referral
+  // code.
+  const [loggedInReferralCode, setLoggedInReferralCode] = useState<string | null>(null);
+  const [loggedInReferralCount, setLoggedInReferralCount] = useState<number>(0);
 
-  const refLink = userName.trim() 
-    ? `https://officialdancetheory.com?ref=${encodeURIComponent(userName.trim().toLowerCase().replace(/\s+/g, ''))}`
-    : `https://officialdancetheory.com?ref=dancefriend`;
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('ai_urbano_member_user');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed?.referralCode) {
+          setLoggedInReferralCode(parsed.referralCode);
+          setLoggedInReferralCount(parsed.referralCount ?? 0);
+        }
+      }
+    } catch {
+      // No valid stored session — treat as logged out.
+    }
+  }, []);
+
+  const referralCount = loggedInReferralCount;
+  const refLink = loggedInReferralCode
+    ? `https://officialdancetheory.com?ref=${loggedInReferralCode}`
+    : null;
 
   const handleCopyLink = () => {
+    if (!refLink) return;
     navigator.clipboard.writeText(refLink);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2000);
   };
 
   const handleShareWhatsApp = () => {
+    if (!refLink) return;
     const text = `Hey! Come dance Urban Bachata with me in Tampa at AI Urbano with Albina & Isaac! Get your free open house or class pass here: ${refLink}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
   };
@@ -62,7 +89,7 @@ export const ReferralProgramSection: React.FC<ReferralProgramSectionProps> = ({ 
             Dancing is always better with friends! Invite your dance crew to AI Urbano Bachata in Tampa and unlock free socials, discounts on full cycles, and private lessons with Albina & Isaac.
           </p>
           <p className="text-slate-500 text-[11px] max-w-xl mx-auto leading-relaxed pt-1">
-            Have your friend enter your name in the "Referred By" field when they check out — we track it and honor these rewards for you directly.
+            Share your personal referral link with friends. When they create an account through your link, we'll automatically know you referred them — no need to tell them to type anything in.
           </p>
         </div>
 
@@ -159,64 +186,72 @@ export const ReferralProgramSection: React.FC<ReferralProgramSectionProps> = ({ 
 
         </div>
 
-        {/* Interactive Link Generator Box */}
+        {/* Real Referral Link Box — shows the actual logged-in member's
+            real, server-generated referral code, or an honest prompt to
+            create a free account if nobody's logged in. There is no
+            longer any way to type in an arbitrary name/handle and get a
+            fake link here. */}
         <div className="bg-black/60 rounded-2xl p-4 sm:p-6 border border-white/10 max-w-3xl mx-auto space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
               <h4 className="text-sm font-bold text-white flex items-center gap-2">
                 <Share2 className="w-4 h-4 text-red-400" />
-                <span>Get Your Personalized Referral Link</span>
+                <span>Your Personal Referral Link</span>
               </h4>
-              <p className="text-[11px] text-slate-400">Enter your name or Instagram handle to generate your link</p>
+              <p className="text-[11px] text-slate-400">
+                {refLink
+                  ? 'Share it with friends — when they create an account through it, we automatically know you referred them.'
+                  : 'Available once you have a free account.'}
+              </p>
             </div>
-
-            {onOpenBooking && (
-              <button
-                onClick={() => onOpenBooking('dropin-1')}
-                className="px-4 py-1.5 rounded-full bg-red-600 hover:bg-red-500 text-white font-bold text-xs flex items-center gap-1.5 self-start sm:self-auto transition-all shadow-md"
-              >
-                <span>Claim Rewards at Check-in</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            )}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
-            <input
-              type="text"
-              placeholder="Your Name (e.g., Alex)"
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
-              className="sm:col-span-4 px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-red-500"
-            />
+          {refLink ? (
+            <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
+              <div className="sm:col-span-9 relative flex items-center">
+                <input
+                  type="text"
+                  readOnly
+                  value={refLink}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono text-red-300 focus:outline-none truncate pr-10"
+                />
+                <button
+                  onClick={handleCopyLink}
+                  className="absolute right-2 p-1.5 text-slate-400 hover:text-white"
+                  title="Copy Link"
+                >
+                  {copiedLink ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                </button>
+              </div>
 
-            <div className="sm:col-span-5 relative flex items-center">
-              <input
-                type="text"
-                readOnly
-                value={refLink}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono text-red-300 focus:outline-none truncate pr-10"
-              />
               <button
-                onClick={handleCopyLink}
-                className="absolute right-2 p-1.5 text-slate-400 hover:text-white"
-                title="Copy Link"
+                onClick={handleShareWhatsApp}
+                className="sm:col-span-3 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs uppercase tracking-wide flex items-center justify-center gap-2 transition-all shadow-md"
               >
-                {copiedLink ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                <MessageCircle className="w-4 h-4" />
+                <span>Share Link</span>
               </button>
             </div>
-
-            <button
-              onClick={handleShareWhatsApp}
-              className="sm:col-span-3 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs uppercase tracking-wide flex items-center justify-center gap-2 transition-all shadow-md"
-            >
-              <MessageCircle className="w-4 h-4" />
-              <span>Share Link</span>
-            </button>
-          </div>
+          ) : (
+            <div className="flex flex-col sm:flex-row items-center gap-3 p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+              <Lock className="w-5 h-5 text-slate-500 shrink-0" />
+              <p className="text-xs text-slate-400 flex-1">
+                Create a free account to get your unique personal referral link — no purchase required.
+              </p>
+              {onOpenStudentPortal && (
+                <button
+                  onClick={onOpenStudentPortal}
+                  className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs whitespace-nowrap transition-colors"
+                >
+                  Create Free Account
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
       </div>
     </section>
   );
 };
+

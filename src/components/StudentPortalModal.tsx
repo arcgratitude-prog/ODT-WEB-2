@@ -235,9 +235,9 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
     setLoginError(null);
   };
 
-  const refLink = user 
+  const refLink = user?.referralCode
     ? `https://officialdancetheory.com?ref=${user.referralCode}`
-    : `https://officialdancetheory.com?ref=dancefriend`;
+    : '';
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(refLink);
@@ -698,7 +698,7 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                         </span>
                         <h5 className="text-lg font-black text-white mt-1">Your Personal Referral Link</h5>
                         <p className="text-[10px] text-slate-400 mt-1 max-w-xs">
-                          Have friends enter your name in "Referred By" at checkout — we track it and honor these rewards for you directly.
+                          Share your link with friends. When they create an account through it, we automatically know you referred them — no need to tell them to type your name anywhere.
                         </p>
                       </div>
                       <div className="text-right">
