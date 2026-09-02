@@ -111,6 +111,8 @@ export interface MemberUser {
   // is currently active, computed server-side from membership_expires_at.
   isActive?: boolean;
   membershipExpiresAt?: string;
+  lastPassName?: string;
+  sessionToken?: string;
 }
 
 export type StudentUser = MemberUser; // Backward compatibility alias

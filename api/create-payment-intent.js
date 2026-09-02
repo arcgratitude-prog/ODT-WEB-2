@@ -29,6 +29,7 @@ export default async function handler(req, res) {
       quantity,
       memberEmail,
       memberPassword,
+      memberSessionToken,
     } = req.body;
 
     if (!passName || typeof priceInCents !== 'number' || priceInCents < 50) {
@@ -45,28 +46,34 @@ export default async function handler(req, res) {
     // order — buying 3 tickets doesn't mean 3 discounts, it means 2 full
     // price + 1 discounted. This entire block ignores whatever the
     // client suggested the price should be; it independently verifies
-    // the member's password against the real database and recomputes
-    // the charge from scratch, so nobody can just edit a number in their
-    // browser (or hand their login to a friend mid-purchase) to get a
-    // discount that wasn't actually earned. Only applies to the two
-    // social events — Locura and Invasion — not weekly Tiers/drop-ins.
+    // the member against the real database and recomputes the charge
+    // from scratch, so nobody can just edit a number in their browser
+    // (or hand their login to a friend mid-purchase) to get a discount
+    // that wasn't actually earned. Only applies to the two social
+    // events — Locura and Invasion — not weekly Tiers/drop-ins.
+    //
+    // Two ways to prove membership: a password (manual entry at
+    // checkout) or a session token (issued at Member Portal login, so
+    // someone already logged in gets the discount automatically without
+    // re-typing their password — the frontend never stores the password
+    // itself for this, only the token).
     let finalPriceInCents = priceInCents;
     let memberDiscountApplied = false;
     const isDiscountEligibleEvent = /Locura|Invasion/i.test(passName);
 
-    if (isDiscountEligibleEvent && memberEmail && memberPassword) {
+    if (isDiscountEligibleEvent && memberEmail && (memberPassword || memberSessionToken)) {
       await ensureMembersTable();
       const normalizedMemberEmail = String(memberEmail).trim().toLowerCase();
       const memberRows = await sql`
-        SELECT password_hash, password_salt, membership_expires_at
+        SELECT password_hash, password_salt, session_token, membership_expires_at
         FROM members WHERE LOWER(email) = ${normalizedMemberEmail} LIMIT 1;
       `;
       if (memberRows.length > 0) {
-        const isCorrectPassword = await verifyPassword(
-          memberPassword, memberRows[0].password_hash, memberRows[0].password_salt
-        );
+        const isVerified = memberSessionToken
+          ? memberSessionToken === memberRows[0].session_token
+          : await verifyPassword(memberPassword, memberRows[0].password_hash, memberRows[0].password_salt);
         const isActiveMember = new Date(memberRows[0].membership_expires_at) > new Date();
-        if (isCorrectPassword && isActiveMember) {
+        if (isVerified && isActiveMember) {
           // Recompute from the pass's real per-ticket price rather than
           // trusting any client math — priceInCents here is expected to
           // be the FULL undiscounted total (base price × qty).
@@ -75,10 +82,10 @@ export default async function handler(req, res) {
           finalPriceInCents = discountedFirstTicket + perTicketCents * (qty - 1);
           memberDiscountApplied = true;
         }
-        // Wrong password or expired membership: silently fall back to
-        // full price rather than erroring out the whole checkout — the
-        // customer still gets to complete their purchase, just without
-        // the discount they didn't actually qualify for.
+        // Wrong password/token or expired membership: silently fall back
+        // to full price rather than erroring out the whole checkout —
+        // the customer still gets to complete their purchase, just
+        // without the discount they didn't actually qualify for.
       }
     }
 

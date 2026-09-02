@@ -5,7 +5,7 @@ import {
   ChevronRight, Shield, Zap, BookOpen, Star, ArrowRight, Activity, ChevronDown, Trophy, CreditCard
 } from 'lucide-react';
 import { MemberUser, TicketPass } from '../types';
-import { STUDIO_INFO } from '../data/danceData';
+import { STUDIO_INFO, PASS_OPTIONS } from '../data/danceData';
 
 interface StudentPortalModalProps {
   isOpen: boolean;
@@ -45,18 +45,6 @@ const DEFAULT_DEMO_MEMBER: MemberUser = {
       currentWeek: 2,
       totalWeeks: 4,
       nextClassDate: 'Wednesday, Aug 5 (7:00 PM)',
-      instructors: 'Albina & Isaac',
-      status: 'Active'
-    },
-    {
-      id: 'social-invasion-pass',
-      title: 'Bachata Invasion',
-      schedule: '2nd Fridays @ 8:00 PM',
-      location: 'Dance Factory Tampa',
-      startDate: 'July 2026',
-      currentWeek: 1,
-      totalWeeks: 4,
-      nextClassDate: 'Friday, Sept 11 (8:00 PM)',
       instructors: 'Albina & Isaac',
       status: 'Active'
     }
@@ -134,6 +122,8 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
         phone: data.phone || DEFAULT_DEMO_MEMBER.phone,
         isActive: data.isActive,
         membershipExpiresAt: data.membershipExpiresAt,
+        lastPassName: data.lastPassName,
+        sessionToken: data.sessionToken,
       };
       setUser(loggedInUser);
       localStorage.setItem('ai_urbano_member_user', JSON.stringify(loggedInUser));
@@ -227,6 +217,30 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
           </div>
         )}
 
+        {/* Real Tier benefits — pulled from the actual PASS_OPTIONS data
+            (the same features list shown on the pricing page), matched to
+            whichever Tier they last purchased. Only shown for active
+            members — an expired membership doesn't get the perks. */}
+        {user && user.isActive && user.lastPassName && (() => {
+          const matchedPass = PASS_OPTIONS.find((p) => p.name === user.lastPassName);
+          if (!matchedPass) return null;
+          return (
+            <div className="px-4 py-3 bg-slate-900/60 border-b border-white/10">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+                Your {matchedPass.name} Benefits
+              </p>
+              <ul className="space-y-1">
+                {matchedPass.features.map((feature, i) => (
+                  <li key={i} className="text-xs text-slate-300 flex items-start gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })()}
+
         {/* Navigation Selector Bar when Logged In */}
         {user && (
           <div className="px-4 py-3 bg-slate-950 border-b border-white/10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shrink-0">
@@ -249,7 +263,7 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                   👥 Referral Rewards & Earned Credits ({user.referralCount} Friends)
                 </option>
                 <option value="cycles" className="bg-slate-950 text-white">
-                  📅 Enrolled Wednesday Cycles & Schedule ({user.enrolledCycles.length} Enrolled)
+                  🎁 Tier Benefits & Perks
                 </option>
                 <option value="profile" className="bg-slate-950 text-white">
                   👤 Profile, Role & Preferences
@@ -586,56 +600,53 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h5 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                      <BookOpen className="w-4 h-4 text-red-400" />
-                      <span>Enrolled Cycles & Wednesday Schedule</span>
+                      <Gift className="w-4 h-4 text-red-400" />
+                      <span>Tier Benefits</span>
                     </h5>
-                    <span className="text-xs text-slate-400">Dance Factory Tampa</span>
+                    {user.lastPassName && (
+                      <span className="text-xs text-slate-400">{user.lastPassName}</span>
+                    )}
                   </div>
 
-                  {user.enrolledCycles.map((cycle) => (
-                    <div
-                      key={cycle.id}
-                      className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 border border-slate-800 hover:border-red-500/40 transition-all space-y-3"
-                    >
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-3">
-                        <div>
-                          <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase">
-                            {cycle.status}
-                          </span>
-                          <h6 className="text-base font-extrabold text-white mt-1">
-                            {cycle.title}
-                          </h6>
-                          <p className="text-xs text-slate-400 flex items-center gap-1.5 mt-0.5">
-                            <Clock className="w-3.5 h-3.5 text-red-400" />
-                            <span>{cycle.schedule}</span>
-                          </p>
-                        </div>
-
-                        <div className="text-right shrink-0">
-                          <span className="text-xs font-mono font-bold text-red-400">
-                            Week {cycle.currentWeek} of {cycle.totalWeeks}
-                          </span>
-                          <div className="w-28 h-2 rounded-full bg-slate-800 mt-1 overflow-hidden">
-                            <div 
-                              className="h-full bg-gradient-to-r from-red-600 to-rose-400"
-                              style={{ width: `${(cycle.currentWeek / cycle.totalWeeks) * 100}%` }}
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-300 pt-1">
-                        <div className="flex items-center gap-2">
-                          <MapPin className="w-3.5 h-3.5 text-red-400" />
-                          <span>{cycle.location} ({STUDIO_INFO.mallName})</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <User className="w-3.5 h-3.5 text-rose-400" />
-                          <span>Instructors: {cycle.instructors}</span>
-                        </div>
-                      </div>
+                  {user.isActive === false && (
+                    <div className="p-3 rounded-2xl bg-red-500/10 border border-red-500/30">
+                      <p className="text-[11px] text-red-300">
+                        Your membership has expired — these perks aren't active right now. Buy a new Tier pass to renew.
+                      </p>
                     </div>
-                  ))}
+                  )}
+
+                  <div
+                    className={`p-4 sm:p-5 rounded-2xl border space-y-3 ${
+                      user.isActive
+                        ? 'bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 border-emerald-500/30'
+                        : 'bg-slate-900/40 border-slate-800 opacity-60'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className={`w-4 h-4 ${user.isActive ? 'text-emerald-400' : 'text-slate-500'}`} />
+                      <span className="text-sm font-bold text-white">20% off ODT socials</span>
+                    </div>
+                    <p className="text-xs text-slate-400 pl-6">
+                      Applies at checkout for Bachata Invasion and Bachata Locura — log in with this account to redeem. Limited to one discounted ticket per order.
+                    </p>
+                  </div>
+
+                  <div
+                    className={`p-4 sm:p-5 rounded-2xl border space-y-3 ${
+                      user.isActive
+                        ? 'bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 border-emerald-500/30'
+                        : 'bg-slate-900/40 border-slate-800 opacity-60'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className={`w-4 h-4 ${user.isActive ? 'text-emerald-400' : 'text-slate-500'}`} />
+                      <span className="text-sm font-bold text-white">10% off private lessons</span>
+                    </div>
+                    <p className="text-xs text-slate-400 pl-6">
+                      Mention your member account when booking a private lesson with Albina & Isaac.
+                    </p>
+                  </div>
                 </div>
               )}
 

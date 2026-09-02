@@ -3,7 +3,13 @@
 // members table and returns the account (never the password hash/salt)
 // plus a computed isActive flag so the frontend doesn't need to do its
 // own date math.
+//
+// Also issues a random session token, stored server-side, so the
+// checkout flow can auto-apply the member discount for someone who's
+// already logged in without asking them to type their password again —
+// the frontend only ever holds this token, never the password itself.
 
+import { randomBytes } from 'crypto';
 import { sql, ensureMembersTable } from './lib/db.js';
 import { verifyPassword } from './lib/password.js';
 
@@ -38,6 +44,9 @@ export default async function handler(req, res) {
       return res.status(401).json({ error: 'Incorrect password.' });
     }
 
+    const sessionToken = randomBytes(24).toString('hex');
+    await sql`UPDATE members SET session_token = ${sessionToken} WHERE id = ${member.id};`;
+
     return res.status(200).json({
       id: member.id,
       email: member.email,
@@ -47,9 +56,11 @@ export default async function handler(req, res) {
       membershipExpiresAt: member.membership_expires_at,
       isActive: new Date(member.membership_expires_at) > new Date(),
       memberSince: member.created_at,
+      sessionToken,
     });
   } catch (err) {
     console.error('member-login error:', err);
     return res.status(500).json({ error: 'Something went wrong logging in. Please try again.' });
   }
 }
+

@@ -121,6 +121,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   const [isClaimingDiscount, setIsClaimingDiscount] = useState(false);
   const [memberEmail, setMemberEmail] = useState('');
   const [memberPassword, setMemberPassword] = useState('');
+  const [memberSessionToken, setMemberSessionToken] = useState('');
   const [discountConfirmed, setDiscountConfirmed] = useState<boolean | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [generatedPass, setGeneratedPass] = useState<TicketPass | null>(null);
@@ -148,7 +149,28 @@ export const TicketModal: React.FC<TicketModalProps> = ({
       setIsClaimingDiscount(false);
       setMemberEmail('');
       setMemberPassword('');
+      setMemberSessionToken('');
       setDiscountConfirmed(null);
+
+      // If they're already logged into the Member Portal as an active
+      // member, apply their discount automatically — no re-typing a
+      // password. This uses the session token issued at login (see
+      // api/member-login.js), verified server-side in
+      // api/create-payment-intent.js, never the password itself.
+      try {
+        const storedUser = localStorage.getItem('ai_urbano_member_user');
+        if (storedUser) {
+          const parsed = JSON.parse(storedUser);
+          if (parsed?.isActive && parsed?.email && parsed?.sessionToken) {
+            setIsClaimingDiscount(true);
+            setMemberEmail(parsed.email);
+            setMemberSessionToken(parsed.sessionToken);
+          }
+        }
+      } catch {
+        // Corrupt/missing local session — just skip the pre-fill silently.
+      }
+
       ticketIdRef.current = `UB-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -369,6 +391,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                     referredBy={referredBy}
                     memberEmail={isClaimingDiscount ? memberEmail : undefined}
                     memberPassword={isClaimingDiscount ? memberPassword : undefined}
+                    memberSessionToken={isClaimingDiscount ? memberSessionToken : undefined}
                     onDiscountResult={setDiscountConfirmed}
                     classesIncluded={
                       getClassesIncludedLabel(currentPassOption, initialClassTimes)
@@ -490,46 +513,57 @@ export const TicketModal: React.FC<TicketModalProps> = ({
 
                   {isDiscountEligible && (
                     <div className="p-3 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 space-y-3">
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={isClaimingDiscount}
-                          onChange={(e) => {
-                            setIsClaimingDiscount(e.target.checked);
-                            setDiscountConfirmed(null);
-                          }}
-                          className="w-4 h-4 rounded accent-emerald-500"
-                        />
-                        <span className="text-xs font-bold text-emerald-300">
-                          I'm an active Tier member — apply my 20% discount
-                        </span>
-                      </label>
-
-                      {isClaimingDiscount && (
+                      {memberSessionToken ? (
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                          <span className="text-xs font-bold text-emerald-300">
+                            Logged in as an active member — your 20% discount will apply automatically to 1 ticket.
+                          </span>
+                        </div>
+                      ) : (
                         <>
-                          <p className="text-[10px] text-slate-400">
-                            Log in to verify. The discount only applies to one ticket, even if you're buying more than one.
-                          </p>
-                          <div className="relative">
-                            <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                          <label className="flex items-center gap-2 cursor-pointer">
                             <input
-                              type="email"
-                              placeholder="Member email"
-                              value={memberEmail}
-                              onChange={(e) => setMemberEmail(e.target.value)}
-                              className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none focus:border-emerald-400 transition-colors"
+                              type="checkbox"
+                              checked={isClaimingDiscount}
+                              onChange={(e) => {
+                                setIsClaimingDiscount(e.target.checked);
+                                setDiscountConfirmed(null);
+                              }}
+                              className="w-4 h-4 rounded accent-emerald-500"
                             />
-                          </div>
-                          <div className="relative">
-                            <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
-                            <input
-                              type="password"
-                              placeholder="Member password"
-                              value={memberPassword}
-                              onChange={(e) => setMemberPassword(e.target.value)}
-                              className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none focus:border-emerald-400 transition-colors"
-                            />
-                          </div>
+                            <span className="text-xs font-bold text-emerald-300">
+                              I'm an active Tier member — apply my 20% discount
+                            </span>
+                          </label>
+
+                          {isClaimingDiscount && (
+                            <>
+                              <p className="text-[10px] text-slate-400">
+                                Confirm your password to redeem. The discount only applies to one ticket, even if you're buying more than one.
+                              </p>
+                              <div className="relative">
+                                <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                                <input
+                                  type="email"
+                                  placeholder="Member email"
+                                  value={memberEmail}
+                                  onChange={(e) => setMemberEmail(e.target.value)}
+                                  className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none focus:border-emerald-400 transition-colors"
+                                />
+                              </div>
+                              <div className="relative">
+                                <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                                <input
+                                  type="password"
+                                  placeholder="Member password"
+                                  value={memberPassword}
+                                  onChange={(e) => setMemberPassword(e.target.value)}
+                                  className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none focus:border-emerald-400 transition-colors"
+                                />
+                              </div>
+                            </>
+                          )}
                         </>
                       )}
                     </div>

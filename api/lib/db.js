@@ -69,6 +69,7 @@ export async function ensureMembersTable() {
       phone TEXT,
       last_pass_name TEXT,
       last_ticket_id TEXT,
+      session_token TEXT,
       membership_expires_at TIMESTAMPTZ NOT NULL,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -77,6 +78,7 @@ export async function ensureMembersTable() {
   await sql`
     CREATE INDEX IF NOT EXISTS idx_members_email ON members (LOWER(email));
   `;
+  await sql`ALTER TABLE members ADD COLUMN IF NOT EXISTS session_token TEXT;`;
   await sql`
     CREATE INDEX IF NOT EXISTS idx_members_expires_at ON members (membership_expires_at DESC);
   `;
