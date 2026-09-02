@@ -3,7 +3,7 @@
 // in the "x-admin-password" header — simple, no user accounts to manage,
 // good enough for a small team sharing one door-check device.
 
-import { ensureBookingsTable, sql } from './lib/db.js';
+import { ensureBookingsTable, sql } from './_lib/db.js';
 
 function isAuthorized(req) {
   const provided = req.headers['x-admin-password'];

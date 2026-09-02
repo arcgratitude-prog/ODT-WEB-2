@@ -4,9 +4,9 @@
 // The secret key never leaves this server-side file.
 
 import Stripe from 'stripe';
-import { sql, ensureMembersTable } from './lib/db.js';
-import { verifyPassword } from './lib/password.js';
-import { getRealPriceInCents } from './lib/priceCatalog.js';
+import { sql, ensureMembersTable } from './_lib/db.js';
+import { verifyPassword } from './_lib/password.js';
+import { getRealPriceInCents } from './_lib/priceCatalog.js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 

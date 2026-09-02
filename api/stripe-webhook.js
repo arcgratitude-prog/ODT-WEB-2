@@ -13,8 +13,8 @@
 //      STRIPE_WEBHOOK_SECRET
 
 import Stripe from 'stripe';
-import { ensureBookingsTable, ensureMembersTable, sql } from './lib/db.js';
-import { sendBookingAlertEmail, sendBookingPushNotification, sendCustomerConfirmationEmail } from './lib/notify.js';
+import { ensureBookingsTable, ensureMembersTable, sql } from './_lib/db.js';
+import { sendBookingAlertEmail, sendBookingPushNotification, sendCustomerConfirmationEmail } from './_lib/notify.js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 

@@ -4,7 +4,7 @@
 // now" without extra requests). Same shared-password protection as
 // admin-bookings.js.
 
-import { ensureMembersTable, sql } from './lib/db.js';
+import { ensureMembersTable, sql } from './_lib/db.js';
 
 function isAuthorized(req) {
   const provided = req.headers['x-admin-password'];

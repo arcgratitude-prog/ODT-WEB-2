@@ -7,7 +7,7 @@
 // is treated as proof you're allowed to view that one booking's basic
 // details. This does not expose a list of bookings or anyone else's data.
 
-import { sql, ensureBookingsTable } from './lib/db.js';
+import { sql, ensureBookingsTable } from './_lib/db.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {

@@ -24,9 +24,9 @@
 // successful login without a second request.
 
 import { randomBytes } from 'crypto';
-import { sql, ensureMembersTable } from './lib/db.js';
-import { hashPassword, verifyPassword } from './lib/password.js';
-import { generateUniqueReferralCode, getReferralCount, findMemberByReferralCode } from './lib/referral.js';
+import { sql, ensureMembersTable } from './_lib/db.js';
+import { hashPassword, verifyPassword } from './_lib/password.js';
+import { generateUniqueReferralCode, getReferralCount, findMemberByReferralCode } from './_lib/referral.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {

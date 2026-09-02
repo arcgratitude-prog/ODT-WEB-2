@@ -10,7 +10,7 @@
 
 import { randomBytes } from 'crypto';
 import { Resend } from 'resend';
-import { sql, ensureMembersTable, ensurePasswordResetTable } from './lib/db.js';
+import { sql, ensureMembersTable, ensurePasswordResetTable } from './_lib/db.js';
 
 const RESET_TOKEN_TTL_MS = 60 * 60 * 1000; // 1 hour
 

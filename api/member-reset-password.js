@@ -4,8 +4,8 @@
 // marked used immediately so it can never be replayed, even if someone
 // intercepts the reset link after it's already been used once.
 
-import { sql, ensureMembersTable, ensurePasswordResetTable } from './lib/db.js';
-import { hashPassword } from './lib/password.js';
+import { sql, ensureMembersTable, ensurePasswordResetTable } from './_lib/db.js';
+import { hashPassword } from './_lib/password.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {

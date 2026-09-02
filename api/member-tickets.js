@@ -8,7 +8,7 @@
 // never just an email by itself, since that would let anyone see anyone
 // else's purchase history just by guessing/knowing their email address.
 
-import { sql, ensureBookingsTable, ensureMembersTable } from './lib/db.js';
+import { sql, ensureBookingsTable, ensureMembersTable } from './_lib/db.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
