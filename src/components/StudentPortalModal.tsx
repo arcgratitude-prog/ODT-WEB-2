@@ -75,8 +75,6 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [nameInput, setNameInput] = useState('');
   const [phoneInput, setPhoneInput] = useState('');
-  const [roleInput, setRoleInput] = useState<'Lead' | 'Follow' | 'Both' | 'Social Dancer / Enthusiast'>('Lead');
-  const [levelInput, setLevelInput] = useState<'Beginner' | 'Intermediate' | 'Advanced'>('Intermediate');
   const [copiedLink, setCopiedLink] = useState(false);
   const [selectedPassForQr, setSelectedPassForQr] = useState<TicketPass | null>(null);
   
@@ -404,40 +402,6 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                   />
                 </div>
 
-                {isSignUp && (
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-bold uppercase text-slate-300 mb-1">
-                        Dance Role
-                      </label>
-                      <select
-                        value={roleInput}
-                        onChange={(e) => setRoleInput(e.target.value as any)}
-                        className="w-full px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-red-500"
-                      >
-                        <option value="Lead">Lead</option>
-                        <option value="Follow">Follow</option>
-                        <option value="Both">Both / Switch</option>
-                        <option value="Social Dancer / Enthusiast">Social Dancer</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold uppercase text-slate-300 mb-1">
-                        Experience Level
-                      </label>
-                      <select
-                        value={levelInput}
-                        onChange={(e) => setLevelInput(e.target.value as any)}
-                        className="w-full px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-red-500"
-                      >
-                        <option value="Beginner">Beginner (Level 1)</option>
-                        <option value="Intermediate">Intermediate (Level 2)</option>
-                        <option value="Advanced">Advanced (Level 3)</option>
-                      </select>
-                    </div>
-                  </div>
-                )}
 
                 {loginError && (
                   <div className="p-3 rounded-2xl bg-red-500/10 border border-red-500/30">
@@ -469,12 +433,7 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                   </div>
 
                   <div>
-                    <div className="flex items-center gap-2">
-                      <h4 className="text-base font-black text-white">{user.name}</h4>
-                      <span className="px-2 py-0.5 rounded bg-red-600 text-white font-mono font-bold text-[10px] uppercase">
-                        {user.danceRole}
-                      </span>
-                    </div>
+                    <h4 className="text-base font-black text-white">{user.name}</h4>
                     <p className="text-xs text-slate-300 font-medium">{user.email}</p>
                   </div>
                 </div>
@@ -748,26 +707,6 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                         readOnly
                         value={user.email}
                         className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white font-medium"
-                      />
-                    </div>
-
-                    <div>
-                      <span className="text-slate-400 block mb-1">Dance Role</span>
-                      <input
-                        type="text"
-                        readOnly
-                        value={user.danceRole}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-rose-300 font-bold"
-                      />
-                    </div>
-
-                    <div>
-                      <span className="text-slate-400 block mb-1">Experience Level</span>
-                      <input
-                        type="text"
-                        readOnly
-                        value={`${user.level} Level`}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-emerald-300 font-bold"
                       />
                     </div>
                   </div>
