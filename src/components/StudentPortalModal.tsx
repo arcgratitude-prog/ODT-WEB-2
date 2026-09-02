@@ -67,6 +67,11 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
   const [emailInput, setEmailInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [realTickets, setRealTickets] = useState<Array<{
+    ticketId: string; passName: string; amountCents: number;
+    classesIncluded: string | null; ticketNumber: number; ticketCount: number;
+    checkedIn: boolean; createdAt: string;
+  }> | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [nameInput, setNameInput] = useState('');
   const [phoneInput, setPhoneInput] = useState('');
@@ -82,30 +87,59 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
     try {
       const storedUser = localStorage.getItem('ai_urbano_member_user');
       if (storedUser) {
-        setUser(JSON.parse(storedUser));
+        const parsed = JSON.parse(storedUser);
+        setUser(parsed);
+        if (parsed?.email && parsed?.sessionToken) {
+          fetchRealTickets(parsed.email, parsed.sessionToken);
+        }
       }
     } catch (e) {
       console.error('Failed to load member user:', e);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!isOpen) return null;
 
+  const fetchRealTickets = async (email: string, sessionToken: string) => {
+    try {
+      const res = await fetch('/api/member-tickets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, sessionToken }),
+      });
+      if (!res.ok) return; // Silently skip — local savedPasses still shows as a fallback.
+      const data = await res.json();
+      setRealTickets(data.tickets || []);
+    } catch {
+      // Network hiccup — not worth blocking the whole portal over.
+    }
+  };
+
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!emailInput.trim() || !passwordInput.trim()) return;
+    if (isSignUp && !nameInput.trim()) return;
     setLoginError(null);
     setIsLoggingIn(true);
 
     try {
-      const res = await fetch('/api/member-login', {
+      // Signing up creates a free account (no purchase required, no
+      // benefits until a real Tier purchase); logging in verifies an
+      // existing one. Both endpoints return the same response shape.
+      const endpoint = isSignUp ? '/api/member-signup' : '/api/member-login';
+      const body = isSignUp
+        ? { name: nameInput.trim(), email: emailInput.trim(), password: passwordInput }
+        : { email: emailInput.trim(), password: passwordInput };
+
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: emailInput.trim(), password: passwordInput }),
+        body: JSON.stringify(body),
       });
       const data = await res.json();
       if (!res.ok) {
-        setLoginError(data.error || 'Could not log in. Please try again.');
+        setLoginError(data.error || 'Could not complete that. Please try again.');
         setIsLoggingIn(false);
         return;
       }
@@ -127,6 +161,13 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
       };
       setUser(loggedInUser);
       localStorage.setItem('ai_urbano_member_user', JSON.stringify(loggedInUser));
+
+      // Real purchase history from the database — not just whatever
+      // happens to be saved in this one browser's local storage, which
+      // breaks the moment someone logs in on a different device.
+      if (data.email && data.sessionToken) {
+        fetchRealTickets(data.email, data.sessionToken);
+      }
     } catch {
       setLoginError('Could not reach the server. Check your connection and try again.');
     } finally {
@@ -136,6 +177,7 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
 
   const handleLogout = () => {
     setUser(null);
+    setRealTickets(null);
     localStorage.removeItem('ai_urbano_member_user');
   };
 
@@ -288,13 +330,32 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                 </p>
               </div>
 
-              {/* Accounts only come from buying a Tier pass now — no free
-                  signup here, since membership status needs to be tied to
-                  a real purchase. */}
               <div className="p-3 rounded-2xl bg-white/5 border border-white/10 text-center">
                 <p className="text-[11px] text-slate-400">
-                  Don't have an account yet? <span className="text-white font-bold">Buy any Tier pass</span> and one is created automatically.
+                  Anyone can create a free account. <span className="text-white font-bold">Buying a Tier pass</span> unlocks active-member perks like discounted socials.
                 </p>
+              </div>
+
+              {/* Login/Signup Toggle */}
+              <div className="flex rounded-xl bg-slate-900 p-1 border border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => { setIsSignUp(false); setLoginError(null); }}
+                  className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
+                    !isSignUp ? 'bg-red-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  Log In
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setIsSignUp(true); setLoginError(null); }}
+                  className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
+                    isSignUp ? 'bg-red-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  Create Free Account
+                </button>
               </div>
 
               {/* Form */}
@@ -451,6 +512,50 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                       <span>+ Buy New Pass</span>
                     </button>
                   </div>
+
+                  {/* Real purchase history from your account — this is
+                      what actually persists across devices, unlike the
+                      "saved on this device" section below which only
+                      knows about tickets bought in this exact browser. */}
+                  {realTickets !== null && (
+                    <div className="space-y-2">
+                      <h6 className="text-xs font-bold text-slate-400 uppercase tracking-wide">
+                        Your Account Purchase History
+                      </h6>
+                      {realTickets.length === 0 ? (
+                        <p className="text-xs text-slate-500 italic">No purchases found yet for this account's email.</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {realTickets.map((t) => (
+                            <div
+                              key={t.ticketId}
+                              className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between gap-3"
+                            >
+                              <div className="min-w-0">
+                                <p className="text-xs font-bold text-white truncate">{t.passName}</p>
+                                <p className="text-[10px] text-slate-500">
+                                  {new Date(t.createdAt).toLocaleDateString()} · #{t.ticketId.slice(0, 8)}
+                                  {t.ticketCount > 1 ? ` · Ticket ${t.ticketNumber} of ${t.ticketCount}` : ''}
+                                </p>
+                              </div>
+                              <div className="shrink-0 flex items-center gap-2">
+                                <span className="text-xs font-bold text-slate-300">${(t.amountCents / 100).toFixed(2)}</span>
+                                {t.checkedIn && (
+                                  <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                    Checked In
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <h6 className="text-xs font-bold text-slate-400 uppercase tracking-wide pt-2">
+                    Passes Saved On This Device
+                  </h6>
 
                   {savedPasses.length === 0 ? (
                     <div className="text-center py-10 bg-slate-900/50 rounded-2xl border border-slate-800 p-6 space-y-3">
