@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   User, X, LogIn, UserPlus, Calendar, Award, Gift, Ticket, QrCode, CheckCircle2, 
   Sparkles, Flame, Users, Clock, MapPin, Share2, Copy, Check, MessageCircle, LogOut, 
-  ChevronRight, Shield, Zap, BookOpen, Star, ArrowRight, Activity, ChevronDown, Trophy, CreditCard
+  ChevronRight, Shield, BookOpen, Star, ArrowRight, Activity, ChevronDown, Trophy, CreditCard
 } from 'lucide-react';
 import { MemberUser, TicketPass } from '../types';
 import { STUDIO_INFO, PASS_OPTIONS } from '../data/danceData';
@@ -132,11 +132,6 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
     } finally {
       setIsLoggingIn(false);
     }
-  };
-
-  const handleDemoLogin = () => {
-    setUser(DEFAULT_DEMO_MEMBER);
-    localStorage.setItem('ai_urbano_member_user', JSON.stringify(DEFAULT_DEMO_MEMBER));
   };
 
   const handleLogout = () => {
@@ -398,19 +393,6 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                   <span>{isLoggingIn ? 'Logging In...' : isSignUp ? 'Complete Member Setup' : 'Log In to Member Portal'}</span>
                 </button>
               </form>
-
-              {/* Demo Login Option */}
-              <div className="pt-4 border-t border-white/10 text-center space-y-2">
-                <p className="text-[11px] text-slate-400">Or test with a pre-configured sample profile:</p>
-                <button
-                  type="button"
-                  onClick={handleDemoLogin}
-                  className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-bold flex items-center justify-center gap-2 transition-all"
-                >
-                  <Zap className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Instant Login as Demo Member (Alex Rivera)</span>
-                </button>
-              </div>
             </div>
           ) : (
             /* ================= LOGGED IN STATE: MEMBER DASHBOARD ================= */
