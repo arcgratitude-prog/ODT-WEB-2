@@ -9,6 +9,7 @@ import { PricingSection } from './components/PricingSection';
 import { LocationSection } from './components/LocationSection';
 import { FAQSection } from './components/FAQSection';
 import { Footer } from './components/Footer';
+import { PolicyPage } from './components/PolicyPage';
 import { TicketModal } from './components/TicketModal';
 import { SavedPassesDrawer } from './components/SavedPassesDrawer';
 import { CalendarPage } from './components/CalendarPage';
@@ -31,6 +32,7 @@ export default function App() {
   const [bookingQuantity, setBookingQuantity] = useState<number>(1);
   const [isSavedPassesOpen, setIsSavedPassesOpen] = useState<boolean>(false);
   const [isStudentPortalOpen, setIsStudentPortalOpen] = useState<boolean>(false);
+  const [isPolicyOpen, setIsPolicyOpen] = useState<boolean>(false);
   const [isStoryModalOpen, setIsStoryModalOpen] = useState<boolean>(false);
   const [activeSection, setActiveSection] = useState<string>('schedule');
 
@@ -182,14 +184,14 @@ export default function App() {
               onOpenBooking={handleOpenBooking}
               onNavigateToHome={() => handleNavigate('home')}
             />
-            <Footer />
+            <Footer onOpenPolicy={() => setIsPolicyOpen(true)} />
           </div>
         ) : currentPage === 'x1' ? (
           <div className="min-h-[80vh]">
             <BachataX1Page
               onOpenBooking={handleOpenBooking}
             />
-            <Footer />
+            <Footer onOpenPolicy={() => setIsPolicyOpen(true)} />
           </div>
         ) : currentPage === 'schedule' ? (
           <div className="pt-20 sm:pt-24 min-h-[80vh]">
@@ -197,14 +199,14 @@ export default function App() {
               onOpenBooking={handleOpenBooking}
               onNavigate={handleNavigate}
             />
-            <Footer />
+            <Footer onOpenPolicy={() => setIsPolicyOpen(true)} />
           </div>
         ) : currentPage === 'review' ? (
           <div className="pt-20 sm:pt-24 min-h-[80vh]">
             <ReviewPage
               onOpenBooking={handleOpenBooking}
             />
-            <Footer />
+            <Footer onOpenPolicy={() => setIsPolicyOpen(true)} />
           </div>
         ) : currentPage === 'referral' ? (
           <div className="pt-20 sm:pt-24 min-h-[80vh]">
@@ -212,7 +214,7 @@ export default function App() {
               onOpenBooking={handleOpenBooking}
               onNavigateHome={() => handleNavigate('home')}
             />
-            <Footer />
+            <Footer onOpenPolicy={() => setIsPolicyOpen(true)} />
           </div>
         ) : (
           <>
@@ -239,7 +241,7 @@ export default function App() {
             <FAQSection />
 
             {/* Footer */}
-            <Footer />
+            <Footer onOpenPolicy={() => setIsPolicyOpen(true)} />
           </>
         )}
       </div>
@@ -276,6 +278,14 @@ export default function App() {
         savedPasses={savedPasses}
         onOpenBooking={handleOpenBooking}
       />
+
+      {/* Privacy & Refund Policy overlay — reachable from the footer on
+          every page */}
+      {isPolicyOpen && (
+        <div className="fixed inset-0 z-[60] bg-[#0a0a0c] overflow-y-auto">
+          <PolicyPage onBack={() => setIsPolicyOpen(false)} />
+        </div>
+      )}
 
       {/* Nudge for social-app in-app browsers (Instagram, etc.) where wallet
           checkout misbehaves — prompts opening in a real browser. */}

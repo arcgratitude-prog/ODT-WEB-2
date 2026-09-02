@@ -9,7 +9,13 @@ import { loadStripe, PaymentRequest, type StripeCardElement } from '@stripe/stri
 import { Check, CreditCard, Loader2, CheckCircle2, ShieldCheck } from 'lucide-react';
 import type { CheckoutTheme } from '../types';
 
+// Reads from an env var if set in Vercel (VITE_STRIPE_PUBLISHABLE_KEY),
+// falling back to the current live key so nothing breaks if that env var
+// is never configured. Publishable keys are meant to be public/exposed
+// in frontend code — this isn't a secret — but using an env var means
+// rotating it later is a config change, not a code change + redeploy.
 const stripePromise = loadStripe(
+  import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ||
   'pk_live_51TVgyc0sK2OeDNeTeiLZtSPCT1Esrjakl3wdToEdsYVEdWt2v5USe0cuaZ3fhkZhFiQoJcL5PTmLUaEp9SezW73O00st5xAx2M'
 );
 

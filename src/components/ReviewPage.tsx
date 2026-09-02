@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Star, MessageSquare, Sparkles, CheckCircle2, Copy, Check, Ticket, Gift, ThumbsUp, Heart, ShieldCheck, ArrowRight, User, ExternalLink, MapPin } from 'lucide-react';
+import { Star, MessageSquare, Sparkles, CheckCircle2, Ticket, Gift, ThumbsUp, Heart, ShieldCheck, ArrowRight, User, ExternalLink, MapPin } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { STUDIO_INFO } from '../data/danceData';
 
@@ -76,10 +76,7 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({ onOpenBooking }) => {
   const [comment, setComment] = useState<string>('');
   
   const [submittedReview, setSubmittedReview] = useState<boolean>(false);
-  const [copiedCode, setCopiedCode] = useState<boolean>(false);
   const [reviewsList, setReviewsList] = useState<DancerReview[]>(INITIAL_REVIEWS);
-
-  const PROMO_CODE = 'REVIEW10OFF';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,13 +91,13 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({ onOpenBooking }) => {
     const newRev: DancerReview = {
       id: `rev-${Date.now()}`,
       name: name.trim(),
-      role: 'Google Verified Reviewer',
+      role: 'Dance Factory Student',
       rating,
       date: 'Just now',
       title: title.trim() || 'Awesome Bachata Experience!',
       comment: comment.trim(),
       favoriteClass,
-      verified: true
+      verified: false
     };
 
     setReviewsList([newRev, ...reviewsList]);
@@ -112,12 +109,6 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({ onOpenBooking }) => {
         window.open(STUDIO_INFO.googleReviewUrl, '_blank', 'noopener,noreferrer');
       }, 600);
     }
-  };
-
-  const handleCopyCode = () => {
-    navigator.clipboard.writeText(PROMO_CODE);
-    setCopiedCode(true);
-    setTimeout(() => setCopiedCode(false), 2000);
   };
 
   const ratingLabels = ['1 Star - Needs Work', '2 Stars - Fair', '3 Stars - Good', '4 Stars - Great!', '5 Stars - Amazing / High Vibe! ★'];
@@ -133,11 +124,11 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({ onOpenBooking }) => {
         </div>
 
         <h1 className="text-3xl sm:text-5xl font-black text-white uppercase font-sans tracking-tight">
-          LEAVE A REVIEW & <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 urban-text-glow">$10 OFF NEXT PAYMENT</span>
+          LEAVE A <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 urban-text-glow">REVIEW</span>
         </h1>
 
         <p className="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto">
-          Your feedback helps our Tampa dance family grow! Leave your review below to instantly unlock a <strong>$10 discount promo code</strong> toward your next pass and sync your review directly with AI Urbano on Google.
+          Your feedback helps our Tampa dance family grow! Leave a review below and we'll open Google Maps so you can post it live for AI Urbano.
         </p>
       </div>
 
@@ -151,10 +142,10 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({ onOpenBooking }) => {
             </div>
             <div>
               <h2 className="text-xl font-black text-white uppercase font-sans">
-                Leave Your Review & Get $10 Off
+                Leave Your Review
               </h2>
               <p className="text-xs text-slate-400">
-                Takes under 60 seconds • Unlocks instant $10 Off coupon + Google Maps review
+                Takes under 60 seconds • Posts live on Google Maps
               </p>
             </div>
           </div>
@@ -214,7 +205,7 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({ onOpenBooking }) => {
                 <input
                   type="email"
                   required
-                  placeholder="For sending $10 discount receipt"
+                  placeholder="Your email address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:border-amber-400 focus:outline-none"
@@ -274,13 +265,13 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({ onOpenBooking }) => {
               className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-black font-black text-sm uppercase tracking-wider shadow-2xl shadow-amber-500/30 flex items-center justify-center gap-2 transition-transform hover:scale-[1.01]"
             >
               <Sparkles className="w-5 h-5 text-black" />
-              <span>SUBMIT REVIEW & REVEAL $10 OFF CODE</span>
+              <span>SUBMIT REVIEW</span>
             </button>
 
           </form>
         </div>
       ) : (
-        /* SUCCESS REWARD CARD */
+        /* SUCCESS CARD */
         <div className="liquid-glass-card rounded-3xl p-8 sm:p-10 border-2 border-amber-400/80 shadow-[0_0_40px_rgba(251,191,36,0.3)] bg-gradient-to-b from-slate-900 via-zinc-950 to-slate-950 max-w-2xl mx-auto text-center space-y-6">
           
           <div className="w-16 h-16 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/50 flex items-center justify-center mx-auto shadow-lg">
@@ -290,37 +281,13 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({ onOpenBooking }) => {
           <div className="space-y-2">
             <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold border border-emerald-500/30 uppercase tracking-widest inline-flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-              REVIEW SUBMITTED & LINKED TO GOOGLE MAPS!
+              THANK YOU FOR YOUR REVIEW!
             </span>
             <h2 className="text-2xl sm:text-4xl font-black text-white uppercase font-sans">
-              YOUR $10 OFF CODE IS READY
+              We opened Google Maps for you
             </h2>
             <p className="text-slate-300 text-xs sm:text-sm max-w-md mx-auto">
-              We opened <strong>AI Urbano on Google Maps</strong> in a new tab for you to publish your review live! Use your promo code below on your next pass.
-            </p>
-          </div>
-
-          {/* Coupon Display Box */}
-          <div className="p-6 rounded-2xl bg-slate-950 border border-amber-500/40 max-w-md mx-auto space-y-3 shadow-inner">
-            <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest">
-              YOUR EXCLUSIVE DISCOUNT PROMO CODE
-            </span>
-
-            <div className="flex items-center justify-between bg-slate-900 p-3.5 rounded-xl border border-amber-400/50">
-              <span className="text-2xl font-black font-mono text-amber-300 tracking-wider">
-                {PROMO_CODE}
-              </span>
-              <button
-                onClick={handleCopyCode}
-                className="px-3.5 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold flex items-center gap-1.5 transition-colors"
-              >
-                {copiedCode ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                <span>{copiedCode ? 'COPIED!' : 'COPY CODE'}</span>
-              </button>
-            </div>
-
-            <p className="text-[11px] font-mono text-amber-400/90">
-              ✓ Applies $10 OFF automatically at checkout
+              Just paste your review into the tab we opened and hit post — it means a lot to our Tampa dance family, and helps other dancers find us.
             </p>
           </div>
 
@@ -330,7 +297,7 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({ onOpenBooking }) => {
               className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-black text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-2"
             >
               <Ticket className="w-4 h-4" />
-              <span>BOOK PASS WITH $10 OFF NOW</span>
+              <span>BROWSE CLASS PASSES</span>
             </button>
             {STUDIO_INFO.googleReviewUrl && (
               <a

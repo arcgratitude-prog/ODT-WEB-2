@@ -22,8 +22,9 @@ interface CalendarEvent {
 }
 
 export const CalendarPage: React.FC<CalendarPageProps> = ({ onOpenBooking, onNavigate }) => {
-  const [currentYear, setCurrentYear] = useState<number>(2026);
-  const [currentMonth, setCurrentMonth] = useState<number>(7); // 0-indexed: 7 = August
+  const today = new Date();
+  const [currentYear, setCurrentYear] = useState<number>(today.getFullYear());
+  const [currentMonth, setCurrentMonth] = useState<number>(today.getMonth());
   const [selectedCategory, setSelectedCategory] = useState<'ALL' | 'social' | 'class' | 'open-house'>('ALL');
   const [viewMode, setViewMode] = useState<'month' | 'agenda'>('month');
   const [activeEvent, setActiveEvent] = useState<CalendarEvent | null>(null);

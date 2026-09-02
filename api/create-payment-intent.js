@@ -6,6 +6,7 @@
 import Stripe from 'stripe';
 import { sql, ensureMembersTable } from './lib/db.js';
 import { verifyPassword } from './lib/password.js';
+import { getRealPriceInCents } from './lib/priceCatalog.js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -18,7 +19,6 @@ export default async function handler(req, res) {
   try {
     const {
       passName,
-      priceInCents,
       passType,
       customerName,
       customerEmail,
@@ -32,8 +32,20 @@ export default async function handler(req, res) {
       memberSessionToken,
     } = req.body;
 
-    if (!passName || typeof priceInCents !== 'number' || priceInCents < 50) {
+    if (!passName) {
       return res.status(400).json({ error: 'Invalid request' });
+    }
+
+    // The real per-ticket price, looked up server-side from a catalog
+    // this file owns — never taken from the request body. A previous
+    // version of this endpoint trusted a client-submitted price number
+    // (with only a 50-cent floor check), which meant anyone editing the
+    // network request in dev tools could pay whatever they wanted for
+    // any pass. That vulnerability is now closed: the client no longer
+    // gets any say in the base price at all.
+    const realPricePerTicketCents = getRealPriceInCents(passName);
+    if (realPricePerTicketCents === null) {
+      return res.status(400).json({ error: 'Unrecognized pass — cannot determine price.' });
     }
 
     // Clamp defensively — matches the same 1–10 range enforced again in
@@ -42,22 +54,23 @@ export default async function handler(req, res) {
     const rawQty = parseInt(quantity, 10);
     const qty = Number.isFinite(rawQty) ? Math.min(Math.max(rawQty, 1), 10) : 1;
 
+    const realTotalInCents = realPricePerTicketCents * qty;
+
     // Active-member discount: 20% off, but only ever on ONE ticket per
     // order — buying 3 tickets doesn't mean 3 discounts, it means 2 full
-    // price + 1 discounted. This entire block ignores whatever the
-    // client suggested the price should be; it independently verifies
-    // the member against the real database and recomputes the charge
-    // from scratch, so nobody can just edit a number in their browser
-    // (or hand their login to a friend mid-purchase) to get a discount
-    // that wasn't actually earned. Only applies to the two social
-    // events — Locura and Invasion — not weekly Tiers/drop-ins.
+    // price + 1 discounted. This independently verifies the member
+    // against the real database and recomputes the charge from scratch,
+    // so nobody can just edit a number in their browser (or hand their
+    // login to a friend mid-purchase) to get a discount that wasn't
+    // actually earned. Only applies to the two social events — Locura
+    // and Invasion — not weekly Tiers/drop-ins.
     //
     // Two ways to prove membership: a password (manual entry at
     // checkout) or a session token (issued at Member Portal login, so
     // someone already logged in gets the discount automatically without
     // re-typing their password — the frontend never stores the password
     // itself for this, only the token).
-    let finalPriceInCents = priceInCents;
+    let finalPriceInCents = realTotalInCents;
     let memberDiscountApplied = false;
     const isDiscountEligibleEvent = /Locura|Invasion/i.test(passName);
 
@@ -74,12 +87,9 @@ export default async function handler(req, res) {
           : await verifyPassword(memberPassword, memberRows[0].password_hash, memberRows[0].password_salt);
         const isActiveMember = new Date(memberRows[0].membership_expires_at) > new Date();
         if (isVerified && isActiveMember) {
-          // Recompute from the pass's real per-ticket price rather than
-          // trusting any client math — priceInCents here is expected to
-          // be the FULL undiscounted total (base price × qty).
-          const perTicketCents = Math.round(priceInCents / qty);
-          const discountedFirstTicket = Math.round(perTicketCents * 0.8);
-          finalPriceInCents = discountedFirstTicket + perTicketCents * (qty - 1);
+          // Recompute from the REAL per-ticket price (never the client's).
+          const discountedFirstTicket = Math.round(realPricePerTicketCents * 0.8);
+          finalPriceInCents = discountedFirstTicket + realPricePerTicketCents * (qty - 1);
           memberDiscountApplied = true;
         }
         // Wrong password/token or expired membership: silently fall back

@@ -3,7 +3,11 @@ import { Crown, MapPin, Instagram, Sparkles, Heart, MessageCircle } from 'lucide
 import { STUDIO_INFO } from '../data/danceData';
 import { AiUrbanoLogo } from './AiUrbanoLogo';
 
-export const Footer: React.FC = () => {
+interface FooterProps {
+  onOpenPolicy?: () => void;
+}
+
+export const Footer: React.FC<FooterProps> = ({ onOpenPolicy }) => {
   return (
     <footer className="relative z-10 border-t border-white/10 bg-[#0a0a0c]/90 backdrop-blur-xl pt-12 pb-28 md:pb-12 px-4 sm:px-6 lg:px-8">
       
@@ -96,6 +100,14 @@ export const Footer: React.FC = () => {
         {/* Copyright */}
         <div className="md:col-span-3 text-left md:text-right text-xs text-slate-400 space-y-1">
           <div>&copy; {new Date().getFullYear()} Urban Bachata Tampa</div>
+          {onOpenPolicy && (
+            <button
+              onClick={onOpenPolicy}
+              className="text-[11px] text-slate-500 hover:text-slate-300 underline underline-offset-2 transition-colors"
+            >
+              Privacy & Refund Policy
+            </button>
+          )}
           <div className="flex items-center md:justify-end gap-1 text-[11px] text-slate-400">
             <span>Crafted for Urban Bachata Dancers</span>
             <Heart className="w-3 h-3 text-red-500 fill-red-500" />

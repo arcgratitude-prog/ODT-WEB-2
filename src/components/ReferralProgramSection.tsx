@@ -9,7 +9,7 @@ interface ReferralProgramSectionProps {
 export const ReferralProgramSection: React.FC<ReferralProgramSectionProps> = ({ onOpenBooking, onNavigateHome }) => {
   const [userName, setUserName] = useState('');
   const [copiedLink, setCopiedLink] = useState(false);
-  const [referralCount, setReferralCount] = useState<number>(1);
+  const [referralCount] = useState<number>(0);
 
   const refLink = userName.trim() 
     ? `https://officialdancetheory.com?ref=${encodeURIComponent(userName.trim().toLowerCase().replace(/\s+/g, ''))}`
@@ -61,6 +61,9 @@ export const ReferralProgramSection: React.FC<ReferralProgramSectionProps> = ({ 
           <p className="text-slate-300 text-xs sm:text-sm max-w-2xl mx-auto leading-relaxed">
             Dancing is always better with friends! Invite your dance crew to AI Urbano Bachata in Tampa and unlock free socials, discounts on full cycles, and private lessons with Albina & Isaac.
           </p>
+          <p className="text-slate-500 text-[11px] max-w-xl mx-auto leading-relaxed pt-1">
+            Have your friend enter your name in the "Referred By" field when they check out — we track it and honor these rewards for you directly.
+          </p>
         </div>
 
         {/* 3 Tier Reward Cards */}
@@ -89,7 +92,7 @@ export const ReferralProgramSection: React.FC<ReferralProgramSectionProps> = ({ 
             <div className="pt-4 border-t border-white/10 flex items-center justify-between">
               <span className="text-[11px] font-mono text-slate-400">Value: $10 – $20</span>
               <span className="text-xs font-bold text-red-400 flex items-center gap-1">
-                Reward Tier 1 <Check className="w-3.5 h-3.5" />
+                Reward Tier 1
               </span>
             </div>
           </div>
@@ -121,7 +124,7 @@ export const ReferralProgramSection: React.FC<ReferralProgramSectionProps> = ({ 
             <div className="pt-4 border-t border-white/10 flex items-center justify-between">
               <span className="text-[11px] font-mono text-slate-400">Save $20 Instant</span>
               <span className="text-xs font-bold text-rose-400 flex items-center gap-1">
-                Reward Tier 2 <Check className="w-3.5 h-3.5" />
+                Reward Tier 2
               </span>
             </div>
           </div>
