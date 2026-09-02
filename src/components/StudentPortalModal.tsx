@@ -22,8 +22,8 @@ const DEFAULT_DEMO_MEMBER: MemberUser = {
   danceRole: 'Lead',
   level: 'Intermediate',
   joinedDate: 'June 2026',
-  referralCode: 'alexrivera',
-  referralCount: 2,
+  referralCode: '',
+  referralCount: 0,
   attendanceCount: 7,
   socialsAttendedCount: 4,
   socialPunchGoal: 5,
@@ -66,6 +66,7 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
   const [isSignUp, setIsSignUp] = useState(false);
   const [emailInput, setEmailInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
+  const [confirmPasswordInput, setConfirmPasswordInput] = useState('');
   const [loginError, setLoginError] = useState<string | null>(null);
   const [realTickets, setRealTickets] = useState<Array<{
     ticketId: string; passName: string; amountCents: number;
@@ -119,6 +120,18 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
     if (!emailInput.trim() || !passwordInput.trim()) return;
     if (isSignUp && !nameInput.trim()) return;
     setLoginError(null);
+
+    if (isSignUp) {
+      if (passwordInput.length < 6) {
+        setLoginError('Password must be at least 6 characters.');
+        return;
+      }
+      if (passwordInput !== confirmPasswordInput) {
+        setLoginError('Passwords do not match.');
+        return;
+      }
+    }
+
     setIsLoggingIn(true);
 
     try {
@@ -146,6 +159,15 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
       // cosmetic demo fields (role/level/achievements/etc.) that don't
       // have a real backend yet — those stay as placeholders for now,
       // only the membership status itself is real.
+      //
+      // referralCode is derived from THIS account's own name/email —
+      // not a shared template value — so every real account gets its
+      // own distinct-looking referral link instead of everyone
+      // accidentally sharing "alexrivera".
+      const derivedReferralCode = (data.name || data.email.split('@')[0])
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '');
+
       const loggedInUser: MemberUser = {
         ...DEFAULT_DEMO_MEMBER,
         id: String(data.id),
@@ -156,6 +178,8 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
         membershipExpiresAt: data.membershipExpiresAt,
         lastPassName: data.lastPassName,
         sessionToken: data.sessionToken,
+        referralCode: derivedReferralCode,
+        referralCount: 0,
       };
       setUser(loggedInUser);
       localStorage.setItem('ai_urbano_member_user', JSON.stringify(loggedInUser));
@@ -402,6 +426,22 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                   />
                 </div>
 
+                {isSignUp && (
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-slate-300 mb-1">
+                      Confirm Password
+                    </label>
+                    <input
+                      type="password"
+                      required
+                      placeholder="Re-enter password"
+                      value={confirmPasswordInput}
+                      onChange={(e) => setConfirmPasswordInput(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-red-500"
+                    />
+                  </div>
+                )}
+
 
                 {loginError && (
                   <div className="p-3 rounded-2xl bg-red-500/10 border border-red-500/30">
@@ -573,6 +613,9 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                           REFERRAL DASHBOARD
                         </span>
                         <h5 className="text-lg font-black text-white mt-1">Your Personal Referral Link</h5>
+                        <p className="text-[10px] text-slate-400 mt-1 max-w-xs">
+                          Have friends enter your name in "Referred By" at checkout — we track it and honor these rewards for you directly.
+                        </p>
                       </div>
                       <div className="text-right">
                         <span className="text-2xl font-black text-rose-400">{user.referralCount}</span>
