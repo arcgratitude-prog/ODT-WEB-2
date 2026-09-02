@@ -70,6 +70,8 @@ export async function ensureMembersTable() {
       last_pass_name TEXT,
       last_ticket_id TEXT,
       session_token TEXT,
+      referral_code TEXT UNIQUE,
+      referred_by_member_id INTEGER REFERENCES members(id),
       membership_expires_at TIMESTAMPTZ NOT NULL,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -79,8 +81,42 @@ export async function ensureMembersTable() {
     CREATE INDEX IF NOT EXISTS idx_members_email ON members (LOWER(email));
   `;
   await sql`ALTER TABLE members ADD COLUMN IF NOT EXISTS session_token TEXT;`;
+  // Real, stored, unique referral code per account (not derived from name
+  // client-side, which could collide for two people sharing a name) and
+  // a foreign key recording exactly which member — if any — referred
+  // this one. This is the real, database-backed relationship the
+  // referral system is built on; "referral count" for any member is
+  // always computed live as COUNT(*) of rows where
+  // referred_by_member_id = that member's id, never a separately
+  // stored/incremented counter that could drift out of sync or be
+  // double-counted.
+  await sql`ALTER TABLE members ADD COLUMN IF NOT EXISTS referral_code TEXT;`;
+  await sql`ALTER TABLE members ADD COLUMN IF NOT EXISTS referred_by_member_id INTEGER REFERENCES members(id);`;
+  await sql`
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_members_referral_code ON members (referral_code) WHERE referral_code IS NOT NULL;
+  `;
   await sql`
     CREATE INDEX IF NOT EXISTS idx_members_expires_at ON members (membership_expires_at DESC);
+  `;
+}
+
+// Password reset tokens — short-lived, single-use. Kept in their own
+// table rather than a column on members so a token can be cleanly
+// deleted the moment it's used (or expired), with no risk of stale
+// token data lingering on the member row itself.
+export async function ensurePasswordResetTable() {
+  await sql`
+    CREATE TABLE IF NOT EXISTS password_resets (
+      id SERIAL PRIMARY KEY,
+      member_id INTEGER NOT NULL REFERENCES members(id),
+      token TEXT UNIQUE NOT NULL,
+      expires_at TIMESTAMPTZ NOT NULL,
+      used BOOLEAN NOT NULL DEFAULT FALSE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_password_resets_token ON password_resets (token);
   `;
 }
 

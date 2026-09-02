@@ -12,6 +12,7 @@
 import { randomBytes } from 'crypto';
 import { sql, ensureMembersTable } from './lib/db.js';
 import { verifyPassword } from './lib/password.js';
+import { generateUniqueReferralCode, getReferralCount } from './lib/referral.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -30,7 +31,7 @@ export default async function handler(req, res) {
     const normalizedEmail = email.trim().toLowerCase();
     const rows = await sql`
       SELECT id, email, password_hash, password_salt, name, phone,
-             last_pass_name, membership_expires_at, created_at
+             last_pass_name, membership_expires_at, created_at, referral_code
       FROM members WHERE LOWER(email) = ${normalizedEmail} LIMIT 1;
     `;
 
@@ -45,7 +46,20 @@ export default async function handler(req, res) {
     }
 
     const sessionToken = randomBytes(24).toString('hex');
-    await sql`UPDATE members SET session_token = ${sessionToken} WHERE id = ${member.id};`;
+
+    // Backfill: an account created before referral codes existed won't
+    // have one yet (NULL). Generate a real one now rather than leaving
+    // it blank forever — every account should have exactly one real,
+    // unique code once this runs.
+    let referralCode = member.referral_code;
+    if (!referralCode) {
+      referralCode = await generateUniqueReferralCode();
+      await sql`UPDATE members SET session_token = ${sessionToken}, referral_code = ${referralCode} WHERE id = ${member.id};`;
+    } else {
+      await sql`UPDATE members SET session_token = ${sessionToken} WHERE id = ${member.id};`;
+    }
+
+    const referralCount = await getReferralCount(member.id);
 
     return res.status(200).json({
       id: member.id,
@@ -57,6 +71,8 @@ export default async function handler(req, res) {
       isActive: new Date(member.membership_expires_at) > new Date(),
       memberSince: member.created_at,
       sessionToken,
+      referralCode,
+      referralCount,
     });
   } catch (err) {
     console.error('member-login error:', err);

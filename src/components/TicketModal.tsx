@@ -422,16 +422,20 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                       }
                       setIsCheckingAccount(true);
                       try {
+                        const pendingReferralCode = localStorage.getItem('ai_urbano_pending_referral_code');
                         const res = await fetch('/api/member-signup', {
                           method: 'POST',
                           headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ name, email, phone, password }),
+                          body: JSON.stringify({ name, email, phone, password, referralCode: pendingReferralCode || undefined }),
                         });
                         const data = await res.json();
                         if (!res.ok) {
                           setAccountError(data.error || 'Could not create your account. Please try again.');
                           setIsCheckingAccount(false);
                           return;
+                        }
+                        if (data.isNewAccount) {
+                          localStorage.removeItem('ai_urbano_pending_referral_code');
                         }
                       } catch {
                         setAccountError('Could not reach the server. Check your connection and try again.');

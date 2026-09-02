@@ -35,20 +35,7 @@ const DEFAULT_DEMO_MEMBER: MemberUser = {
     { id: '3', title: 'Community Ambassador', desc: 'Referred 2 friends to AI Urbano', icon: '🎁', date: 'July 2026' },
     { id: '4', title: 'Cycle Enrollee', desc: 'Registered for 8-Week Progressive Urban Bachata', icon: '🏆', date: 'August 2026' }
   ],
-  enrolledCycles: [
-    {
-      id: 'track-progression-enrolled',
-      title: 'Tier 2: Grindin’ (4-Week Course)',
-      schedule: 'Wednesdays @ 7:00 PM - 9:00 PM',
-      location: 'Dance Factory Tampa',
-      startDate: 'August 5, 2026',
-      currentWeek: 2,
-      totalWeeks: 4,
-      nextClassDate: 'Wednesday, Aug 5 (7:00 PM)',
-      instructors: 'Albina & Isaac',
-      status: 'Active'
-    }
-  ]
+  enrolledCycles: []
 };
 
 export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
@@ -67,6 +54,10 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
   const [emailInput, setEmailInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [confirmPasswordInput, setConfirmPasswordInput] = useState('');
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
+  const [forgotPasswordMessage, setForgotPasswordMessage] = useState<string | null>(null);
+  const [isSendingReset, setIsSendingReset] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [realTickets, setRealTickets] = useState<Array<{
     ticketId: string; passName: string; amountCents: number;
@@ -115,6 +106,28 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
     }
   };
 
+  const handleForgotPasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!forgotPasswordEmail.trim()) return;
+    setIsSendingReset(true);
+    setForgotPasswordMessage(null);
+    try {
+      const res = await fetch('/api/member-forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: forgotPasswordEmail.trim() }),
+      });
+      const data = await res.json();
+      // Deliberately the same message whether or not the email exists —
+      // matches the backend's own privacy-preserving behavior.
+      setForgotPasswordMessage(data.message || "If that email has an account, we've sent a password reset link to it.");
+    } catch {
+      setForgotPasswordMessage('Could not reach the server. Please try again.');
+    } finally {
+      setIsSendingReset(false);
+    }
+  };
+
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!emailInput.trim() || !passwordInput.trim()) return;
@@ -139,8 +152,14 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
       // benefits until a real Tier purchase); logging in verifies an
       // existing one. Both endpoints return the same response shape.
       const endpoint = isSignUp ? '/api/member-signup' : '/api/member-login';
+      // If they arrived via someone's referral link, App.tsx already
+      // captured it into localStorage — send it along so the backend can
+      // record the real relationship at the moment the account is
+      // actually created. Only relevant for signup; logging into an
+      // existing account can't retroactively add a referrer.
+      const pendingReferralCode = isSignUp ? localStorage.getItem('ai_urbano_pending_referral_code') : null;
       const body = isSignUp
-        ? { name: nameInput.trim(), email: emailInput.trim(), password: passwordInput }
+        ? { name: nameInput.trim(), email: emailInput.trim(), password: passwordInput, referralCode: pendingReferralCode || undefined }
         : { email: emailInput.trim(), password: passwordInput };
 
       const res = await fetch(endpoint, {
@@ -155,19 +174,23 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
         return;
       }
 
-      // Real account data (name/email/membership status) merged with the
-      // cosmetic demo fields (role/level/achievements/etc.) that don't
-      // have a real backend yet — those stay as placeholders for now,
-      // only the membership status itself is real.
-      //
-      // referralCode is derived from THIS account's own name/email —
-      // not a shared template value — so every real account gets its
-      // own distinct-looking referral link instead of everyone
-      // accidentally sharing "alexrivera".
-      const derivedReferralCode = (data.name || data.email.split('@')[0])
-        .toLowerCase()
-        .replace(/[^a-z0-9]/g, '');
+      // Once a signup successfully uses a pending referral code, clear
+      // it — it's been consumed (recorded permanently in the database as
+      // referred_by_member_id), so it shouldn't be replayed onto a
+      // second, unrelated signup later in the same browser.
+      if (isSignUp) {
+        localStorage.removeItem('ai_urbano_pending_referral_code');
+      }
 
+      // Real account data (name/email/membership status/referral code/
+      // referral count) — all of this now comes directly from the
+      // server, which is the actual source of truth. referralCode is a
+      // real, unique, database-stored value generated server-side (see
+      // api/lib/referral.js), never derived from the name client-side —
+      // that would collide for two people who happen to share a name.
+      // referralCount is computed live from real rows in the database
+      // (how many accounts have this account as their referrer), not a
+      // hardcoded or locally-tracked number.
       const loggedInUser: MemberUser = {
         ...DEFAULT_DEMO_MEMBER,
         id: String(data.id),
@@ -178,8 +201,8 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
         membershipExpiresAt: data.membershipExpiresAt,
         lastPassName: data.lastPassName,
         sessionToken: data.sessionToken,
-        referralCode: derivedReferralCode,
-        referralCount: 0,
+        referralCode: data.referralCode || '',
+        referralCount: data.referralCount ?? 0,
       };
       setUser(loggedInUser);
       localStorage.setItem('ai_urbano_member_user', JSON.stringify(loggedInUser));
@@ -201,6 +224,15 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
     setUser(null);
     setRealTickets(null);
     localStorage.removeItem('ai_urbano_member_user');
+    // Clear the form entirely — otherwise the next person to use this
+    // device (e.g. a shared computer at the studio front desk) would see
+    // the previous person's name and email still sitting in the fields.
+    setIsSignUp(false);
+    setNameInput('');
+    setEmailInput('');
+    setPasswordInput('');
+    setConfirmPasswordInput('');
+    setLoginError(null);
   };
 
   const refLink = user 
@@ -358,6 +390,46 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                 </p>
               </div>
 
+              {showForgotPassword ? (
+                <form onSubmit={handleForgotPasswordSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-slate-300 mb-1">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="dance@example.com"
+                      value={forgotPasswordEmail}
+                      onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-red-500"
+                    />
+                  </div>
+
+                  {forgotPasswordMessage && (
+                    <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30">
+                      <p className="text-[11px] text-emerald-300">{forgotPasswordMessage}</p>
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={isSendingReset}
+                    className="w-full py-3 rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-pink-600 hover:from-red-500 hover:to-pink-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-red-600/30 transition-all disabled:opacity-60"
+                  >
+                    {isSendingReset ? 'Sending...' : 'Send Reset Link'}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => { setShowForgotPassword(false); setForgotPasswordMessage(null); }}
+                    className="w-full text-center text-xs text-slate-400 hover:text-white"
+                  >
+                    ← Back to Log In
+                  </button>
+                </form>
+              ) : (
+                <>
               {/* Login/Signup Toggle */}
               <div className="flex rounded-xl bg-slate-900 p-1 border border-slate-800">
                 <button
@@ -449,6 +521,16 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                   </div>
                 )}
 
+                {!isSignUp && (
+                  <button
+                    type="button"
+                    onClick={() => { setShowForgotPassword(true); setLoginError(null); }}
+                    className="text-xs text-slate-400 hover:text-white underline underline-offset-2"
+                  >
+                    Forgot Password?
+                  </button>
+                )}
+
                 <button
                   type="submit"
                   disabled={isLoggingIn}
@@ -458,6 +540,8 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                   <span>{isLoggingIn ? 'Logging In...' : isSignUp ? 'Complete Member Setup' : 'Log In to Member Portal'}</span>
                 </button>
               </form>
+              </>
+              )}
             </div>
           ) : (
             /* ================= LOGGED IN STATE: MEMBER DASHBOARD ================= */

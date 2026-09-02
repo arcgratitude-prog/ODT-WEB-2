@@ -10,6 +10,7 @@ import { LocationSection } from './components/LocationSection';
 import { FAQSection } from './components/FAQSection';
 import { Footer } from './components/Footer';
 import { PolicyPage } from './components/PolicyPage';
+import { ResetPasswordPage } from './components/ResetPasswordPage';
 import { TicketModal } from './components/TicketModal';
 import { SavedPassesDrawer } from './components/SavedPassesDrawer';
 import { CalendarPage } from './components/CalendarPage';
@@ -46,6 +47,25 @@ export default function App() {
       }
     } catch (e) {
       console.error('Failed to load local passes:', e);
+    }
+  }, []);
+
+  // Capture a referral code from the URL (?ref=CODE) the moment anyone
+  // arrives via a referral link, and persist it so it survives normal
+  // browsing/navigation around the site even if they don't sign up on
+  // this exact page. This is what "the referral information must
+  // persist while the new person navigates the site" actually means in
+  // practice — it's read again later, at the moment of signup, in
+  // TicketModal.tsx / StudentPortalModal.tsx.
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const ref = params.get('ref');
+      if (ref && ref.trim()) {
+        localStorage.setItem('ai_urbano_pending_referral_code', ref.trim());
+      }
+    } catch (e) {
+      console.error('Failed to capture referral code:', e);
     }
   }, []);
 
@@ -151,6 +171,12 @@ export default function App() {
     const ticketId = params.get('ticket');
     if (ticketId) {
       return <DigitalPassPage ticketId={ticketId} />;
+    }
+    // Password reset — reached via the link in the password reset
+    // email, at yoursite.com/?reset=<token>.
+    const resetToken = params.get('reset');
+    if (resetToken) {
+      return <ResetPasswordPage token={resetToken} />;
     }
   }
 
