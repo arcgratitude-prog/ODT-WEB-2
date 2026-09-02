@@ -195,7 +195,6 @@ export default function App() {
         <Navbar
           onOpenBooking={handleOpenBooking}
           onOpenSavedPasses={() => setIsSavedPassesOpen(true)}
-          savedPassesCount={savedPasses.length}
           currentPage={currentPage}
           onNavigate={handleNavigate}
           activeSection={activeSection}

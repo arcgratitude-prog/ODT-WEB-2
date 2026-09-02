@@ -11,7 +11,6 @@ const SHOW_X1_TAB = false;
 interface NavbarProps {
   onOpenBooking: (passTypeId?: string, quantity?: number) => void;
   onOpenSavedPasses: () => void;
-  savedPassesCount: number;
   currentPage: 'home' | 'social' | 'schedule' | 'review' | 'referral' | 'x1';
   onNavigate: (page: 'home' | 'social' | 'schedule' | 'review' | 'referral' | 'x1', sectionId?: string) => void;
   activeSection: string;
@@ -22,7 +21,6 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({
   onOpenBooking,
   onOpenSavedPasses,
-  savedPassesCount,
   currentPage,
   onNavigate,
   activeSection,
@@ -195,11 +193,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 <User className="w-3.5 h-3.5 text-red-400" />
                 <span>Member Login</span>
-                {savedPassesCount > 0 && (
-                  <span className="px-1.5 py-0.2 rounded-full bg-emerald-500 text-black text-[9px] font-mono font-black">
-                    {savedPassesCount}
-                  </span>
-                )}
               </button>
             )}
 
@@ -258,11 +251,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </div>
                   <span>Member Login & Account Portal</span>
                 </div>
-                {savedPassesCount > 0 && (
-                  <span className="px-2 py-0.5 rounded-full bg-emerald-500 text-black text-[10px] font-mono font-black">
-                    {savedPassesCount} Saved
-                  </span>
-                )}
               </button>
             )}
 
