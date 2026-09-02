@@ -438,17 +438,6 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
 
                 <div className="flex items-center gap-2 self-end sm:self-center w-full sm:w-auto">
                   <button
-                    onClick={() => {
-                      onClose();
-                      onOpenBooking('dropin-1');
-                    }}
-                    className="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md transition-all"
-                  >
-                    <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
-                    <span>Get New Pass</span>
-                  </button>
-
-                  <button
                     onClick={handleLogout}
                     className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-700 transition-colors"
                     title="Log Out"
@@ -486,10 +475,7 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                       <Ticket className="w-10 h-10 text-slate-600 mx-auto" />
                       <p className="text-xs text-slate-300">No active passes saved on this device yet.</p>
                       <button
-                        onClick={() => {
-                          onClose();
-                          onOpenBooking('dropin-1');
-                        }}
+                        onClick={onClose}
                         className="px-4 py-2.5 rounded-xl bg-red-600 text-white text-xs font-bold"
                       >
                         Browse Class Passes
