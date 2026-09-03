@@ -681,35 +681,67 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {savedPasses.map((pass) => (
-                        <div
-                          key={pass.ticketId}
-                          className="p-4 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 border border-slate-800 hover:border-red-500/40 transition-all flex flex-col justify-between space-y-3"
-                        >
-                          <div>
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase">
-                                {pass.status}
-                              </span>
-                              <span className="text-[10px] font-mono text-slate-400">
-                                ID: #{pass.ticketId.slice(0, 8)}
-                              </span>
+                      {savedPasses.map((pass) => {
+                        // Same reasoning as the real Account Purchase
+                        // History list: a dated social event ticket isn't
+                        // valid to show at a door once that date has
+                        // passed. Also specifically catch the old known-
+                        // bad "August 5th" placeholder text some tickets
+                        // saved before this was fixed still carry — that
+                        // string was never a real event date to begin
+                        // with, so any ticket showing it is automatically
+                        // treated as expired regardless of today's date.
+                        let isPastEvent = /August 5th/i.test(pass.eventDate);
+                        if (!isPastEvent && /Locura/i.test(pass.passName)) {
+                          isPastEvent = new Date('2026-09-20T21:00:00') < new Date();
+                        } else if (!isPastEvent && /Invasion/i.test(pass.passName)) {
+                          isPastEvent = new Date('2026-09-12T01:00:00') < new Date();
+                        }
+
+                        return (
+                          <div
+                            key={pass.ticketId}
+                            className={`p-4 rounded-2xl border flex flex-col justify-between space-y-3 transition-all ${
+                              isPastEvent
+                                ? 'bg-slate-950/40 border-slate-800/60 opacity-50 grayscale'
+                                : 'bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 border-slate-800 hover:border-red-500/40'
+                            }`}
+                          >
+                            <div>
+                              <div className="flex items-center justify-between mb-2">
+                                <span className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase border ${
+                                  isPastEvent
+                                    ? 'bg-slate-700/40 text-slate-300 border-slate-600'
+                                    : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                                }`}>
+                                  {isPastEvent ? 'Past Event' : pass.status}
+                                </span>
+                                <span className="text-[10px] font-mono text-slate-400">
+                                  ID: #{pass.ticketId.slice(0, 8)}
+                                </span>
+                              </div>
+
+                              <h6 className="text-sm font-extrabold text-white">{pass.passName}</h6>
+                              <p className="text-xs text-slate-300 font-medium">{pass.eventDate}</p>
+                              <p className="text-[11px] text-slate-400">{pass.location}</p>
                             </div>
 
-                            <h6 className="text-sm font-extrabold text-white">{pass.passName}</h6>
-                            <p className="text-xs text-slate-300 font-medium">{pass.eventDate}</p>
-                            <p className="text-[11px] text-slate-400">{pass.location}</p>
+                            {isPastEvent ? (
+                              <div className="w-full py-2 rounded-xl bg-slate-800/60 border border-slate-700 text-slate-400 text-xs font-bold flex items-center justify-center gap-1.5">
+                                <span>Event Has Passed — No Longer Valid</span>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => setSelectedPassForQr(pass)}
+                                className="w-full py-2 rounded-xl bg-red-600/20 hover:bg-red-600/30 border border-red-500/40 text-red-300 text-xs font-bold flex items-center justify-center gap-1.5 transition-all"
+                              >
+                                <QrCode className="w-3.5 h-3.5" />
+                                <span>Show Entry QR Code</span>
+                              </button>
+                            )}
                           </div>
-
-                          <button
-                            onClick={() => setSelectedPassForQr(pass)}
-                            className="w-full py-2 rounded-xl bg-red-600/20 hover:bg-red-600/30 border border-red-500/40 text-red-300 text-xs font-bold flex items-center justify-center gap-1.5 transition-all"
-                          >
-                            <QrCode className="w-3.5 h-3.5" />
-                            <span>Show Entry QR Code</span>
-                          </button>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
                 </div>

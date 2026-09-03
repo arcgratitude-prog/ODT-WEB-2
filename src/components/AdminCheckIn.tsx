@@ -148,6 +148,9 @@ export const AdminCheckIn: React.FC = () => {
 
   const checkedInCount = bookings.filter((b) => b.checked_in).length;
   const totalRevenueCents = bookings.reduce((sum, b) => sum + b.amount_cents, 0);
+  const boughtTodayCount = bookings.filter(
+    (b) => /^Tier \d+:/.test(b.pass_name) && new Date(b.created_at).toDateString() === new Date().toDateString()
+  ).length;
 
   return (
     <div className="min-h-screen bg-slate-950 text-white pb-16">
@@ -174,7 +177,7 @@ export const AdminCheckIn: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 text-center">
+          <div className="grid grid-cols-4 gap-2 text-center">
             <div className="bg-white/5 rounded-xl p-2.5 border border-white/10">
               <div className="text-lg font-black">{bookings.length}</div>
               <div className="text-[10px] text-slate-400 uppercase flex items-center justify-center gap-1">
@@ -193,7 +196,19 @@ export const AdminCheckIn: React.FC = () => {
                 <DollarSign className="w-3 h-3" /> Revenue
               </div>
             </div>
+            <div className="bg-amber-500/10 rounded-xl p-2.5 border border-amber-500/30">
+              <div className="text-lg font-black text-amber-400">{boughtTodayCount}</div>
+              <div className="text-[10px] text-slate-400 uppercase flex items-center justify-center gap-1 leading-tight">
+                Bought Today
+              </div>
+            </div>
           </div>
+
+          {boughtTodayCount > 0 && (
+            <p className="text-[10px] text-amber-400/80 text-center -mt-1">
+              "Bought Today" = a Tier purchased same-day — their membership is already active, so let them into tonight's class if it's a Wednesday.
+            </p>
+          )}
 
           <div className="relative">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
@@ -235,6 +250,11 @@ export const AdminCheckIn: React.FC = () => {
                   {b.ticket_count > 1 && (
                     <span className="shrink-0 px-1.5 py-0.5 rounded bg-fuchsia-500/20 border border-fuchsia-500/40 text-fuchsia-300 text-[9px] font-bold uppercase tracking-wide">
                       Ticket {b.ticket_number} of {b.ticket_count}
+                    </span>
+                  )}
+                  {/^Tier \d+:/.test(b.pass_name) && new Date(b.created_at).toDateString() === new Date().toDateString() && (
+                    <span className="shrink-0 px-1.5 py-0.5 rounded bg-amber-500/20 border border-amber-500/40 text-amber-300 text-[9px] font-bold uppercase tracking-wide">
+                      Bought Today
                     </span>
                   )}
                 </div>

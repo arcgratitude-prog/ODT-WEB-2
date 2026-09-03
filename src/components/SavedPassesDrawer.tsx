@@ -60,10 +60,20 @@ export const SavedPassesDrawer: React.FC<SavedPassesDrawerProps> = ({
             </div>
           ) : (
             <div className="space-y-4">
-              {passes.map((pass) => (
+              {passes.map((pass) => {
+                let isPastEvent = /August 5th/i.test(pass.eventDate);
+                if (!isPastEvent && /Locura/i.test(pass.passName)) {
+                  isPastEvent = new Date('2026-09-20T21:00:00') < new Date();
+                } else if (!isPastEvent && /Invasion/i.test(pass.passName)) {
+                  isPastEvent = new Date('2026-09-12T01:00:00') < new Date();
+                }
+
+                return (
                 <div
                   key={pass.ticketId}
-                  className="liquid-glass-card rounded-2xl p-4 border border-white/15 space-y-3 relative overflow-hidden"
+                  className={`liquid-glass-card rounded-2xl p-4 border space-y-3 relative overflow-hidden ${
+                    isPastEvent ? 'border-white/5 opacity-50 grayscale' : 'border-white/15'
+                  }`}
                 >
                   <div className="flex justify-between items-start">
                     <div>
@@ -100,8 +110,8 @@ export const SavedPassesDrawer: React.FC<SavedPassesDrawerProps> = ({
                   <div className="flex items-center justify-between pt-2">
                     <div className="flex items-center gap-2">
                       <QrCode className="w-10 h-10 text-white p-1 bg-white/10 rounded-lg" />
-                      <span className="text-[10px] font-mono text-emerald-400 font-bold uppercase">
-                        Ready for Check-in
+                      <span className={`text-[10px] font-mono font-bold uppercase ${isPastEvent ? 'text-slate-400' : 'text-emerald-400'}`}>
+                        {isPastEvent ? 'Event Has Passed' : 'Ready for Check-in'}
                       </span>
                     </div>
                     <span className="text-xs font-mono font-black text-white">
@@ -109,7 +119,8 @@ export const SavedPassesDrawer: React.FC<SavedPassesDrawerProps> = ({
                     </span>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
