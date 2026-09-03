@@ -171,18 +171,23 @@ export const TicketModal: React.FC<TicketModalProps> = ({
       // password. This uses the session token issued at login (see
       // api/member-login.js), verified server-side in
       // api/create-payment-intent.js, never the password itself.
-      try {
-        const storedUser = localStorage.getItem('ai_urbano_member_user');
-        if (storedUser) {
-          const parsed = JSON.parse(storedUser);
-          if (parsed?.isActive && parsed?.email && parsed?.sessionToken) {
-            setIsClaimingDiscount(true);
-            setMemberEmail(parsed.email);
-            setMemberSessionToken(parsed.sessionToken);
+      // Only relevant for the two social events — attempting this for a
+      // Tier/drop-in purchase would just come back "not applied" and
+      // show a confusing message for a discount nobody was trying to use.
+      if (isDiscountEligible) {
+        try {
+          const storedUser = localStorage.getItem('ai_urbano_member_user');
+          if (storedUser) {
+            const parsed = JSON.parse(storedUser);
+            if (parsed?.isActive && parsed?.email && parsed?.sessionToken) {
+              setIsClaimingDiscount(true);
+              setMemberEmail(parsed.email);
+              setMemberSessionToken(parsed.sessionToken);
+            }
           }
+        } catch {
+          // Corrupt/missing local session — just skip the pre-fill silently.
         }
-      } catch {
-        // Corrupt/missing local session — just skip the pre-fill silently.
       }
 
       ticketIdRef.current = `UB-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
@@ -380,7 +385,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
             {isPaidPass ? (
               contactConfirmed ? (
                 <>
-                  {discountConfirmed !== null && (
+                  {isDiscountEligible && discountConfirmed !== null && (
                     <div className={`mb-3 p-3 rounded-2xl border text-center ${
                       discountConfirmed
                         ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'

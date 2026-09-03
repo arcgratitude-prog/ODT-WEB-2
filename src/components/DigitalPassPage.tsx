@@ -105,6 +105,18 @@ function bookingToTicketData(b: RawBooking): TicketData {
   // (real check-in still uses staff name search, not this barcode).
   const barcodeNumber = Array.from(b.ticketId).map((c) => c.charCodeAt(0)).join('').slice(0, 16).padEnd(16, '0');
 
+  // Once a dated social event has actually happened, its ticket isn't
+  // something to show at a door for check-in anymore — the digital pass
+  // page marks this clearly rather than looking identical to a still-
+  // valid upcoming ticket. Tiers/drop-ins aren't tied to one single
+  // calendar date the same way, so they don't get this treatment.
+  let isPastEvent = false;
+  if (isLocura) {
+    isPastEvent = new Date('2026-09-20T21:00:00') < new Date();
+  } else if (isInvasion) {
+    isPastEvent = new Date('2026-09-12T01:00:00') < new Date();
+  }
+
   return {
     id: b.ticketId,
     orderNumber: b.ticketId,
@@ -135,6 +147,7 @@ function bookingToTicketData(b: RawBooking): TicketData {
     curriculum,
     schedule,
     perks,
+    isPastEvent,
   };
 }
 
@@ -221,6 +234,13 @@ export const DigitalPassPage: React.FC<{ ticketId: string }> = ({ ticketId }) =>
       />
 
       <main className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        {ticket.isPastEvent && (
+          <div className="mb-6 p-4 rounded-2xl bg-slate-800/60 border border-slate-700 text-center">
+            <p className="text-sm font-bold text-slate-300">
+              This event has already happened — this pass is no longer valid for entry.
+            </p>
+          </div>
+        )}
         {viewMode === 'email' && (
           <div className="space-y-6">
             <EmailHeader
@@ -235,7 +255,7 @@ export const DigitalPassPage: React.FC<{ ticketId: string }> = ({ ticketId }) =>
         )}
 
         {(viewMode === 'stage3d' || viewMode === 'print') && (
-          <div className="space-y-6">
+          <div className={`space-y-6 ${ticket.isPastEvent ? 'opacity-50 grayscale' : ''}`}>
             <Ticket3D
               ticket={ticket}
               isStageMode={viewMode === 'stage3d'}

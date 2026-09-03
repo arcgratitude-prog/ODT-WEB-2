@@ -59,7 +59,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPolicy }) => {
             </span>
           </div>
           <p className="text-xs text-slate-400 max-w-sm">
-            Top-rated Bachata classes in Tampa, FL. Learn beginner Bachata lessons, progressive 4-week tracks, and Urban Bachata flow at Dance Factory inside WestShore Plaza Mall.
+            Bachata classes in Tampa, FL. Learn beginner Bachata lessons, progressive 4-week tracks, and Urban Bachata flow at Dance Factory inside WestShore Plaza Mall.
           </p>
           <div className="text-[11px] text-slate-400 font-mono leading-tight pt-1">
             <span className="text-white font-bold">Serving Tampa Bay:</span> South Tampa - Ybor City - Downtown Tampa - Brandon - Riverview - St. Petersburg - Clearwater - Carrollwood - Wesley Chapel

@@ -609,28 +609,56 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                         <p className="text-xs text-slate-500 italic">No purchases found yet for this account's email.</p>
                       ) : (
                         <div className="space-y-2">
-                          {realTickets.map((t) => (
-                            <div
-                              key={t.ticketId}
-                              className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between gap-3"
-                            >
-                              <div className="min-w-0">
-                                <p className="text-xs font-bold text-white truncate">{t.passName}</p>
-                                <p className="text-[10px] text-slate-500">
-                                  {new Date(t.createdAt).toLocaleDateString()} · #{t.ticketId.slice(0, 8)}
-                                  {t.ticketCount > 1 ? ` · Ticket ${t.ticketNumber} of ${t.ticketCount}` : ''}
-                                </p>
+                          {realTickets.map((t) => {
+                            // Locura/Invasion tickets are for a specific
+                            // dated event — once that date has passed,
+                            // the ticket isn't something to "scan" at a
+                            // door anymore, so it's shown as a past event
+                            // rather than looking identical to an active
+                            // one. Tiers and drop-ins aren't tied to one
+                            // single calendar date the same way, so they
+                            // don't get this treatment.
+                            let isPastEvent = false;
+                            if (/Locura/i.test(t.passName)) {
+                              isPastEvent = new Date('2026-09-20T21:00:00') < new Date();
+                            } else if (/Invasion/i.test(t.passName)) {
+                              isPastEvent = new Date('2026-09-12T01:00:00') < new Date();
+                            }
+
+                            return (
+                              <div
+                                key={t.ticketId}
+                                className={`p-3 rounded-xl border flex items-center justify-between gap-3 ${
+                                  isPastEvent
+                                    ? 'bg-slate-950/40 border-slate-800/60 opacity-50'
+                                    : 'bg-slate-900/60 border-slate-800'
+                                }`}
+                              >
+                                <div className="min-w-0">
+                                  <p className="text-xs font-bold text-white truncate flex items-center gap-1.5">
+                                    {t.passName}
+                                    {isPastEvent && (
+                                      <span className="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase bg-slate-700 text-slate-300 shrink-0">
+                                        Past Event
+                                      </span>
+                                    )}
+                                  </p>
+                                  <p className="text-[10px] text-slate-500">
+                                    {new Date(t.createdAt).toLocaleDateString()} · #{t.ticketId.slice(0, 8)}
+                                    {t.ticketCount > 1 ? ` · Ticket ${t.ticketNumber} of ${t.ticketCount}` : ''}
+                                  </p>
+                                </div>
+                                <div className="shrink-0 flex items-center gap-2">
+                                  <span className="text-xs font-bold text-slate-300">${(t.amountCents / 100).toFixed(2)}</span>
+                                  {t.checkedIn && (
+                                    <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                      Checked In
+                                    </span>
+                                  )}
+                                </div>
                               </div>
-                              <div className="shrink-0 flex items-center gap-2">
-                                <span className="text-xs font-bold text-slate-300">${(t.amountCents / 100).toFixed(2)}</span>
-                                {t.checkedIn && (
-                                  <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                                    Checked In
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       )}
                     </div>

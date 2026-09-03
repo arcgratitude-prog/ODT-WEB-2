@@ -34,6 +34,7 @@ export interface TicketData {
   seatOrLevel: string;
   passColorTheme: 'vibrant' | 'gold' | 'holographic' | 'obsidian' | 'ruby';
   curriculum?: string[];
+  isPastEvent?: boolean;
   schedule: Array<{
     time: string;
     title: string;
