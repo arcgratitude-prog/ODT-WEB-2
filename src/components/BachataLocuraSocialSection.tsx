@@ -341,8 +341,30 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
               </p>
             </div>
 
+            {/* Boot Camp Add-On — same day, before Bachata Locura */}
+            <div className="mt-6 p-4 rounded-2xl bg-gradient-to-br from-rose-950/60 to-slate-950 border border-rose-500/30">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="px-2 py-0.5 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300 text-[9px] font-black uppercase tracking-wider">
+                  Same Day — Before Locura
+                </span>
+              </div>
+              <h4 className="text-lg font-black text-white uppercase mb-1">Bachata Battle Boot Camp</h4>
+              <p className="text-xs text-slate-300 mb-3">
+                1:30 PM – 3:30 PM at Dance Factory Tampa. Technique, musicality & partnerwork with Albina & Isaac + Xavier & Jairo (AI.Urbano x La Calle Dance Co.). Full day pass — before that evening's Bachata Locura.
+              </p>
+              <div className="flex items-center justify-between">
+                <span className="text-2xl font-black text-rose-300">$45</span>
+                <button
+                  onClick={() => onOpenBooking('social-bootcamp')}
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white font-black text-xs uppercase tracking-wide shadow-lg transition-all"
+                >
+                  Get Boot Camp Pass
+                </button>
+              </div>
+            </div>
+
             {/* Location & Directions */}
-            <div className="p-5 rounded-2xl bg-black/60 border border-white/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="mt-6 p-5 rounded-2xl bg-black/60 border border-white/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div className="flex items-start gap-3">
                 <div className="p-3 rounded-xl bg-slate-800 text-slate-200 border border-slate-600 shrink-0 mt-0.5">
                   <MapPin className="w-5 h-5" />
@@ -375,28 +397,6 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                   <ExternalLink className="w-3.5 h-3.5" />
                   <span>Get Directions</span>
                 </a>
-              </div>
-            </div>
-
-            {/* Boot Camp Add-On — same day, before Bachata Locura */}
-            <div className="mt-6 p-4 rounded-2xl bg-gradient-to-br from-rose-950/60 to-slate-950 border border-rose-500/30">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="px-2 py-0.5 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300 text-[9px] font-black uppercase tracking-wider">
-                  Same Day — Before Locura
-                </span>
-              </div>
-              <h4 className="text-lg font-black text-white uppercase mb-1">Bachata Battle Boot Camp</h4>
-              <p className="text-xs text-slate-300 mb-3">
-                1:30 PM – 3:30 PM at Dance Factory Tampa. Technique, musicality & partnerwork with Albina & Isaac + Xavier & Jairo (AI.Urbano x La Calle Dance Co.). Full day pass — before that evening's Bachata Locura.
-              </p>
-              <div className="flex items-center justify-between">
-                <span className="text-2xl font-black text-rose-300">$45</span>
-                <button
-                  onClick={() => onOpenBooking('social-bootcamp')}
-                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white font-black text-xs uppercase tracking-wide shadow-lg transition-all"
-                >
-                  Get Boot Camp Pass
-                </button>
               </div>
             </div>
 
