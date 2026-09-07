@@ -14,7 +14,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
   onOpenBooking,
   onNavigateToHome 
 }) => {
-  const [activeTab, setActiveTab] = useState<'invasion' | 'locura'>('invasion');
+  const [activeTab, setActiveTab] = useState<'invasion' | 'locura' | 'labnight'>('invasion');
   const [copiedInvasionAddress, setCopiedInvasionAddress] = useState(false);
   const [copiedLocuraAddress, setCopiedLocuraAddress] = useState(false);
 
@@ -40,7 +40,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
         </h1>
 
         {/* Dual Social Selector Tabs - 2 Tabs Side-by-Side */}
-        <div className="grid grid-cols-2 gap-2 p-2 rounded-2xl bg-slate-900/90 border border-slate-700 shadow-2xl max-w-lg mx-auto w-full mt-2">
+        <div className="grid grid-cols-3 gap-2 p-2 rounded-2xl bg-slate-900/90 border border-slate-700 shadow-2xl max-w-2xl mx-auto w-full mt-2">
           <button
             onClick={() => setActiveTab('invasion')}
             className={`px-2.5 sm:px-4 py-3 rounded-xl font-bold text-xs sm:text-sm tracking-wide transition-all flex flex-col items-center justify-center gap-1 text-center ${
@@ -84,6 +84,28 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
             <div className="flex items-center gap-1.5">
               <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
               <span>Bachata Locura</span>
+            </div>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('labnight')}
+            className={`px-2.5 sm:px-4 py-3 rounded-xl font-bold text-xs sm:text-sm tracking-wide transition-all flex flex-col items-center justify-center gap-1 text-center ${
+              activeTab === 'labnight'
+                ? 'bg-gradient-to-r from-teal-500 to-cyan-600 text-white shadow-lg shadow-teal-600/40 border border-teal-300/50 scale-[1.02]'
+                : 'text-slate-400 hover:text-slate-200 bg-slate-800/40 border border-slate-800'
+            }`}
+          >
+            <span className={`px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider flex items-center gap-1 shadow-sm border ${
+              activeTab === 'labnight'
+                ? 'bg-black/40 text-teal-200 border-white/30'
+                : 'bg-slate-900 text-teal-300 border border-teal-500/30'
+            }`}>
+              <Calendar className="w-2.5 h-2.5 text-teal-300" />
+              <span>3rd Fridays</span>
+            </span>
+            <div className="flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-teal-300 shrink-0" />
+              <span>Lab Night</span>
             </div>
           </button>
         </div>
@@ -356,6 +378,84 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
               </div>
             </div>
 
+            {/* Boot Camp Add-On — same day, before Bachata Locura */}
+            <div className="mt-6 p-4 rounded-2xl bg-gradient-to-br from-rose-950/60 to-slate-950 border border-rose-500/30">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="px-2 py-0.5 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300 text-[9px] font-black uppercase tracking-wider">
+                  Same Day — Before Locura
+                </span>
+              </div>
+              <h4 className="text-lg font-black text-white uppercase mb-1">Bachata Battle Boot Camp</h4>
+              <p className="text-xs text-slate-300 mb-3">
+                1:30 PM – 3:30 PM at Dance Factory Tampa. Technique, musicality & partnerwork with Albina & Isaac + Xavier & Jairo (AI.Urbano x La Calle Dance Co.). Full day pass — before that evening's Bachata Locura.
+              </p>
+              <div className="flex items-center justify-between">
+                <span className="text-2xl font-black text-rose-300">$45</span>
+                <button
+                  onClick={() => onOpenBooking('social-bootcamp')}
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white font-black text-xs uppercase tracking-wide shadow-lg transition-all"
+                >
+                  Get Boot Camp Pass
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: AI URBANO LAB NIGHT (MONTHLY, EVERY 3RD FRIDAY) */}
+      {activeTab === 'labnight' && (
+        <div className="relative">
+          <div className="relative rounded-3xl border border-teal-500/30 bg-gradient-to-br from-teal-950/40 via-slate-950 to-slate-950 p-5 sm:p-8 overflow-hidden">
+            <div className="text-center mb-6">
+              <span className="px-3 py-1 rounded-full bg-teal-500/20 border border-teal-500/40 text-teal-300 text-[10px] font-black uppercase tracking-wider">
+                Every 3rd Friday of the Month
+              </span>
+              <h3 className="text-2xl sm:text-4xl font-black text-white uppercase mt-3">
+                Lab Night
+              </h3>
+              <p className="text-sm text-teal-200 font-bold mt-1">Practice. Connect. Unwind.</p>
+              <p className="text-xs text-slate-400 mt-2 max-w-md mx-auto">
+                More than practice — it's community. Friday, September 18th · 6:30 PM – 10:30 PM · Westshore Plaza Mall.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+              <div className="p-3 rounded-xl bg-slate-900/60 border border-teal-500/20 text-center">
+                <p className="text-xs font-bold text-white">1. Practice</p>
+                <p className="text-[10px] text-slate-400">Salsa, Bachata, Zouk</p>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-900/60 border border-teal-500/20 text-center">
+                <p className="text-xs font-bold text-white">2. Connect</p>
+                <p className="text-[10px] text-slate-400">Social Dancing</p>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-900/60 border border-teal-500/20 text-center">
+                <p className="text-xs font-bold text-white">3. Potluck</p>
+                <p className="text-[10px] text-slate-400">Bring a Dish</p>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-900/60 border border-teal-500/20 text-center">
+                <p className="text-xs font-bold text-white">4. Play</p>
+                <p className="text-[10px] text-slate-400">Board Games</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-slate-900/60 border border-teal-500/20">
+              <div>
+                <p className="text-sm font-bold text-emerald-400">FREE for Active Tier Members & Current Dance Factory Students</p>
+                <p className="text-xs text-slate-400">$5 for everyone else · Show your account or ID at the door</p>
+              </div>
+              <button
+                onClick={() => onOpenBooking('social-labnight')}
+                className="px-6 py-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-600 hover:from-teal-400 hover:to-cyan-500 text-white font-black text-xs uppercase tracking-wide shadow-lg whitespace-nowrap transition-all"
+              >
+                Get Lab Night Pass — $5
+              </button>
+            </div>
+
+            <p className="text-center text-[11px] text-slate-500 mt-4">
+              Westshore Plaza Mall · 334 Westshore Plaza, Unit A10, Tampa, FL 33609 · Bring a board game!
+            </p>
           </div>
         </div>
       )}

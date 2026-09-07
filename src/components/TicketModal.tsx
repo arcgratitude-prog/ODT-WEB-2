@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Sparkles, CheckCircle2, Calendar, MapPin, Download, QrCode, Ticket, ShieldCheck, User, Mail, Phone, ArrowRight, Lock, AlertCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { PASS_OPTIONS, SOCIAL_PASS_OPTION, BACHATA_INVASION_PASS_OPTION, X1_MONTHLY_PASS_OPTION, X1_DROPIN_PASS_OPTION, STUDIO_INFO } from '../data/danceData';
+import { PASS_OPTIONS, SOCIAL_PASS_OPTION, BACHATA_INVASION_PASS_OPTION, BOOT_CAMP_PASS_OPTION, LAB_NIGHT_PASS_OPTION, X1_MONTHLY_PASS_OPTION, X1_DROPIN_PASS_OPTION, STUDIO_INFO } from '../data/danceData';
 import { TicketPass, CheckoutTheme } from '../types';
 import { CustomStripeCheckout } from './CustomStripeCheckout';
 
@@ -40,6 +40,8 @@ const getClassesIncludedLabel = (passOption: { id: string; classesCount: number 
 // in BachataLocuraSocialSection.tsx, danceData.ts, and api/lib/notify.js.
 const getEventDateLabel = (passName: string): string => {
   if (/Locura/i.test(passName)) return 'Sunday, September 20th (4:00 PM - 9:00 PM)';
+  if (/Boot Camp/i.test(passName)) return 'Sunday, September 20th (1:30 PM - 3:30 PM)';
+  if (/Lab Night/i.test(passName)) return 'Friday, September 18th (6:30 PM - 10:30 PM)';
   if (/Invasion/i.test(passName)) return 'Friday, September 11th (8:00 PM - 1:00 AM)';
   if (/X1/i.test(passName)) return 'Private Session — Scheduled Directly With Albina & Antonio';
   // Weekly Tiers and class drop-ins: recurring, not a single calendar date.
@@ -197,7 +199,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
 
   if (!isOpen) return null;
 
-  const allAvailablePasses = [BACHATA_INVASION_PASS_OPTION, SOCIAL_PASS_OPTION, X1_MONTHLY_PASS_OPTION, X1_DROPIN_PASS_OPTION, ...PASS_OPTIONS];
+  const allAvailablePasses = [BACHATA_INVASION_PASS_OPTION, SOCIAL_PASS_OPTION, BOOT_CAMP_PASS_OPTION, LAB_NIGHT_PASS_OPTION, X1_MONTHLY_PASS_OPTION, X1_DROPIN_PASS_OPTION, ...PASS_OPTIONS];
   const currentPassOption = allAvailablePasses.find(p => p.id === selectedPassId) || PASS_OPTIONS[0];
   const isPaidPass = currentPassOption.price > 0;
   const theme = THEME_CLASSES[getCheckoutTheme(currentPassOption.id)];

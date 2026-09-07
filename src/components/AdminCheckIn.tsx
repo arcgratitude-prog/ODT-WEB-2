@@ -159,6 +159,14 @@ export const AdminCheckIn: React.FC = () => {
           <div className="flex items-center justify-between">
             <h1 className="text-lg font-black uppercase">Check-In</h1>
             <div className="flex items-center gap-2">
+              <a
+                href="/?admin=members"
+                className="px-2.5 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors text-[11px] font-bold uppercase tracking-wide flex items-center gap-1.5"
+                title="Check if someone is an active Tier member (e.g. for free Lab Night entry)"
+              >
+                <Users className="w-3.5 h-3.5" />
+                Members
+              </a>
               <button
                 onClick={() => fetchBookings(password)}
                 disabled={isLoading}
@@ -176,6 +184,9 @@ export const AdminCheckIn: React.FC = () => {
               </button>
             </div>
           </div>
+          <p className="text-[10px] text-teal-400/80 -mt-1">
+            Lab Night is free for active Tier members and current Dance Factory students — no ticket needed. Tap "Members" to verify at the door.
+          </p>
 
           <div className="grid grid-cols-4 gap-2 text-center">
             <div className="bg-white/5 rounded-xl p-2.5 border border-white/10">

@@ -88,6 +88,8 @@ function buildOrderReceiptEmail(order) {
   const passNameLower = (order.passName || '').toLowerCase();
   const isLocura = passNameLower.includes('locura');
   const isInvasion = passNameLower.includes('invasion');
+  const isBootCamp = passNameLower.includes('boot camp');
+  const isLabNight = passNameLower.includes('lab night');
   const isX1 = passNameLower.includes('x1');
   const totalAmount = (order.totalAmountCents / 100).toFixed(2);
   const ticketIds = order.ticketIds && order.ticketIds.length > 0 ? order.ticketIds : [order.ticketId];
@@ -102,6 +104,16 @@ function buildOrderReceiptEmail(order) {
     dateBig = 'SEPT 20';
     dateSmall = 'SUNDAY';
     dj = 'DJ JR';
+  } else if (isBootCamp) {
+    timeLabel = '1:30–3:30 PM EDT';
+    dateBig = 'SEPT 20';
+    dateSmall = 'SUNDAY';
+    dj = null;
+  } else if (isLabNight) {
+    timeLabel = '6:30–10:30 PM EDT';
+    dateBig = 'SEPT 18';
+    dateSmall = 'FRIDAY';
+    dj = null;
   } else if (isInvasion) {
     timeLabel = '8 PM–1 AM EDT';
     dateBig = 'SEPT 11';
@@ -119,20 +131,24 @@ function buildOrderReceiptEmail(order) {
     dj = null;
   }
 
-  const eventTitle = isLocura ? 'Bachata Locura' : isInvasion ? 'Bachata Invasion' : order.passName;
-  const instructors = isX1 ? 'Albina & Antonio' : 'Albina & Isaac';
+  const eventTitle = isLocura ? 'Bachata Locura' : isInvasion ? 'Bachata Invasion' : isBootCamp ? 'Bachata Battle Boot Camp' : isLabNight ? 'AI Urbano Lab Night' : order.passName;
+  const instructors = isX1 ? 'Albina & Antonio' : isBootCamp ? 'Albina & Isaac + Xavier & Jairo' : 'Albina & Isaac';
 
   // Accent colors, made deliberately bold and distinct per category:
   //   Invasion  → neon purple
   //   Locura    → deep "red velvet" maroon/rose
+  //   Boot Camp → same rose family as Locura (same-day companion event)
+  //   Lab Night → teal, matching its own flyer branding
   //   X1        → premium gold, matching its black/white brand identity
   //   Classes   → the site's actual bright red brand color (red-600/500)
   // Kept as genuinely different colors rather than shades that look
   // similar against the same dark background.
-  const accent = isLocura
+  const accent = isLocura || isBootCamp
     ? { main: '#fb7185', badgeBg: '#4c0519', border30: 'rgba(251,113,133,0.35)', border50: 'rgba(251,113,133,0.55)', dateText: '#fda4af', dateTextDim: 'rgba(253,164,175,0.85)', cardBg: '#2a0a14', insetBg: '#1a0510' }
     : isInvasion
     ? { main: '#c084fc', badgeBg: '#3b0764', border30: 'rgba(192,132,252,0.35)', border50: 'rgba(192,132,252,0.55)', dateText: '#d8b4fe', dateTextDim: 'rgba(216,180,254,0.85)', cardBg: '#230845', insetBg: '#160530' }
+    : isLabNight
+    ? { main: '#2dd4bf', badgeBg: '#042f2e', border30: 'rgba(45,212,191,0.35)', border50: 'rgba(45,212,191,0.55)', dateText: '#5eead4', dateTextDim: 'rgba(94,234,212,0.85)', cardBg: '#0a1f1d', insetBg: '#051312' }
     : isX1
     ? { main: '#fbbf24', badgeBg: '#451a03', border30: 'rgba(251,191,36,0.35)', border50: 'rgba(251,191,36,0.55)', dateText: '#fde68a', dateTextDim: 'rgba(253,230,138,0.85)', cardBg: '#1c1a10', insetBg: '#100e08' }
     : { main: '#ef4444', badgeBg: '#450a0a', border30: 'rgba(239,68,68,0.35)', border50: 'rgba(239,68,68,0.55)', dateText: '#fca5a5', dateTextDim: 'rgba(252,165,165,0.85)', cardBg: '#2a0a0a', insetBg: '#1a0505' };
@@ -146,7 +162,7 @@ function buildOrderReceiptEmail(order) {
   // (Skills and Drills)") get their own prominent list rather than being
   // crammed into a compact grid cell — that's the whole point of showing
   // the customer exactly which classes they picked.
-  const classList = (!isLocura && !isInvasion && !isX1 && order.classesIncluded)
+  const classList = (!isLocura && !isInvasion && !isBootCamp && !isLabNight && !isX1 && order.classesIncluded)
     ? order.classesIncluded.split(',').map((s) => s.trim()).filter(Boolean)
     : [];
 

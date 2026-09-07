@@ -30,8 +30,10 @@ function bookingToTicketData(b: RawBooking): TicketData {
   const passNameLower = (b.passName || '').toLowerCase();
   const isLocura = passNameLower.includes('locura');
   const isInvasion = passNameLower.includes('invasion');
+  const isBootCamp = passNameLower.includes('boot camp');
+  const isLabNight = passNameLower.includes('lab night');
   const isX1 = passNameLower.includes('x1');
-  const isSocialEvent = isLocura || isInvasion;
+  const isSocialEvent = isLocura || isInvasion || isBootCamp || isLabNight;
   const instructors = isX1 ? 'Albina & Antonio' : 'Albina & Isaac';
 
   let date: string, time: string, doorsOpen: string, schedule: TicketData['schedule'], dj: string, subtitle: string, category: TicketData['category'], passColorTheme: TicketData['passColorTheme'], curriculum: string[] | undefined;
@@ -78,6 +80,34 @@ function bookingToTicketData(b: RawBooking): TicketData {
     schedule = [
       { time: '90 min', title: 'Private Session with Albina & Antonio', description: 'Dance Factory Tampa' },
     ];
+  } else if (isBootCamp) {
+    date = 'Sunday, September 20, 2026';
+    time = '1:30 PM – 3:30 PM EDT';
+    doorsOpen = '1:30 PM';
+    dj = '';
+    subtitle = 'Technique, Musicality & Partnerwork Workshop';
+    category = 'Masterclass';
+    passColorTheme = 'ruby';
+    curriculum = ['Technique', 'Musicality', 'Partnerwork'];
+    schedule = [
+      { time: '1:30 PM', title: 'Boot Camp Begins', description: 'Albina & Isaac + Xavier & Jairo (AI.Urbano x La Calle Dance Co.)' },
+      { time: '3:30 PM', title: 'Boot Camp Ends', description: 'Bachata Locura begins later that evening at 4:00 PM.' },
+    ];
+  } else if (isLabNight) {
+    date = 'Friday, September 18, 2026';
+    time = '6:30 PM – 10:30 PM EDT';
+    doorsOpen = '6:30 PM';
+    dj = '';
+    subtitle = 'Practice, Connect & Unwind — Every 3rd Friday';
+    category = 'Social';
+    passColorTheme = 'holographic';
+    curriculum = undefined;
+    schedule = [
+      { time: '6:30 PM', title: 'Practice — Open Salsa, Bachata & Zouk Floor', description: '' },
+      { time: '8:00 PM', title: 'Connect — Social Dancing', description: '' },
+      { time: '9:00 PM', title: 'Potluck & Board Games', description: 'Bring a dish and your favorite game!' },
+      { time: '10:30 PM', title: 'Event Ends', description: '' },
+    ];
   } else {
     // Weekly class pass (tier or drop-in) — recurring, no single event date.
     date = 'Ongoing — Weekly';
@@ -97,6 +127,10 @@ function bookingToTicketData(b: RawBooking): TicketData {
     ? ['4 PM presocial class with Albina & Isaac', 'Full night of social dancing, 4–9 PM', 'Music by DJ JR', 'Pink & Purple dress theme']
     : isInvasion
     ? ['8–9 PM class with Albina & Isaac', 'Social dancing 9 PM–1 AM', 'Music by DJ JR']
+    : isBootCamp
+    ? ['2 hours of technique, musicality & partnerwork', 'Taught by Albina & Isaac + Xavier & Jairo', 'Same day as Bachata Locura']
+    : isLabNight
+    ? ['Open practice floor — Salsa, Bachata, Zouk', 'Potluck — bring a dish to share', 'Board games — bring your favorite', 'Free for current Dance Factory students']
     : isX1
     ? ['90 minutes of direct one-on-one coaching', 'Warm Up, Mobility, Isolation, Train, Concept, Movement, Apply', 'Personalized to your goals']
     : ['Structured Urban Bachata curriculum', 'Video recaps after each class', ...(b.classesIncluded ? [`Classes: ${b.classesIncluded}`] : [])];
@@ -113,6 +147,10 @@ function bookingToTicketData(b: RawBooking): TicketData {
   let isPastEvent = false;
   if (isLocura) {
     isPastEvent = new Date('2026-09-20T21:00:00') < new Date();
+  } else if (isBootCamp) {
+    isPastEvent = new Date('2026-09-20T15:30:00') < new Date();
+  } else if (isLabNight) {
+    isPastEvent = new Date('2026-09-18T22:30:00') < new Date();
   } else if (isInvasion) {
     isPastEvent = new Date('2026-09-12T01:00:00') < new Date();
   }
@@ -120,7 +158,7 @@ function bookingToTicketData(b: RawBooking): TicketData {
   return {
     id: b.ticketId,
     orderNumber: b.ticketId,
-    eventName: isSocialEvent ? (isLocura ? 'Bachata Locura' : 'Bachata Invasion') : b.passName,
+    eventName: isLocura ? 'Bachata Locura' : isInvasion ? 'Bachata Invasion' : isBootCamp ? 'Bachata Battle Boot Camp' : isLabNight ? 'AI Urbano Lab Night' : b.passName,
     subtitle,
     category,
     tierName: b.passName,

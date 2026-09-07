@@ -20,6 +20,8 @@
 export const PRICE_CATALOG = {
   'Bachata Invasion Social Pass': 1200,
   'Bachata Locura Social Pass': 1500,
+  'Bachata Battle Boot Camp': 4500,
+  'AI Urbano Lab Night': 500,
   'Tier 1: Solo Sesh': 8000,
   'Tier 2: Grindin\u2019': 10500,
   'Tier 3: Locked In': 12500,

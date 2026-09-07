@@ -64,6 +64,10 @@ export const SavedPassesDrawer: React.FC<SavedPassesDrawerProps> = ({
                 let isPastEvent = /August 5th/i.test(pass.eventDate);
                 if (!isPastEvent && /Locura/i.test(pass.passName)) {
                   isPastEvent = new Date('2026-09-20T21:00:00') < new Date();
+                } else if (!isPastEvent && /Boot Camp/i.test(pass.passName)) {
+                  isPastEvent = new Date('2026-09-20T15:30:00') < new Date();
+                } else if (!isPastEvent && /Lab Night/i.test(pass.passName)) {
+                  isPastEvent = new Date('2026-09-18T22:30:00') < new Date();
                 } else if (!isPastEvent && /Invasion/i.test(pass.passName)) {
                   isPastEvent = new Date('2026-09-12T01:00:00') < new Date();
                 }

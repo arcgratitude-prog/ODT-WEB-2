@@ -112,6 +112,42 @@ export const SOCIAL_PASS_OPTION: PassOption = {
   type: 'drop_in_1'
 };
 
+export const BOOT_CAMP_PASS_OPTION: PassOption = {
+  id: 'social-bootcamp',
+  name: 'Bachata Battle Boot Camp',
+  price: 45,
+  tagline: 'Sunday, September 20th @ Dance Factory Tampa (1:30 PM - 3:30 PM) — Before Bachata Locura',
+  classesCount: 1,
+  popular: false,
+  features: [
+    'Technique, Musicality & Partnerwork Workshop',
+    'Taught by Albina & Isaac + Xavier & Jairo (AI.Urbano x La Calle Dance Co.)',
+    'Full Day Pass — Same Day as Bachata Locura',
+    'Dance Factory Tampa (334 Westshore Plaza, Unit A10)',
+    'Digital Mobile Pass with Instant Check-In'
+  ],
+  type: 'drop_in_1'
+};
+
+export const LAB_NIGHT_PASS_OPTION: PassOption = {
+  id: 'social-labnight',
+  name: 'AI Urbano Lab Night',
+  price: 5,
+  tagline: 'Friday, September 18th @ Westshore Plaza Mall (6:30 PM - 10:30 PM) — Every 3rd Friday',
+  classesCount: 1,
+  popular: false,
+  features: [
+    'Free for Active Tier Members (Show Your Account at the Door)',
+    'Free for Current Dance Factory Students (Show ID at Door)',
+    'Practice: Open Salsa, Bachata & Zouk Floor',
+    'Connect: Social Dancing with the Community',
+    'Potluck: Bring a Dish to Share',
+    'Play: Board Games — Bring Your Favorite!',
+    'Westshore Plaza Mall (334 Westshore Plaza, Unit A10)'
+  ],
+  type: 'drop_in_1'
+};
+
 export const PASS_OPTIONS: PassOption[] = [
   {
     id: 'track-foundations',

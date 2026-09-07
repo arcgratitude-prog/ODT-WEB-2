@@ -54,6 +54,34 @@ export const CalendarPage: React.FC<CalendarPageProps> = ({ onOpenBooking, onNav
       isFeatured: true
     });
 
+    // 1b. Bachata Battle Boot Camp — same day, before Bachata Locura
+    events.push({
+      id: 'bootcamp-sept20',
+      title: 'Bachata Battle Boot Camp @ Dance Factory Tampa',
+      date: new Date(2026, 8, 20),
+      timeStr: '1:30 PM – 3:30 PM',
+      category: 'social',
+      location: 'Dance Factory Tampa (334 Westshore Plaza, Unit A10, Tampa, FL)',
+      passTypeId: 'social-bootcamp',
+      description: 'Technique, Musicality & Partnerwork workshop with Albina & Isaac + Xavier & Jairo. Before Bachata Locura that evening.',
+      badge: 'WORKSHOP',
+      color: 'from-rose-600 to-pink-700 text-white'
+    });
+
+    // 1c. AI Urbano Lab Night — every 3rd Friday of the month
+    events.push({
+      id: 'labnight-sept18',
+      title: 'AI Urbano Lab Night @ Westshore Plaza Mall',
+      date: new Date(2026, 8, 18),
+      timeStr: '6:30 PM – 10:30 PM',
+      category: 'social',
+      location: 'Westshore Plaza Mall (334 Westshore Plaza, Unit A10, Tampa, FL)',
+      passTypeId: 'social-labnight',
+      description: 'Practice, Connect, Potluck & Board Games. Free for current Dance Factory students, $5 for everyone else.',
+      badge: 'EVERY 3RD FRIDAY',
+      color: 'from-teal-500 to-cyan-600 text-white'
+    });
+
     // 2. Wednesday Classes (every Wednesday in Aug & Sept)
     const wednesdayDatesInAug = [5, 12, 19, 26];
     const wednesdayDatesInSept = [2, 9, 16, 23, 30];

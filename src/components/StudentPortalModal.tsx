@@ -274,15 +274,29 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
               <p className="text-xs text-slate-400">
                 {user ? `Logged in as ${user.name}` : 'Log in to track tickets, social visits, referrals & cycle progress'}
               </p>
+              {user && (
+                <p className="text-[10px] text-slate-500">{user.email}</p>
+              )}
             </div>
           </div>
 
-          <button
-            onClick={onClose}
-            className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            {user && (
+              <button
+                onClick={handleLogout}
+                className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                title="Log Out"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Real membership status — only shows once we actually have it
@@ -546,32 +560,6 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
           ) : (
             /* ================= LOGGED IN STATE: MEMBER DASHBOARD ================= */
             <div className="space-y-6">
-              
-              {/* Member Quick Info Header */}
-              <div className="bg-gradient-to-r from-red-950/60 via-slate-900 to-slate-950 p-4 rounded-2xl border border-red-500/30 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-600 via-rose-600 to-pink-600 p-0.5 shadow-lg shadow-red-600/30 shrink-0">
-                    <div className="w-full h-full rounded-[14px] bg-black flex items-center justify-center text-lg font-black text-white">
-                      {user.name.charAt(0)}
-                    </div>
-                  </div>
-
-                  <div>
-                    <h4 className="text-base font-black text-white">{user.name}</h4>
-                    <p className="text-xs text-slate-300 font-medium">{user.email}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 self-end sm:self-center w-full sm:w-auto">
-                  <button
-                    onClick={handleLogout}
-                    className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-700 transition-colors"
-                    title="Log Out"
-                  >
-                    <LogOut className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
 
               {/* SECTION 2: MY TICKETS & BOUGHT PASSES */}
               {selectedView === 'tickets' && (
@@ -621,6 +609,10 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                             let isPastEvent = false;
                             if (/Locura/i.test(t.passName)) {
                               isPastEvent = new Date('2026-09-20T21:00:00') < new Date();
+                            } else if (/Boot Camp/i.test(t.passName)) {
+                              isPastEvent = new Date('2026-09-20T15:30:00') < new Date();
+                            } else if (/Lab Night/i.test(t.passName)) {
+                              isPastEvent = new Date('2026-09-18T22:30:00') < new Date();
                             } else if (/Invasion/i.test(t.passName)) {
                               isPastEvent = new Date('2026-09-12T01:00:00') < new Date();
                             }
@@ -694,6 +686,10 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                         let isPastEvent = /August 5th/i.test(pass.eventDate);
                         if (!isPastEvent && /Locura/i.test(pass.passName)) {
                           isPastEvent = new Date('2026-09-20T21:00:00') < new Date();
+                        } else if (!isPastEvent && /Boot Camp/i.test(pass.passName)) {
+                          isPastEvent = new Date('2026-09-20T15:30:00') < new Date();
+                        } else if (!isPastEvent && /Lab Night/i.test(pass.passName)) {
+                          isPastEvent = new Date('2026-09-18T22:30:00') < new Date();
                         } else if (!isPastEvent && /Invasion/i.test(pass.passName)) {
                           isPastEvent = new Date('2026-09-12T01:00:00') < new Date();
                         }
