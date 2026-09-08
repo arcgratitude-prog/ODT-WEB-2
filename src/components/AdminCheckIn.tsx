@@ -294,6 +294,9 @@ export const AdminCheckIn: React.FC = () => {
                   )}
                 </div>
                 <div className="text-xs text-slate-400 truncate">{b.pass_name} · ${(b.amount_cents / 100).toFixed(2)}</div>
+                <div className="text-[10px] text-slate-500">
+                  Purchased {new Date(b.created_at).toLocaleDateString()}
+                </div>
                 {b.classes_included && (
                   <div className="text-[11px] text-slate-500 truncate">{b.classes_included}</div>
                 )}
