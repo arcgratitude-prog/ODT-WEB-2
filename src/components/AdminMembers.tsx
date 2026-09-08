@@ -4,7 +4,7 @@ import { Search, RefreshCw, Users, UserCheck, LogOut, Mail, Phone, Ticket } from
 // Private staff page for tracking Tier members. Not linked anywhere in
 // the public nav — reached directly at /?admin=members (see App.tsx).
 // Same shared-password auth as AdminCheckIn.tsx — reuses the same
-// sessionStorage key too, so staff already logged into check-in don't
+// localStorage key too, so staff already logged into check-in don't
 // have to log in again here.
 
 interface Member {
@@ -40,7 +40,7 @@ export const AdminMembers: React.FC = () => {
       if (res.status === 401) {
         setAuthorized(false);
         setAuthError('Incorrect password.');
-        sessionStorage.removeItem(PASSWORD_STORAGE_KEY);
+        localStorage.removeItem(PASSWORD_STORAGE_KEY);
         return;
       }
       const data = await res.json();
@@ -56,7 +56,7 @@ export const AdminMembers: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const saved = sessionStorage.getItem(PASSWORD_STORAGE_KEY);
+    const saved = localStorage.getItem(PASSWORD_STORAGE_KEY);
     if (saved) {
       setPassword(saved);
       fetchMembers(saved);
@@ -66,12 +66,12 @@ export const AdminMembers: React.FC = () => {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (!password.trim()) return;
-    sessionStorage.setItem(PASSWORD_STORAGE_KEY, password);
+    localStorage.setItem(PASSWORD_STORAGE_KEY, password);
     fetchMembers(password);
   };
 
   const handleLogout = () => {
-    sessionStorage.removeItem(PASSWORD_STORAGE_KEY);
+    localStorage.removeItem(PASSWORD_STORAGE_KEY);
     setAuthorized(false);
     setPassword('');
     setMembers([]);

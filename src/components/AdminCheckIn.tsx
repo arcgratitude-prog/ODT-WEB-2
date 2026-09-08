@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Search, Check, X, RefreshCw, Users, DollarSign, LogOut } from 'lucide-react';
+import { Search, Check, X, RefreshCw, Users, LogOut } from 'lucide-react';
 
 // Private staff check-in page. Not linked anywhere in the public nav —
 // reached directly at /?admin=checkin (see App.tsx). Protected by a shared
@@ -45,7 +45,7 @@ export const AdminCheckIn: React.FC = () => {
       if (res.status === 401) {
         setAuthorized(false);
         setAuthError('Incorrect password.');
-        sessionStorage.removeItem(PASSWORD_STORAGE_KEY);
+        localStorage.removeItem(PASSWORD_STORAGE_KEY);
         return;
       }
       const data = await res.json();
@@ -63,7 +63,7 @@ export const AdminCheckIn: React.FC = () => {
   // Try a password saved earlier this browser session, so staff don't have
   // to re-type it every time they refresh the page during an event.
   useEffect(() => {
-    const saved = sessionStorage.getItem(PASSWORD_STORAGE_KEY);
+    const saved = localStorage.getItem(PASSWORD_STORAGE_KEY);
     if (saved) {
       setPassword(saved);
       fetchBookings(saved);
@@ -73,12 +73,12 @@ export const AdminCheckIn: React.FC = () => {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (!password.trim()) return;
-    sessionStorage.setItem(PASSWORD_STORAGE_KEY, password);
+    localStorage.setItem(PASSWORD_STORAGE_KEY, password);
     fetchBookings(password);
   };
 
   const handleLogout = () => {
-    sessionStorage.removeItem(PASSWORD_STORAGE_KEY);
+    localStorage.removeItem(PASSWORD_STORAGE_KEY);
     setAuthorized(false);
     setPassword('');
     setBookings([]);
@@ -147,7 +147,6 @@ export const AdminCheckIn: React.FC = () => {
     : bookings;
 
   const checkedInCount = bookings.filter((b) => b.checked_in).length;
-  const totalRevenueCents = bookings.reduce((sum, b) => sum + b.amount_cents, 0);
   const boughtTodayCount = bookings.filter(
     (b) => /^Tier \d+:/.test(b.pass_name) && new Date(b.created_at).toDateString() === new Date().toDateString()
   ).length;
@@ -188,7 +187,7 @@ export const AdminCheckIn: React.FC = () => {
             Lab Night is free for active Tier members and current Dance Factory students — no ticket needed. Tap "Members" to verify at the door.
           </p>
 
-          <div className="grid grid-cols-4 gap-2 text-center">
+          <div className="grid grid-cols-3 gap-2 text-center">
             <div className="bg-white/5 rounded-xl p-2.5 border border-white/10">
               <div className="text-lg font-black">{bookings.length}</div>
               <div className="text-[10px] text-slate-400 uppercase flex items-center justify-center gap-1">
@@ -199,12 +198,6 @@ export const AdminCheckIn: React.FC = () => {
               <div className="text-lg font-black text-emerald-400">{checkedInCount}</div>
               <div className="text-[10px] text-slate-400 uppercase flex items-center justify-center gap-1">
                 <Check className="w-3 h-3" /> Checked In
-              </div>
-            </div>
-            <div className="bg-white/5 rounded-xl p-2.5 border border-white/10">
-              <div className="text-lg font-black">${(totalRevenueCents / 100).toFixed(0)}</div>
-              <div className="text-[10px] text-slate-400 uppercase flex items-center justify-center gap-1">
-                <DollarSign className="w-3 h-3" /> Revenue
               </div>
             </div>
             <div className="bg-amber-500/10 rounded-xl p-2.5 border border-amber-500/30">
