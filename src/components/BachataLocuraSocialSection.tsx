@@ -350,7 +350,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
               </div>
               <h4 className="text-lg font-black text-white uppercase mb-1">Bachata Battle Boot Camp</h4>
               <p className="text-xs text-slate-300 mb-3">
-                1:30 PM – 3:30 PM at Dance Factory Tampa. Technique, musicality & partnerwork with Albina & Isaac + Xavier & Jairo (AI.Urbano x La Calle Dance Co.). Full day pass — before that evening's Bachata Locura.
+                1:30 PM – 3:30 PM · Albina & Isaac + Xavier & Jairo · Includes Bachata Locura social after
               </p>
               <div className="flex items-center justify-between">
                 <span className="text-2xl font-black text-rose-300">$45</span>
