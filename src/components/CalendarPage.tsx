@@ -77,7 +77,7 @@ export const CalendarPage: React.FC<CalendarPageProps> = ({ onOpenBooking, onNav
       category: 'social',
       location: 'Westshore Plaza Mall (334 Westshore Plaza, Unit A10, Tampa, FL)',
       passTypeId: 'social-labnight',
-      description: 'Practice, Connect, Potluck & Board Games. Free for current Dance Factory students, $5 for everyone else.',
+      description: 'Practice, Connect, Potluck & Board Games. Free for current Dance Factory students, $12 for everyone else.',
       badge: 'EVERY 3RD FRIDAY',
       color: 'from-teal-500 to-cyan-600 text-white'
     });

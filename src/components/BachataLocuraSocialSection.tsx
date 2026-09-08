@@ -443,13 +443,13 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-slate-900/60 border border-teal-500/20">
               <div>
                 <p className="text-sm font-bold text-emerald-400">FREE for Active Tier Members & Current Dance Factory Students</p>
-                <p className="text-xs text-slate-400">$5 for everyone else · Show your account or ID at the door</p>
+                <p className="text-xs text-slate-400">$12 for everyone else · Show your account or ID at the door</p>
               </div>
               <button
                 onClick={() => onOpenBooking('social-labnight')}
                 className="px-6 py-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-600 hover:from-teal-400 hover:to-cyan-500 text-white font-black text-xs uppercase tracking-wide shadow-lg whitespace-nowrap transition-all"
               >
-                Get Lab Night Pass — $5
+                Get Lab Night Pass — $12
               </button>
             </div>
 
