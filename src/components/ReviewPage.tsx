@@ -223,10 +223,10 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({ onOpenBooking }) => {
                 onChange={(e) => setFavoriteClass(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:border-amber-400 focus:outline-none"
               >
-                <option value="7 PM Foundations & Essentials">Wednesday 7 PM - Foundations & Essentials</option>
-                <option value="8 PM Sensual Skills & Body Isolation">Wednesday 8 PM - Sensual Skills & Body Isolation</option>
-                <option value="9 PM Urban Flow & Partnerwork">Wednesday 9 PM - Urban Flow & Syncopated Partnerwork</option>
-                <option value="Wednesday Full Night Immersion">Wednesday Full Night Immersion (All 3 Classes)</option>
+                <option value="7 PM Foundations & Essentials" className="bg-slate-950 text-white">Wednesday 7 PM - Foundations & Essentials</option>
+                <option value="8 PM Sensual Skills & Body Isolation" className="bg-slate-950 text-white">Wednesday 8 PM - Sensual Skills & Body Isolation</option>
+                <option value="9 PM Urban Flow & Partnerwork" className="bg-slate-950 text-white">Wednesday 9 PM - Urban Flow & Syncopated Partnerwork</option>
+                <option value="Wednesday Full Night Immersion" className="bg-slate-950 text-white">Wednesday Full Night Immersion (All 3 Classes)</option>
               </select>
             </div>
 

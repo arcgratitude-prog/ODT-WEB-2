@@ -102,7 +102,7 @@ export const CustomizerModal: React.FC<CustomizerModalProps> = ({
               className="w-full bg-[#181c2e] border border-white/15 rounded-xl px-3 py-2.5 text-white font-medium focus:outline-none focus:border-amber-400"
             >
               {EVENT_PRESETS.map((p) => (
-                <option key={p.id} value={p.id}>
+                <option key={p.id} value={p.id} className="bg-[#181c2e] text-white">
                   {p.eventName} ({p.tierName})
                 </option>
               ))}
