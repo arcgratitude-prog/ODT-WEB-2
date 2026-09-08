@@ -314,10 +314,34 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
               </span>
             </div>
             {user.membershipExpiresAt && (
-              <span className="text-[11px] text-slate-400">
-                {user.isActive ? 'Renews/expires ' : 'Expired '}
-                {new Date(user.membershipExpiresAt).toLocaleDateString()}
-              </span>
+              <div className="text-right">
+                <div className="text-[11px] text-slate-400">
+                  {user.isActive ? 'Expires ' : 'Expired '}
+                  {new Date(user.membershipExpiresAt).toLocaleDateString()}
+                </div>
+                {user.isActive && (() => {
+                  // Real days remaining, computed fresh from the actual
+                  // expiration timestamp every time this renders — never
+                  // a stored/stale number that could drift out of sync.
+                  const msRemaining = new Date(user.membershipExpiresAt).getTime() - Date.now();
+                  const daysRemaining = Math.max(0, Math.ceil(msRemaining / (1000 * 60 * 60 * 24)));
+                  const weeksRemaining = Math.floor(daysRemaining / 7);
+                  const extraDays = daysRemaining % 7;
+                  let label;
+                  if (daysRemaining === 0) {
+                    label = 'Expires today';
+                  } else if (weeksRemaining === 0) {
+                    label = `${daysRemaining} day${daysRemaining === 1 ? '' : 's'} remaining`;
+                  } else if (extraDays === 0) {
+                    label = `${weeksRemaining} week${weeksRemaining === 1 ? '' : 's'} remaining`;
+                  } else {
+                    label = `${weeksRemaining}w ${extraDays}d remaining`;
+                  }
+                  return (
+                    <div className="text-[10px] font-bold text-emerald-400">{label}</div>
+                  );
+                })()}
+              </div>
             )}
           </div>
         )}

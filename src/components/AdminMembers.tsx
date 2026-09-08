@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Search, RefreshCw, Users, UserCheck, LogOut, Mail, Phone, Ticket } from 'lucide-react';
+import { Search, RefreshCw, Users, UserCheck, LogOut, Mail, Phone, Ticket, Pencil, Check, X } from 'lucide-react';
 
 // Private staff page for tracking Tier members. Not linked anywhere in
 // the public nav — reached directly at /?admin=members (see App.tsx).
@@ -30,6 +30,10 @@ export const AdminMembers: React.FC = () => {
   const [search, setSearch] = useState('');
   const [showActiveOnly, setShowActiveOnly] = useState(true);
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
+  const [editingMemberId, setEditingMemberId] = useState<number | null>(null);
+  const [editDateValue, setEditDateValue] = useState('');
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
 
   const fetchMembers = useCallback(async (pwd: string) => {
     setIsLoading(true);
@@ -68,6 +72,41 @@ export const AdminMembers: React.FC = () => {
     if (!password.trim()) return;
     localStorage.setItem(PASSWORD_STORAGE_KEY, password);
     fetchMembers(password);
+  };
+
+  const handleStartEdit = (m: Member) => {
+    setEditingMemberId(m.id);
+    // Pre-fill with the current expiration date in YYYY-MM-DD form for
+    // the native date input.
+    setEditDateValue(new Date(m.membership_expires_at).toISOString().slice(0, 10));
+    setEditError(null);
+  };
+
+  const handleSaveEdit = async (memberId: number) => {
+    if (!editDateValue) return;
+    setIsSavingEdit(true);
+    setEditError(null);
+    try {
+      // Set to end of that day (11:59 PM) so the member stays active
+      // through the whole final day rather than expiring at midnight.
+      const newExpiresAt = new Date(`${editDateValue}T23:59:59`).toISOString();
+      const res = await fetch('/api/admin-members', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
+        body: JSON.stringify({ memberId, newExpiresAt }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setEditError(data.error || 'Could not save.');
+        setIsSavingEdit(false);
+        return;
+      }
+      setEditingMemberId(null);
+      fetchMembers(password);
+    } catch {
+      setEditError('Could not reach the server.');
+      setIsSavingEdit(false);
+    }
   };
 
   const handleLogout = () => {
@@ -250,12 +289,61 @@ export const AdminMembers: React.FC = () => {
                   )}
                 </div>
                 <div className="shrink-0 text-right">
-                  <div className="text-[9px] text-slate-500 uppercase tracking-wide">
-                    {m.isActive ? 'Expires' : 'Expired'}
-                  </div>
-                  <div className={`text-xs font-bold ${m.isActive ? 'text-emerald-400' : 'text-red-400'}`}>
-                    {expiresDate.toLocaleDateString()}
-                  </div>
+                  {editingMemberId === m.id ? (
+                    <div className="flex flex-col items-end gap-1.5">
+                      <input
+                        type="date"
+                        value={editDateValue}
+                        onChange={(e) => setEditDateValue(e.target.value)}
+                        className="px-2 py-1 rounded-lg bg-slate-950 border border-white/20 text-white text-xs"
+                      />
+                      {editError && <p className="text-[9px] text-red-400 max-w-[140px] text-right">{editError}</p>}
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => handleSaveEdit(m.id)}
+                          disabled={isSavingEdit}
+                          className="p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50"
+                          title="Save"
+                        >
+                          <Check className="w-3 h-3" />
+                        </button>
+                        <button
+                          onClick={() => setEditingMemberId(null)}
+                          className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300"
+                          title="Cancel"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="text-[9px] text-slate-500 uppercase tracking-wide">
+                        {m.isActive ? 'Expires' : 'Expired'}
+                      </div>
+                      <button
+                        onClick={() => handleStartEdit(m)}
+                        className="group flex items-center gap-1 hover:opacity-80"
+                        title="Manually correct this member's expiration date"
+                      >
+                        <span className={`text-xs font-bold ${m.isActive ? 'text-emerald-400' : 'text-red-400'}`}>
+                          {expiresDate.toLocaleDateString()}
+                        </span>
+                        <Pencil className="w-2.5 h-2.5 text-slate-500 group-hover:text-slate-300" />
+                      </button>
+                      {m.isActive && (() => {
+                        const daysRemaining = Math.max(0, Math.ceil((expiresDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
+                        const weeksRemaining = Math.floor(daysRemaining / 7);
+                        const extraDays = daysRemaining % 7;
+                        let label;
+                        if (daysRemaining === 0) label = 'Today';
+                        else if (weeksRemaining === 0) label = `${daysRemaining}d left`;
+                        else if (extraDays === 0) label = `${weeksRemaining}w left`;
+                        else label = `${weeksRemaining}w ${extraDays}d left`;
+                        return <div className="text-[9px] text-emerald-500/80">{label}</div>;
+                      })()}
+                    </>
+                  )}
                 </div>
               </div>
             );

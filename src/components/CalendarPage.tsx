@@ -118,7 +118,13 @@ export const CalendarPage: React.FC<CalendarPageProps> = ({ onOpenBooking, onNav
       });
     });
 
-    return events;
+    // Never show events that have already happened — a customer landing
+    // on the calendar shouldn't see a list cluttered with dates that are
+    // no longer relevant to them. Compares by calendar day (midnight),
+    // not exact time, so an event happening later today still shows.
+    const todayMidnight = new Date();
+    todayMidnight.setHours(0, 0, 0, 0);
+    return events.filter((e) => e.date >= todayMidnight);
   };
 
   const allEvents = generateEvents();

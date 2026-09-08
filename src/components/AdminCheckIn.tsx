@@ -34,6 +34,7 @@ export const AdminCheckIn: React.FC = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState('');
+  const [passTypeFilter, setPassTypeFilter] = useState('all');
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
 
   const fetchBookings = useCallback(async (pwd: string) => {
@@ -137,14 +138,31 @@ export const AdminCheckIn: React.FC = () => {
   }
 
   const query = search.trim().toLowerCase();
+
+  // Groups every pass into one of a small, fixed set of categories for
+  // the dropdown below — every individual Tier (1/2/3) and every
+  // drop-in size all collapse into a single "Classes" bucket, rather
+  // than the dropdown having a separate entry per Tier.
+  const getPassCategory = (passName) => {
+    if (/Locura/i.test(passName)) return 'Bachata Locura';
+    if (/Boot Camp/i.test(passName)) return 'Bachata Battle Boot Camp';
+    if (/Lab Night/i.test(passName)) return 'AI Urbano Lab Night';
+    if (/Invasion/i.test(passName)) return 'Bachata Invasion';
+    return 'Classes';
+  };
+
+  const passTypeFiltered = passTypeFilter === 'all'
+    ? bookings
+    : bookings.filter((b) => getPassCategory(b.pass_name) === passTypeFilter);
+
   const filtered = query
-    ? bookings.filter(
+    ? passTypeFiltered.filter(
         (b) =>
           b.customer_name.toLowerCase().includes(query) ||
           b.customer_email.toLowerCase().includes(query) ||
           b.ticket_id.toLowerCase().includes(query)
       )
-    : bookings;
+    : passTypeFiltered;
 
   const checkedInCount = bookings.filter((b) => b.checked_in).length;
   const boughtTodayCount = bookings.filter(
@@ -224,6 +242,19 @@ export const AdminCheckIn: React.FC = () => {
               className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/15 text-white text-sm focus:outline-none focus:border-red-500"
             />
           </div>
+
+          <select
+            value={passTypeFilter}
+            onChange={(e) => setPassTypeFilter(e.target.value)}
+            className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white text-xs font-bold uppercase tracking-wide focus:outline-none focus:border-red-500"
+          >
+            <option value="all">All Socials & Classes</option>
+            <option value="Bachata Invasion">Bachata Invasion</option>
+            <option value="Bachata Locura">Bachata Locura</option>
+            <option value="Bachata Battle Boot Camp">Bachata Battle Boot Camp</option>
+            <option value="AI Urbano Lab Night">AI Urbano Lab Night</option>
+            <option value="Classes">Classes (Tiers & Drop-Ins)</option>
+          </select>
 
           {lastRefreshed && (
             <p className="text-[10px] text-slate-500 text-center">
