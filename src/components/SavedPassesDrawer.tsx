@@ -1,6 +1,7 @@
-import React from 'react';
-import { X, QrCode, Ticket, Calendar, MapPin, Trash2, CheckCircle2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, QrCode, Ticket, Calendar, MapPin, Trash2, ChevronDown } from 'lucide-react';
 import { TicketPass } from '../types';
+import { isPassPast } from '../utils/eventSchedule';
 
 interface SavedPassesDrawerProps {
   isOpen: boolean;
@@ -15,7 +16,71 @@ export const SavedPassesDrawer: React.FC<SavedPassesDrawerProps> = ({
   passes,
   onRemovePass
 }) => {
+  // Past events start collapsed so the drawer leads with what's still
+  // coming up; the ended ones tuck away under an expandable section.
+  const [showPast, setShowPast] = useState(false);
+
   if (!isOpen) return null;
+
+  // Split saved tickets into what's still upcoming vs. events that have
+  // already happened. isPassPast() is the single shared rule for this
+  // (see src/utils/eventSchedule.ts) — a ticket bought for a dated event
+  // moves here on its own once that event's date passes.
+  const upcoming = passes.filter((p) => !isPassPast(p));
+  const past = passes.filter((p) => isPassPast(p));
+
+  const renderCard = (pass: TicketPass, isPastEvent: boolean) => (
+    <div
+      key={pass.ticketId}
+      className={`liquid-glass-card rounded-2xl p-4 border space-y-3 relative overflow-hidden ${
+        isPastEvent ? 'border-white/5 opacity-50 grayscale' : 'border-white/15'
+      }`}
+    >
+      <div className="flex justify-between items-start">
+        <div>
+          <span className="text-[10px] font-mono text-red-400 font-bold uppercase block">
+            TICKET #{pass.ticketId}
+          </span>
+          <h4 className="text-sm font-bold text-white uppercase">
+            {pass.passName}
+          </h4>
+          <span className="text-xs text-slate-300 block">{pass.userName}</span>
+        </div>
+
+        <button
+          onClick={() => onRemovePass(pass.ticketId)}
+          className="p-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
+          title="Remove pass"
+        >
+          <Trash2 className="w-4 h-4" />
+        </button>
+      </div>
+
+      <div className="text-[11px] text-slate-300 space-y-1 bg-slate-950/60 p-2.5 rounded-xl border border-white/5">
+        <div className="flex items-center gap-1.5">
+          <Calendar className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+          <span>{pass.eventDate}</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <MapPin className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+          <span>{pass.location}</span>
+        </div>
+      </div>
+
+      {/* QR Preview */}
+      <div className="flex items-center justify-between pt-2">
+        <div className="flex items-center gap-2">
+          <QrCode className="w-10 h-10 text-white p-1 bg-white/10 rounded-lg" />
+          <span className={`text-[10px] font-mono font-bold uppercase ${isPastEvent ? 'text-slate-400' : 'text-emerald-400'}`}>
+            {isPastEvent ? 'Event Has Passed' : 'Ready for Check-in'}
+          </span>
+        </div>
+        <span className="text-xs font-mono font-black text-white">
+          {pass.price === 0 ? '$0 FREE' : `$${pass.price}`}
+        </span>
+      </div>
+    </div>
+  );
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
@@ -34,7 +99,7 @@ export const SavedPassesDrawer: React.FC<SavedPassesDrawerProps> = ({
                   MY SAVED CLASS TICKETS
                 </h3>
                 <span className="text-xs text-slate-400 font-mono">
-                  {passes.length} Saved Mobile Ticket(s)
+                  {upcoming.length} Upcoming{past.length > 0 ? ` · ${past.length} Past` : ''}
                 </span>
               </div>
             </div>
@@ -60,71 +125,34 @@ export const SavedPassesDrawer: React.FC<SavedPassesDrawerProps> = ({
             </div>
           ) : (
             <div className="space-y-4">
-              {passes.map((pass) => {
-                let isPastEvent = /August 5th/i.test(pass.eventDate);
-                if (!isPastEvent && /Locura/i.test(pass.passName)) {
-                  isPastEvent = new Date('2026-09-20T21:00:00') < new Date();
-                } else if (!isPastEvent && /Boot Camp/i.test(pass.passName)) {
-                  isPastEvent = new Date('2026-09-20T15:30:00') < new Date();
-                } else if (!isPastEvent && /Lab Night/i.test(pass.passName)) {
-                  isPastEvent = new Date('2026-09-18T22:30:00') < new Date();
-                } else if (!isPastEvent && /Invasion/i.test(pass.passName)) {
-                  isPastEvent = new Date('2026-09-12T01:00:00') < new Date();
-                }
+              {/* Upcoming */}
+              {upcoming.length > 0 ? (
+                upcoming.map((pass) => renderCard(pass, false))
+              ) : (
+                <p className="text-xs text-slate-400 text-center py-6">
+                  No upcoming tickets right now — your past events are below.
+                </p>
+              )}
 
-                return (
-                <div
-                  key={pass.ticketId}
-                  className={`liquid-glass-card rounded-2xl p-4 border space-y-3 relative overflow-hidden ${
-                    isPastEvent ? 'border-white/5 opacity-50 grayscale' : 'border-white/15'
-                  }`}
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <span className="text-[10px] font-mono text-red-400 font-bold uppercase block">
-                        TICKET #{pass.ticketId}
-                      </span>
-                      <h4 className="text-sm font-bold text-white uppercase">
-                        {pass.passName}
-                      </h4>
-                      <span className="text-xs text-slate-300 block">{pass.userName}</span>
-                    </div>
-
-                    <button
-                      onClick={() => onRemovePass(pass.ticketId)}
-                      className="p-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
-                      title="Remove pass"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-
-                  <div className="text-[11px] text-slate-300 space-y-1 bg-slate-950/60 p-2.5 rounded-xl border border-white/5">
-                    <div className="flex items-center gap-1.5">
-                      <Calendar className="w-3.5 h-3.5 text-rose-400 shrink-0" />
-                      <span>{pass.eventDate}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-blue-400 shrink-0" />
-                      <span>{pass.location}</span>
-                    </div>
-                  </div>
-
-                  {/* QR Preview */}
-                  <div className="flex items-center justify-between pt-2">
-                    <div className="flex items-center gap-2">
-                      <QrCode className="w-10 h-10 text-white p-1 bg-white/10 rounded-lg" />
-                      <span className={`text-[10px] font-mono font-bold uppercase ${isPastEvent ? 'text-slate-400' : 'text-emerald-400'}`}>
-                        {isPastEvent ? 'Event Has Passed' : 'Ready for Check-in'}
-                      </span>
-                    </div>
-                    <span className="text-xs font-mono font-black text-white">
-                      {pass.price === 0 ? '$0 FREE' : `$${pass.price}`}
+              {/* Past Events — collapsed by default */}
+              {past.length > 0 && (
+                <div className="pt-2 border-t border-white/10 space-y-3">
+                  <button
+                    onClick={() => setShowPast((v) => !v)}
+                    className="w-full flex items-center justify-between px-1 py-1 text-slate-400 hover:text-white transition-colors"
+                  >
+                    <span className="text-xs font-bold uppercase tracking-wider">
+                      Past Events ({past.length})
                     </span>
-                  </div>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${showPast ? 'rotate-180' : ''}`} />
+                  </button>
+                  {showPast && (
+                    <div className="space-y-4">
+                      {past.map((pass) => renderCard(pass, true))}
+                    </div>
+                  )}
                 </div>
-                );
-              })}
+              )}
             </div>
           )}
         </div>

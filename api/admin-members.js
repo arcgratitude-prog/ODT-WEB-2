@@ -48,8 +48,67 @@ export default async function handler(req, res) {
     return res.status(200).json({ success: true, member: updated[0] });
   }
 
+  if (req.method === 'DELETE') {
+    // Permanently remove a member account — built for clearing out test
+    // accounts (and any genuine duplicate/mistake) without ever touching
+    // the database by hand. Scoped strictly to the one member id given,
+    // plus that member's own bookings (matched by their unique email), so
+    // it can never affect anyone else's account or purchases.
+    const { memberId } = req.body || {};
+    // Whether to also delete this person's bookings/purchase history.
+    // Defaults to true (what you want for a test account); pass
+    // deleteBookings:false to keep the purchase records and only remove
+    // the login account.
+    const alsoDeleteBookings = !(req.body && req.body.deleteBookings === false);
+
+    if (!memberId) {
+      return res.status(400).json({ error: 'memberId is required.' });
+    }
+
+    const found = await sql`SELECT id, email, name FROM members WHERE id = ${memberId} LIMIT 1;`;
+    if (found.length === 0) {
+      return res.status(404).json({ error: 'No member found with that id.' });
+    }
+    const member = found[0];
+    const email = (member.email || '').toLowerCase();
+
+    // Ordered cleanup so no foreign key can block the delete, all wrapped
+    // in a single transaction that either fully succeeds or fully rolls
+    // back (never a half-deleted account):
+    //   1. Detach anyone this member referred. Their account is kept —
+    //      only the referral link pointing back at this member is cleared
+    //      — otherwise the members.referred_by_member_id -> members(id)
+    //      foreign key would reject the delete.
+    //   2. Delete this member's password-reset tokens (the
+    //      password_resets.member_id -> members(id) foreign key).
+    //   3. Optionally delete this member's bookings. Bookings have no
+    //      foreign key to members, so this is matched purely on the
+    //      member's own unique email and touches nothing else.
+    //   4. Delete the member row itself.
+    const statements = [
+      sql`UPDATE members SET referred_by_member_id = NULL WHERE referred_by_member_id = ${memberId} RETURNING id`,
+      sql`DELETE FROM password_resets WHERE member_id = ${memberId} RETURNING id`,
+    ];
+    const bookingsStatementIndex = alsoDeleteBookings ? statements.length : -1;
+    if (alsoDeleteBookings) {
+      statements.push(sql`DELETE FROM bookings WHERE LOWER(customer_email) = ${email} RETURNING id`);
+    }
+    statements.push(sql`DELETE FROM members WHERE id = ${memberId} RETURNING id`);
+
+    const results = await sql.transaction(statements);
+    const detachedReferrals = results[0].length;
+    const bookingsDeleted = bookingsStatementIndex >= 0 ? results[bookingsStatementIndex].length : 0;
+
+    return res.status(200).json({
+      success: true,
+      deleted: { id: member.id, name: member.name, email: member.email },
+      detachedReferrals,
+      bookingsDeleted,
+    });
+  }
+
   if (req.method !== 'GET') {
-    res.setHeader('Allow', 'GET, PATCH');
+    res.setHeader('Allow', 'GET, PATCH, DELETE');
     return res.status(405).json({ error: 'Method not allowed' });
   }
 

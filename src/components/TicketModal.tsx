@@ -3,6 +3,7 @@ import { X, Sparkles, CheckCircle2, Calendar, MapPin, Download, QrCode, Ticket, 
 import confetti from 'canvas-confetti';
 import { PASS_OPTIONS, SOCIAL_PASS_OPTION, BACHATA_INVASION_PASS_OPTION, BOOT_CAMP_PASS_OPTION, LAB_NIGHT_PASS_OPTION, X1_MONTHLY_PASS_OPTION, X1_DROPIN_PASS_OPTION, STUDIO_INFO } from '../data/danceData';
 import { TicketPass, CheckoutTheme } from '../types';
+import { getEventEndsAtISO } from '../utils/eventSchedule';
 import { CustomStripeCheckout } from './CustomStripeCheckout';
 
 interface TicketModalProps {
@@ -246,6 +247,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
         price: totalPrice,
         classesIncluded: getClassesIncludedLabel(currentPassOption, initialClassTimes),
         eventDate: getEventDateLabel(currentPassOption.name),
+        eventEndsAt: getEventEndsAtISO(currentPassOption.name),
         location: 'Dance Factory - WestShore Plaza Mall, Tampa, FL',
         purchaseTimestamp: Date.now(),
         status: 'CONFIRMED',
@@ -277,6 +279,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
       price: totalPrice,
       classesIncluded: getClassesIncludedLabel(currentPassOption, initialClassTimes),
       eventDate: getEventDateLabel(currentPassOption.name),
+      eventEndsAt: getEventEndsAtISO(currentPassOption.name),
       location: 'Dance Factory - WestShore Plaza Mall, Tampa, FL',
       purchaseTimestamp: Date.now(),
       status: 'CONFIRMED',

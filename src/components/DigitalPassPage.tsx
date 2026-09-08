@@ -10,6 +10,7 @@ import { WalletPassModal } from './pass/WalletPassModal';
 import { CheckInSimulatorModal } from './pass/CheckInSimulatorModal';
 import { CustomizerModal } from './pass/CustomizerModal';
 import { downloadCalendarEvent } from '../utils/passCalendar';
+import { isPassPast } from '../utils/eventSchedule';
 
 interface RawBooking {
   ticketId: string;
@@ -144,16 +145,7 @@ function bookingToTicketData(b: RawBooking): TicketData {
   // page marks this clearly rather than looking identical to a still-
   // valid upcoming ticket. Tiers/drop-ins aren't tied to one single
   // calendar date the same way, so they don't get this treatment.
-  let isPastEvent = false;
-  if (isLocura) {
-    isPastEvent = new Date('2026-09-20T21:00:00') < new Date();
-  } else if (isBootCamp) {
-    isPastEvent = new Date('2026-09-20T15:30:00') < new Date();
-  } else if (isLabNight) {
-    isPastEvent = new Date('2026-09-18T22:30:00') < new Date();
-  } else if (isInvasion) {
-    isPastEvent = new Date('2026-09-12T01:00:00') < new Date();
-  }
+  const isPastEvent = isPassPast({ passName: b.passName });
 
   return {
     id: b.ticketId,

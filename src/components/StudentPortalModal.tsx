@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { MemberUser, TicketPass } from '../types';
 import { STUDIO_INFO, PASS_OPTIONS } from '../data/danceData';
+import { isPassPast } from '../utils/eventSchedule';
 
 interface StudentPortalModalProps {
   isOpen: boolean;
@@ -69,6 +70,9 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
   const [phoneInput, setPhoneInput] = useState('');
   const [copiedLink, setCopiedLink] = useState(false);
   const [selectedPassForQr, setSelectedPassForQr] = useState<TicketPass | null>(null);
+  // Collapsed-by-default toggle for the "Past Events" section of device
+  // passes, so the portal leads with tickets that are still upcoming.
+  const [showPastPasses, setShowPastPasses] = useState(false);
   
   // Simulated punch card check-in state
 
@@ -630,16 +634,7 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                             // one. Tiers and drop-ins aren't tied to one
                             // single calendar date the same way, so they
                             // don't get this treatment.
-                            let isPastEvent = false;
-                            if (/Locura/i.test(t.passName)) {
-                              isPastEvent = new Date('2026-09-20T21:00:00') < new Date();
-                            } else if (/Boot Camp/i.test(t.passName)) {
-                              isPastEvent = new Date('2026-09-20T15:30:00') < new Date();
-                            } else if (/Lab Night/i.test(t.passName)) {
-                              isPastEvent = new Date('2026-09-18T22:30:00') < new Date();
-                            } else if (/Invasion/i.test(t.passName)) {
-                              isPastEvent = new Date('2026-09-12T01:00:00') < new Date();
-                            }
+                            const isPastEvent = isPassPast({ passName: t.passName });
 
                             return (
                               <div
@@ -695,75 +690,94 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                         Browse Class Passes
                       </button>
                     </div>
-                  ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {savedPasses.map((pass) => {
-                        // Same reasoning as the real Account Purchase
-                        // History list: a dated social event ticket isn't
-                        // valid to show at a door once that date has
-                        // passed. Also specifically catch the old known-
-                        // bad "August 5th" placeholder text some tickets
-                        // saved before this was fixed still carry — that
-                        // string was never a real event date to begin
-                        // with, so any ticket showing it is automatically
-                        // treated as expired regardless of today's date.
-                        let isPastEvent = /August 5th/i.test(pass.eventDate);
-                        if (!isPastEvent && /Locura/i.test(pass.passName)) {
-                          isPastEvent = new Date('2026-09-20T21:00:00') < new Date();
-                        } else if (!isPastEvent && /Boot Camp/i.test(pass.passName)) {
-                          isPastEvent = new Date('2026-09-20T15:30:00') < new Date();
-                        } else if (!isPastEvent && /Lab Night/i.test(pass.passName)) {
-                          isPastEvent = new Date('2026-09-18T22:30:00') < new Date();
-                        } else if (!isPastEvent && /Invasion/i.test(pass.passName)) {
-                          isPastEvent = new Date('2026-09-12T01:00:00') < new Date();
-                        }
-
-                        return (
-                          <div
-                            key={pass.ticketId}
-                            className={`p-4 rounded-2xl border flex flex-col justify-between space-y-3 transition-all ${
+                  ) : (() => {
+                    // Split device tickets into what's still upcoming vs.
+                    // events that have already happened, using the shared
+                    // isPassPast rule (src/utils/eventSchedule.ts). Ended
+                    // tickets drop into the collapsible "Past Events"
+                    // section below so they stop cluttering the active
+                    // list — a dated ticket moves there on its own once
+                    // its event date passes.
+                    const renderCard = (pass: TicketPass, isPastEvent: boolean) => (
+                      <div
+                        key={pass.ticketId}
+                        className={`p-4 rounded-2xl border flex flex-col justify-between space-y-3 transition-all ${
+                          isPastEvent
+                            ? 'bg-slate-950/40 border-slate-800/60 opacity-50 grayscale'
+                            : 'bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 border-slate-800 hover:border-red-500/40'
+                        }`}
+                      >
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <span className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase border ${
                               isPastEvent
-                                ? 'bg-slate-950/40 border-slate-800/60 opacity-50 grayscale'
-                                : 'bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 border-slate-800 hover:border-red-500/40'
-                            }`}
+                                ? 'bg-slate-700/40 text-slate-300 border-slate-600'
+                                : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                            }`}>
+                              {isPastEvent ? 'Past Event' : pass.status}
+                            </span>
+                            <span className="text-[10px] font-mono text-slate-400">
+                              ID: #{pass.ticketId.slice(0, 8)}
+                            </span>
+                          </div>
+
+                          <h6 className="text-sm font-extrabold text-white">{pass.passName}</h6>
+                          <p className="text-xs text-slate-300 font-medium">{pass.eventDate}</p>
+                          <p className="text-[11px] text-slate-400">{pass.location}</p>
+                        </div>
+
+                        {isPastEvent ? (
+                          <div className="w-full py-2 rounded-xl bg-slate-800/60 border border-slate-700 text-slate-400 text-xs font-bold flex items-center justify-center gap-1.5">
+                            <span>Event Has Passed — No Longer Valid</span>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => setSelectedPassForQr(pass)}
+                            className="w-full py-2 rounded-xl bg-red-600/20 hover:bg-red-600/30 border border-red-500/40 text-red-300 text-xs font-bold flex items-center justify-center gap-1.5 transition-all"
                           >
-                            <div>
-                              <div className="flex items-center justify-between mb-2">
-                                <span className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase border ${
-                                  isPastEvent
-                                    ? 'bg-slate-700/40 text-slate-300 border-slate-600'
-                                    : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
-                                }`}>
-                                  {isPastEvent ? 'Past Event' : pass.status}
-                                </span>
-                                <span className="text-[10px] font-mono text-slate-400">
-                                  ID: #{pass.ticketId.slice(0, 8)}
-                                </span>
-                              </div>
+                            <QrCode className="w-3.5 h-3.5" />
+                            <span>Show Entry QR Code</span>
+                          </button>
+                        )}
+                      </div>
+                    );
 
-                              <h6 className="text-sm font-extrabold text-white">{pass.passName}</h6>
-                              <p className="text-xs text-slate-300 font-medium">{pass.eventDate}</p>
-                              <p className="text-[11px] text-slate-400">{pass.location}</p>
-                            </div>
+                    const upcoming = savedPasses.filter((p) => !isPassPast(p));
+                    const past = savedPasses.filter((p) => isPassPast(p));
 
-                            {isPastEvent ? (
-                              <div className="w-full py-2 rounded-xl bg-slate-800/60 border border-slate-700 text-slate-400 text-xs font-bold flex items-center justify-center gap-1.5">
-                                <span>Event Has Passed — No Longer Valid</span>
+                    return (
+                      <div className="space-y-4">
+                        {upcoming.length > 0 ? (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {upcoming.map((pass) => renderCard(pass, false))}
+                          </div>
+                        ) : (
+                          <p className="text-xs text-slate-400 text-center py-6">
+                            No upcoming passes on this device — your past events are below.
+                          </p>
+                        )}
+
+                        {past.length > 0 && (
+                          <div className="pt-1 border-t border-slate-800 space-y-3">
+                            <button
+                              onClick={() => setShowPastPasses((v) => !v)}
+                              className="w-full flex items-center justify-between px-1 py-1 text-slate-400 hover:text-white transition-colors"
+                            >
+                              <span className="text-xs font-bold uppercase tracking-wider">
+                                Past Events ({past.length})
+                              </span>
+                              <ChevronDown className={`w-4 h-4 transition-transform ${showPastPasses ? 'rotate-180' : ''}`} />
+                            </button>
+                            {showPastPasses && (
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                {past.map((pass) => renderCard(pass, true))}
                               </div>
-                            ) : (
-                              <button
-                                onClick={() => setSelectedPassForQr(pass)}
-                                className="w-full py-2 rounded-xl bg-red-600/20 hover:bg-red-600/30 border border-red-500/40 text-red-300 text-xs font-bold flex items-center justify-center gap-1.5 transition-all"
-                              >
-                                <QrCode className="w-3.5 h-3.5" />
-                                <span>Show Entry QR Code</span>
-                              </button>
                             )}
                           </div>
-                        );
-                      })}
-                    </div>
-                  )}
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
 

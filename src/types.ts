@@ -34,6 +34,13 @@ export interface TicketPass {
   price: number;
   classesIncluded: string;
   eventDate: string;
+  // Machine-readable event-end instant (ISO), frozen at purchase time for
+  // dated events (Invasion/Locura/Boot Camp/Lab Night) so a recurring
+  // event's old ticket keeps its real date and correctly moves to "past"
+  // once that date passes. Optional/absent on non-dated passes (Tiers,
+  // drop-ins, X1) and on tickets bought before this field existed — see
+  // src/utils/eventSchedule.ts (isPassPast) for how absence is handled.
+  eventEndsAt?: string | null;
   location: string;
   purchaseTimestamp: number;
   status: 'VALID' | 'CONFIRMED';
