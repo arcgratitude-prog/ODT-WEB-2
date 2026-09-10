@@ -210,7 +210,7 @@ export const AdminMembers: React.FC = () => {
             <h1 className="text-lg font-black uppercase">Members</h1>
             <div className="flex items-center gap-2">
               <a
-                href="/?admin=checkin"
+                href="/checkin"
                 className="px-2.5 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors text-[11px] font-bold uppercase tracking-wide flex items-center gap-1.5"
                 title="Go to ticket check-in"
               >

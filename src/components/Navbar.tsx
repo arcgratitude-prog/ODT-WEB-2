@@ -322,15 +322,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="text-[9px] font-bold tracking-tight">Account</span>
             </button>
           )}
-
-          <button
-            onClick={() => onOpenBooking('dropin-1')}
-            className="p-2 rounded-full bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-lg shadow-red-500/40 flex flex-col items-center gap-0.5 scale-105 font-bold"
-            title="Join a Class"
-          >
-            <Sparkles className="w-4 h-4 text-yellow-300 animate-spin" style={{ animationDuration: '4s' }} />
-            <span className="text-[9px] tracking-tight">Free</span>
-          </button>
         </div>
       </div>
     </>

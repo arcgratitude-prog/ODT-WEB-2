@@ -150,17 +150,22 @@ export default function App() {
     }
   };
 
-  // Private staff tool — reached directly at yoursite.com/?admin=checkin,
-  // not linked anywhere in the public nav. Renders standalone, skipping
-  // the public site's Navbar/Footer/background entirely.
-  if (typeof window !== 'undefined' && window.location.search.toLowerCase().includes('admin=checkin')) {
-    return <AdminCheckIn />;
-  }
-
-  // Private staff tool — reached directly at yoursite.com/?admin=members.
-  // Same reasoning as admin=checkin above.
-  if (typeof window !== 'undefined' && window.location.search.toLowerCase().includes('admin=members')) {
-    return <AdminMembers />;
+  // Private staff tools. Reachable at clean paths (/checkin and /members)
+  // and also at the older query-param URLs (/?admin=checkin,
+  // /?admin=members) so any existing bookmarks keep working. Both render
+  // standalone, skipping the public site's Navbar/Footer/background.
+  // NOTE: the clean paths rely on the SPA rewrite in vercel.json — that's
+  // what makes typing or refreshing /checkin directly serve the app
+  // instead of returning a 404.
+  if (typeof window !== 'undefined') {
+    const path = window.location.pathname.replace(/\/+$/, '').toLowerCase();
+    const search = window.location.search.toLowerCase();
+    if (path === '/checkin' || search.includes('admin=checkin')) {
+      return <AdminCheckIn />;
+    }
+    if (path === '/members' || search.includes('admin=members')) {
+      return <AdminMembers />;
+    }
   }
 
   // Interactive 3D digital pass — reached via the "View Your Digital
