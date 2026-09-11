@@ -140,6 +140,11 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   const [memberPassword, setMemberPassword] = useState('');
   const [memberSessionToken, setMemberSessionToken] = useState('');
   const [discountConfirmed, setDiscountConfirmed] = useState<boolean | null>(null);
+  // The REAL total once the server confirms a discount — used to correct
+  // the summary card's price the moment it's known, instead of leaving
+  // it stuck on the undiscounted client-side number while a small banner
+  // underneath says a discount was applied. See handleDiscountResult.
+  const [confirmedTotalDollars, setConfirmedTotalDollars] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [generatedPass, setGeneratedPass] = useState<TicketPass | null>(null);
   // Paid passes need a name + email up front too — Stripe alone doesn't
@@ -168,6 +173,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
       setMemberPassword('');
       setMemberSessionToken('');
       setDiscountConfirmed(null);
+      setConfirmedTotalDollars(null);
 
       // If they're already logged into the Member Portal as an active
       // member, apply their discount automatically — no re-typing a
@@ -215,6 +221,13 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   const canPickQuantity = QUANTITY_ELIGIBLE_IDS.includes(currentPassOption.id);
   const effectiveQuantity = canPickQuantity ? quantity : 1;
   const totalPrice = currentPassOption.price * effectiveQuantity;
+  // What the summary card actually shows: the real server-confirmed total
+  // once a member discount has been confirmed, otherwise the plain
+  // undiscounted total. Without this the card was stuck showing the full
+  // price forever — the small "✓ Member discount applied" banner would
+  // appear below it, but the dollar amount right above it never moved,
+  // which is exactly what looked like "the discount doesn't appear."
+  const displayTotal = discountConfirmed && confirmedTotalDollars !== null ? confirmedTotalDollars : totalPrice;
   // Real weekly Tiers only — not drop-ins, not X1 (a separate program
   // that happens to share the same underlying "type" value).
   const isTierPass = ['track-foundations', 'track-progression', 'track-unlimited'].includes(currentPassOption.id);
@@ -321,7 +334,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
               <div className="flex items-start justify-between gap-3 border-b border-white/10 pb-3">
                 <div>
                   <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold ${theme.chipBg} ${theme.chipText} border ${theme.chipBorder} uppercase tracking-wider`}>
-                    {totalPrice === 0 ? 'FREE PASS CHECKOUT' : `CHECKOUT: $${totalPrice}`}
+                    {displayTotal === 0 ? 'FREE PASS CHECKOUT' : `CHECKOUT: $${displayTotal}`}
                   </span>
                   <h4 className="text-lg font-black text-white uppercase mt-1">
                     {currentPassOption.name}{effectiveQuantity > 1 ? ` × ${effectiveQuantity}` : ''}
@@ -332,7 +345,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                 </div>
                 <div className="text-right shrink-0">
                   <div className={`text-xl sm:text-2xl font-mono font-black ${theme.priceText}`}>
-                    {totalPrice === 0 ? 'FREE' : `$${totalPrice}`}
+                    {displayTotal === 0 ? 'FREE' : `$${displayTotal}`}
                   </div>
                 </div>
               </div>
@@ -415,7 +428,10 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                     memberEmail={isClaimingDiscount ? memberEmail : undefined}
                     memberPassword={isClaimingDiscount ? memberPassword : undefined}
                     memberSessionToken={isClaimingDiscount ? memberSessionToken : undefined}
-                    onDiscountResult={setDiscountConfirmed}
+                    onDiscountResult={(applied, finalTotalDollars) => {
+                      setDiscountConfirmed(applied);
+                      setConfirmedTotalDollars(typeof finalTotalDollars === 'number' ? finalTotalDollars : null);
+                    }}
                     classesIncluded={
                       getClassesIncludedLabel(currentPassOption, initialClassTimes)
                     }
@@ -540,6 +556,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                               onChange={(e) => {
                                 setIsClaimingDiscount(e.target.checked);
                                 setDiscountConfirmed(null);
+                                setConfirmedTotalDollars(null);
                               }}
                               className="w-4 h-4 rounded accent-emerald-500"
                             />

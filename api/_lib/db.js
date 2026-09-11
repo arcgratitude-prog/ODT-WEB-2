@@ -98,6 +98,15 @@ export async function ensureMembersTable() {
   await sql`
     CREATE INDEX IF NOT EXISTS idx_members_expires_at ON members (membership_expires_at DESC);
   `;
+  // Staff-only flag for marking an account as a test account (e.g. one
+  // created to test the member discount, or any account that isn't a
+  // real customer). Purely a display/filtering aid — it doesn't change
+  // how the account behaves anywhere else (a flagged test account with
+  // an active membership_expires_at still gets the real member discount,
+  // exactly like a real member would, which is the point of using it for
+  // testing). Defaults to FALSE so every existing and future real member
+  // is unaffected.
+  await sql`ALTER TABLE members ADD COLUMN IF NOT EXISTS is_test_account BOOLEAN NOT NULL DEFAULT FALSE;`;
 }
 
 // Password reset tokens — short-lived, single-use. Kept in their own

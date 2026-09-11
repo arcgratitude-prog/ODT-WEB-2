@@ -163,7 +163,21 @@ export default async function handler(req, res) {
       },
     });
 
-    res.status(200).json({ clientSecret: paymentIntent.client_secret, memberDiscountApplied });
+    res.status(200).json({
+      clientSecret: paymentIntent.client_secret,
+      memberDiscountApplied,
+      // The REAL total being charged, in cents — this is what Stripe is
+      // actually about to bill. Previously only `memberDiscountApplied`
+      // (true/false) came back, and the frontend kept showing its own
+      // client-computed, always-undiscounted price everywhere a dollar
+      // amount appeared (the checkout card's big price, and the Apple/
+      // Google Pay wallet sheet total). The charge itself was always
+      // correct — this was a display-only bug — but it meant a member
+      // could see "✓ Member discount applied" and then, right below it,
+      // a price that never actually changed. Sending the real number
+      // back lets the frontend show what's actually being charged.
+      finalPriceInCents,
+    });
   } catch (err) {
     console.error('Stripe PaymentIntent error:', err);
     res.status(500).json({ error: 'Something went wrong creating payment.' });

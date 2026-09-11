@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Search, RefreshCw, Users, UserCheck, LogOut, Mail, Phone, Ticket, Pencil, Check, X, Trash2, AlertTriangle } from 'lucide-react';
+import { Search, RefreshCw, Users, UserCheck, LogOut, Mail, Phone, Ticket, Pencil, Check, X, Trash2, AlertTriangle, FlaskConical } from 'lucide-react';
 
 // Private staff page for tracking Tier members. Not linked anywhere in
 // the public nav — reached directly at /?admin=members (see App.tsx).
@@ -17,6 +17,11 @@ interface Member {
   membership_expires_at: string;
   created_at: string;
   isActive: boolean;
+  // Staff-set flag for accounts created to test something (e.g. the
+  // member discount) rather than real customers. Purely a display/
+  // filtering aid — see api/_lib/db.js for what it does and doesn't
+  // affect.
+  is_test_account: boolean;
 }
 
 const PASSWORD_STORAGE_KEY = 'ai_urbano_admin_password';
@@ -29,6 +34,11 @@ export const AdminMembers: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [showActiveOnly, setShowActiveOnly] = useState(true);
+  // Test accounts (flagged via the flask icon on each row) are hidden
+  // from the list by default so they don't clutter the real member
+  // list — staff can flip this to see them, e.g. to clean one up.
+  const [hideTestAccounts, setHideTestAccounts] = useState(true);
+  const [togglingTestId, setTogglingTestId] = useState<number | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
   const [editingMemberId, setEditingMemberId] = useState<number | null>(null);
   const [editDateValue, setEditDateValue] = useState('');
@@ -115,6 +125,29 @@ export const AdminMembers: React.FC = () => {
     }
   };
 
+  const handleToggleTestAccount = async (m: Member) => {
+    setTogglingTestId(m.id);
+    try {
+      const res = await fetch('/api/admin-members', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
+        body: JSON.stringify({ memberId: m.id, isTestAccount: !m.is_test_account }),
+      });
+      if (res.ok) {
+        // Update locally instead of a full refetch — snappier, and this
+        // one field is all that changed.
+        setMembers((prev) =>
+          prev.map((x) => (x.id === m.id ? { ...x, is_test_account: !m.is_test_account } : x))
+        );
+      }
+    } catch {
+      // Silent — a failed toggle just leaves the flag as it was; staff
+      // can try again, no data was at risk.
+    } finally {
+      setTogglingTestId(null);
+    }
+  };
+
   const openDeleteConfirm = (m: Member) => {
     setDeletingMember(m);
     setAlsoDeleteBookings(true);
@@ -191,7 +224,14 @@ export const AdminMembers: React.FC = () => {
   }
 
   const query = search.trim().toLowerCase();
-  const visibleMembers = showActiveOnly ? members.filter((m) => m.isActive) : members;
+  // "Real" here means not flagged as a test account — the top stats
+  // (Total Members / Active Now) always reflect this, regardless of the
+  // hide-test-accounts toggle below, so a test account never inflates
+  // your real numbers even while you're looking right at it.
+  const realMembers = members.filter((m) => !m.is_test_account);
+  const testAccountCount = members.length - realMembers.length;
+  const visibleBeforeSearch = hideTestAccounts ? realMembers : members;
+  const visibleMembers = showActiveOnly ? visibleBeforeSearch.filter((m) => m.isActive) : visibleBeforeSearch;
   const filtered = query
     ? visibleMembers.filter(
         (m) =>
@@ -200,7 +240,7 @@ export const AdminMembers: React.FC = () => {
       )
     : visibleMembers;
 
-  const activeCount = members.filter((m) => m.isActive).length;
+  const activeCount = realMembers.filter((m) => m.isActive).length;
 
   return (
     <div className="min-h-screen bg-slate-950 text-white pb-16">
@@ -237,7 +277,7 @@ export const AdminMembers: React.FC = () => {
 
           <div className="grid grid-cols-2 gap-2 text-center">
             <div className="bg-white/5 rounded-xl p-2.5 border border-white/10">
-              <div className="text-lg font-black">{members.length}</div>
+              <div className="text-lg font-black">{realMembers.length}</div>
               <div className="text-[10px] text-slate-400 uppercase flex items-center justify-center gap-1">
                 <Users className="w-3 h-3" /> Total Members
               </div>
@@ -271,6 +311,21 @@ export const AdminMembers: React.FC = () => {
               All Members
             </button>
           </div>
+
+          {testAccountCount > 0 && (
+            <label className="flex items-center gap-2 px-1 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={hideTestAccounts}
+                onChange={(e) => setHideTestAccounts(e.target.checked)}
+                className="w-3.5 h-3.5 rounded accent-amber-500"
+              />
+              <span className="text-[11px] text-slate-400 flex items-center gap-1">
+                <FlaskConical className="w-3 h-3 text-amber-400" />
+                Hide test accounts ({testAccountCount})
+              </span>
+            </label>
+          )}
 
           <div className="relative">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
@@ -325,6 +380,12 @@ export const AdminMembers: React.FC = () => {
                     >
                       {m.isActive ? 'Active' : 'Expired'}
                     </span>
+                    {m.is_test_account && (
+                      <span className="shrink-0 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide bg-amber-500/20 border border-amber-500/40 text-amber-300 flex items-center gap-0.5">
+                        <FlaskConical className="w-2.5 h-2.5" />
+                        Test
+                      </span>
+                    )}
                   </div>
                   <div className="text-xs text-slate-400 truncate flex items-center gap-1">
                     <Mail className="w-3 h-3 shrink-0" /> {m.email}
@@ -396,13 +457,27 @@ export const AdminMembers: React.FC = () => {
                   )}
                 </div>
                 {editingMemberId !== m.id && (
-                  <button
-                    onClick={() => openDeleteConfirm(m)}
-                    className="shrink-0 p-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
-                    title="Remove this member"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  <div className="shrink-0 flex flex-col items-center gap-1.5">
+                    <button
+                      onClick={() => handleToggleTestAccount(m)}
+                      disabled={togglingTestId === m.id}
+                      className={`p-2 rounded-lg transition-colors disabled:opacity-50 ${
+                        m.is_test_account
+                          ? 'bg-amber-500/20 text-amber-300 hover:bg-amber-500/30'
+                          : 'bg-white/5 text-slate-500 hover:bg-white/10 hover:text-slate-300'
+                      }`}
+                      title={m.is_test_account ? 'Unmark as test account' : 'Mark as test account'}
+                    >
+                      <FlaskConical className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => openDeleteConfirm(m)}
+                      className="p-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
+                      title="Remove this member"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 )}
               </div>
             );
@@ -422,7 +497,13 @@ export const AdminMembers: React.FC = () => {
               <p>
                 This permanently deletes the account for{' '}
                 <span className="font-bold text-white">{deletingMember.name}</span>{' '}
-                <span className="text-slate-400 break-all">({deletingMember.email})</span>.
+                <span className="text-slate-400 break-all">({deletingMember.email})</span>
+                {deletingMember.is_test_account && (
+                  <span className="ml-1.5 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide bg-amber-500/20 border border-amber-500/40 text-amber-300 align-middle">
+                    <FlaskConical className="w-2.5 h-2.5" /> Test
+                  </span>
+                )}
+                .
               </p>
               <label className="flex items-start gap-2 cursor-pointer bg-white/5 rounded-xl p-3 border border-white/10">
                 <input

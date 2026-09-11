@@ -34,7 +34,7 @@ interface CustomStripeCheckoutProps {
   memberEmail?: string;
   memberPassword?: string;
   memberSessionToken?: string;
-  onDiscountResult?: (applied: boolean) => void;
+  onDiscountResult?: (applied: boolean, finalPriceInDollars?: number) => void;
   classesIncluded?: string;
   ticketId?: string;
   quantity?: number;
@@ -426,6 +426,12 @@ export const CustomStripeCheckout: React.FC<CustomStripeCheckoutProps> = ({
 }) => {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+  // The REAL amount Stripe is charging, from the server's response —
+  // starts as the undiscounted client-side price so something sensible
+  // shows while the request is in flight, then gets replaced the moment
+  // the server confirms the real (possibly discounted) total. This is
+  // what actually gets displayed, never the raw priceInDollars prop.
+  const [displayPriceInDollars, setDisplayPriceInDollars] = useState(priceInDollars);
 
   useEffect(() => {
     let cancelled = false;
@@ -460,7 +466,14 @@ export const CustomStripeCheckout: React.FC<CustomStripeCheckoutProps> = ({
         if (cancelled) return;
         if (data.clientSecret) {
           setClientSecret(data.clientSecret);
-          onDiscountResult?.(!!data.memberDiscountApplied);
+          // Prefer the server's real charged amount; fall back to the
+          // client price only if an older/unexpected response shape
+          // ever comes back without it, so the UI never goes blank.
+          const realDollars = typeof data.finalPriceInCents === 'number'
+            ? data.finalPriceInCents / 100
+            : priceInDollars;
+          setDisplayPriceInDollars(realDollars);
+          onDiscountResult?.(!!data.memberDiscountApplied, realDollars);
         } else {
           setLoadError(data.error || 'Could not start checkout.');
         }
@@ -491,7 +504,7 @@ export const CustomStripeCheckout: React.FC<CustomStripeCheckoutProps> = ({
     <Elements stripe={stripePromise}>
       <InnerCheckoutForm
         passName={passName}
-        priceInDollars={priceInDollars}
+        priceInDollars={displayPriceInDollars}
         clientSecret={clientSecret}
         onSuccess={onSuccess}
         theme={theme}

@@ -23,25 +23,56 @@ export default async function handler(req, res) {
   await ensureMembersTable();
 
   if (req.method === 'PATCH') {
-    // Manual correction to a specific member's expiration date — for
-    // real edge cases (e.g. someone bought right after that day's class
-    // already happened, so their real 4-week window should be counted
-    // differently than a pure "purchase timestamp + 28 days" would give
-    // them). This is a deliberate, staff-initiated override, not
-    // something the automated purchase flow ever does on its own.
-    const { memberId, newExpiresAt } = req.body;
-    if (!memberId || !newExpiresAt) {
-      return res.status(400).json({ error: 'memberId and newExpiresAt are required.' });
+    // Two independent manual corrections live on this one endpoint:
+    //   - newExpiresAt: fixing a member's expiration date for a real
+    //     edge case (e.g. someone bought right after that day's class
+    //     already happened, so their real 4-week window should be
+    //     counted differently than a pure "purchase timestamp + 28
+    //     days" would give them).
+    //   - isTestAccount: flagging/unflagging an account as a test
+    //     account, so it can be told apart from real members in the
+    //     list and excluded from the real member counts — without
+    //     changing how the account actually behaves anywhere else.
+    // Either can be sent alone, or both together; at least one is
+    // required.
+    const { memberId, newExpiresAt, isTestAccount } = req.body || {};
+    if (!memberId) {
+      return res.status(400).json({ error: 'memberId is required.' });
     }
-    const parsedDate = new Date(newExpiresAt);
-    if (isNaN(parsedDate.getTime())) {
-      return res.status(400).json({ error: 'newExpiresAt is not a valid date.' });
+    if (newExpiresAt === undefined && isTestAccount === undefined) {
+      return res.status(400).json({ error: 'Nothing to update — provide newExpiresAt and/or isTestAccount.' });
     }
-    const updated = await sql`
-      UPDATE members SET membership_expires_at = ${parsedDate.toISOString()}, updated_at = NOW()
-      WHERE id = ${memberId}
-      RETURNING id, name, email, membership_expires_at;
-    `;
+
+    let parsedDate = null;
+    if (newExpiresAt !== undefined) {
+      parsedDate = new Date(newExpiresAt);
+      if (isNaN(parsedDate.getTime())) {
+        return res.status(400).json({ error: 'newExpiresAt is not a valid date.' });
+      }
+    }
+
+    let updated;
+    if (parsedDate !== null && isTestAccount !== undefined) {
+      updated = await sql`
+        UPDATE members
+        SET membership_expires_at = ${parsedDate.toISOString()}, is_test_account = ${!!isTestAccount}, updated_at = NOW()
+        WHERE id = ${memberId}
+        RETURNING id, name, email, membership_expires_at, is_test_account;
+      `;
+    } else if (parsedDate !== null) {
+      updated = await sql`
+        UPDATE members SET membership_expires_at = ${parsedDate.toISOString()}, updated_at = NOW()
+        WHERE id = ${memberId}
+        RETURNING id, name, email, membership_expires_at, is_test_account;
+      `;
+    } else {
+      updated = await sql`
+        UPDATE members SET is_test_account = ${!!isTestAccount}, updated_at = NOW()
+        WHERE id = ${memberId}
+        RETURNING id, name, email, membership_expires_at, is_test_account;
+      `;
+    }
+
     if (updated.length === 0) {
       return res.status(404).json({ error: 'No member found with that id.' });
     }
@@ -114,7 +145,7 @@ export default async function handler(req, res) {
 
   const rows = await sql`
     SELECT id, email, name, phone, last_pass_name, last_ticket_id,
-           membership_expires_at, created_at
+           membership_expires_at, created_at, is_test_account
     FROM members
     ORDER BY membership_expires_at DESC
     LIMIT 500;
