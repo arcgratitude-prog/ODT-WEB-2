@@ -41,7 +41,7 @@ interface CustomStripeCheckoutProps {
   memberEmail?: string;
   memberPassword?: string;
   memberSessionToken?: string;
-  onDiscountResult?: (applied: boolean, finalPriceInDollars?: number) => void;
+  onDiscountResult?: (applied: boolean, finalPriceInDollars?: number, deniedReason?: string | null) => void;
   classesIncluded?: string;
   ticketId?: string;
   quantity?: number;
@@ -489,7 +489,7 @@ export const CustomStripeCheckout: React.FC<CustomStripeCheckoutProps> = ({
             ? data.finalPriceInCents / 100
             : priceInDollars;
           setDisplayPriceInDollars(realDollars);
-          onDiscountResult?.(!!data.memberDiscountApplied, realDollars);
+          onDiscountResult?.(!!data.memberDiscountApplied, realDollars, data.discountDeniedReason ?? null);
         } else {
           setLoadError(data.error || 'Could not start checkout.');
         }

@@ -153,6 +153,10 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   // it stuck on the undiscounted client-side number while a small banner
   // underneath says a discount was applied. See handleDiscountResult.
   const [confirmedTotalDollars, setConfirmedTotalDollars] = useState<number | null>(null);
+  // Why the discount wasn't applied, when it wasn't — lets the banner
+  // below give an accurate reason ("already used for this event") instead
+  // of a generic message that would wrongly suggest a wrong password.
+  const [discountDeniedReason, setDiscountDeniedReason] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [generatedPass, setGeneratedPass] = useState<TicketPass | null>(null);
   // Paid passes need a name + email up front too — Stripe alone doesn't
@@ -182,6 +186,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
       setMemberSessionToken('');
       setDiscountConfirmed(null);
       setConfirmedTotalDollars(null);
+      setDiscountDeniedReason(null);
       setLoggedInMember(null);
 
       // If they're already logged into the Member Portal on this device,
@@ -445,6 +450,8 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                       <p className="text-xs font-bold">
                         {discountConfirmed
                           ? '✓ Member discount applied to 1 ticket'
+                          : discountDeniedReason === 'already_used'
+                          ? "You've already used your member discount for this event"
                           : 'Discount not applied — check your email/password'}
                       </p>
                     </div>
@@ -462,9 +469,10 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                     memberEmail={isClaimingDiscount ? memberEmail : undefined}
                     memberPassword={isClaimingDiscount ? memberPassword : undefined}
                     memberSessionToken={isClaimingDiscount ? memberSessionToken : undefined}
-                    onDiscountResult={(applied, finalTotalDollars) => {
+                    onDiscountResult={(applied, finalTotalDollars, deniedReason) => {
                       setDiscountConfirmed(applied);
                       setConfirmedTotalDollars(typeof finalTotalDollars === 'number' ? finalTotalDollars : null);
+                      setDiscountDeniedReason(deniedReason ?? null);
                     }}
                     classesIncluded={
                       getClassesIncludedLabel(currentPassOption, initialClassTimes)
@@ -599,6 +607,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                                 setIsClaimingDiscount(e.target.checked);
                                 setDiscountConfirmed(null);
                                 setConfirmedTotalDollars(null);
+                                setDiscountDeniedReason(null);
                               }}
                               className="w-4 h-4 rounded accent-emerald-500"
                             />

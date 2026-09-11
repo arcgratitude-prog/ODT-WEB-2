@@ -93,6 +93,11 @@ export default async function handler(req, res) {
   // QR code so each admission can be scanned and checked in
   // independently. A single shared row/QR for a "2 tickets" purchase
   // would mean only one of the two people could ever actually get in.
+  //
+  // Only ticket #1 ever carries discountEventKey (create-payment-intent.js
+  // only ever discounts one ticket per order) — stamping it here is what
+  // lets the NEXT purchase attempt for this event correctly see "this
+  // member already used their discount" and decline to grant it again.
   const ticketRows = Array.from({ length: quantity }, (_, i) => {
     const n = i + 1;
     return {
@@ -101,6 +106,7 @@ export default async function handler(req, res) {
       ticketNumber: n,
       ticketCount: quantity,
       amountCents: perTicketAmountCents,
+      discountEventKey: n === 1 && metadata.memberDiscountApplied === 'true' ? (metadata.discountEventKey || null) : null,
     };
   });
 
@@ -126,11 +132,13 @@ export default async function handler(req, res) {
           INSERT INTO bookings (
             ticket_id, customer_name, customer_email, customer_phone,
             pass_name, pass_type, amount_cents, classes_included,
-            referred_by, stripe_payment_intent_id, ticket_number, ticket_count
+            referred_by, stripe_payment_intent_id, ticket_number, ticket_count,
+            discount_event_key
           ) VALUES (
             ${row.ticketId}, ${row.customerName}, ${row.customerEmail}, ${row.customerPhone},
             ${row.passName}, ${row.passType}, ${row.amountCents}, ${row.classesIncluded},
-            ${row.referredBy}, ${row.stripePaymentIntentId}, ${row.ticketNumber}, ${row.ticketCount}
+            ${row.referredBy}, ${row.stripePaymentIntentId}, ${row.ticketNumber}, ${row.ticketCount},
+            ${row.discountEventKey}
           )
           ON CONFLICT (ticket_id) DO NOTHING;
         `;
