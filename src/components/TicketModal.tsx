@@ -140,6 +140,14 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   const [memberPassword, setMemberPassword] = useState('');
   const [memberSessionToken, setMemberSessionToken] = useState('');
   const [discountConfirmed, setDiscountConfirmed] = useState<boolean | null>(null);
+  // Set whenever a valid logged-in member session is found on this
+  // device (see the reset effect below) — used to (a) pre-fill contact
+  // info so a logged-in person never has to retype their own name/email,
+  // and (b) skip the "create a password" step for a Tier purchase, since
+  // an account with a valid session already exists; the webhook matches
+  // the purchase to it by email regardless. Independent of the discount
+  // flow, which additionally requires the pass to be discount-eligible.
+  const [loggedInMember, setLoggedInMember] = useState<{ email: string; sessionToken: string } | null>(null);
   // The REAL total once the server confirms a discount — used to correct
   // the summary card's price the moment it's known, instead of leaving
   // it stuck on the undiscounted client-side number while a small banner
@@ -174,29 +182,40 @@ export const TicketModal: React.FC<TicketModalProps> = ({
       setMemberSessionToken('');
       setDiscountConfirmed(null);
       setConfirmedTotalDollars(null);
+      setLoggedInMember(null);
 
-      // If they're already logged into the Member Portal as an active
-      // member, apply their discount automatically — no re-typing a
-      // password. This uses the session token issued at login (see
-      // api/member-login.js), verified server-side in
-      // api/create-payment-intent.js, never the password itself.
-      // Only relevant for the two social events — attempting this for a
-      // Tier/drop-in purchase would just come back "not applied" and
-      // show a confusing message for a discount nobody was trying to use.
-      if (isDiscountEligible) {
-        try {
-          const storedUser = localStorage.getItem('ai_urbano_member_user');
-          if (storedUser) {
-            const parsed = JSON.parse(storedUser);
-            if (parsed?.isActive && parsed?.email && parsed?.sessionToken) {
+      // If they're already logged into the Member Portal on this device,
+      // read that session once and reuse it two ways below: always
+      // pre-fill their contact info (nobody re-types their own name and
+      // email just because they're already logged in), and — only when
+      // this pass is discount-eligible and they're an active member —
+      // auto-apply the member discount, same as before. This uses the
+      // session token issued at login (see api/member-login.js),
+      // verified server-side in api/create-payment-intent.js, never the
+      // password itself.
+      try {
+        const storedUser = localStorage.getItem('ai_urbano_member_user');
+        if (storedUser) {
+          const parsed = JSON.parse(storedUser);
+          if (parsed?.email && parsed?.sessionToken) {
+            setLoggedInMember({ email: parsed.email, sessionToken: parsed.sessionToken });
+            setName(parsed.name || '');
+            setEmail(parsed.email);
+            setPhone(parsed.phone || '');
+
+            // Discount auto-claim — only relevant for the two social
+            // events; attempting this for a Tier/drop-in purchase would
+            // just come back "not applied" and show a confusing message
+            // for a discount nobody was trying to use.
+            if (isDiscountEligible && parsed?.isActive) {
               setIsClaimingDiscount(true);
               setMemberEmail(parsed.email);
               setMemberSessionToken(parsed.sessionToken);
             }
           }
-        } catch {
-          // Corrupt/missing local session — just skip the pre-fill silently.
         }
+      } catch {
+        // Corrupt/missing local session — just skip the pre-fill silently.
       }
 
       ticketIdRef.current = `UB-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
@@ -231,9 +250,18 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   // Real weekly Tiers only — not drop-ins, not X1 (a separate program
   // that happens to share the same underlying "type" value).
   const isTierPass = ['track-foundations', 'track-progression', 'track-unlimited'].includes(currentPassOption.id);
-  // Active-member 20% discount is only offered on the two social events —
-  // matches the actual server-side check in create-payment-intent.js.
-  const isDiscountEligible = ['social-invasion-10', 'social-presale'].includes(currentPassOption.id);
+  // Active-member 20% discount is offered on the three ticketed Locura-
+  // weekend events (Invasion, Locura, Boot Camp) — matches the actual
+  // server-side check in create-payment-intent.js.
+  const isDiscountEligible = ['social-invasion-10', 'social-presale', 'social-bootcamp'].includes(currentPassOption.id);
+  // True when the email currently in the form still matches an active
+  // logged-in session on this device — used to skip the "create a
+  // password" step for a Tier purchase (the account already exists) and
+  // to show a simpler message instead. If they edit the email to buy for
+  // someone else, this correctly goes back to false, and the normal
+  // signup/password flow applies to that different account.
+  const isRenewingAsLoggedInMember =
+    !!loggedInMember && email.trim().toLowerCase() === loggedInMember.email.toLowerCase();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -344,6 +372,11 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                   </p>
                 </div>
                 <div className="text-right shrink-0">
+                  {displayTotal < totalPrice && (
+                    <div className="text-xs font-mono font-bold text-slate-500 line-through">
+                      ${totalPrice}
+                    </div>
+                  )}
                   <div className={`text-xl sm:text-2xl font-mono font-black ${theme.priceText}`}>
                     {displayTotal === 0 ? 'FREE' : `$${displayTotal}`}
                   </div>
@@ -420,6 +453,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                   <CustomStripeCheckout
                     passName={currentPassOption.name}
                     priceInDollars={totalPrice}
+                    originalPriceInDollars={totalPrice}
                     onSuccess={handlePaymentSuccess}
                     passType={currentPassOption.type}
                     customerName={name}
@@ -450,7 +484,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                     if (!name.trim() || !email.trim()) return;
                     setAccountError(null);
 
-                    if (isTierPass) {
+                    if (isTierPass && !isRenewingAsLoggedInMember) {
                       if (password.length < 6) {
                         setAccountError('Password must be at least 6 characters.');
                         return;
@@ -488,6 +522,14 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                   }}
                   className="space-y-4"
                 >
+                  {isRenewingAsLoggedInMember && (
+                    <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <p className="text-[11px] text-emerald-300 leading-relaxed">
+                        Logged in as <span className="font-bold">{loggedInMember?.email}</span> — your info is pre-filled below.
+                      </p>
+                    </div>
+                  )}
                   <div>
                     <label className="block text-xs font-bold uppercase text-slate-300 mb-1">
                       Full Name *
@@ -599,48 +641,59 @@ export const TicketModal: React.FC<TicketModalProps> = ({
 
                   {isTierPass && (
                     <>
-                      <div className="p-3 rounded-2xl bg-white/5 border border-white/10">
-                        <p className="text-[11px] text-slate-300 leading-relaxed">
-                          <span className="font-bold text-white">A member account is required to purchase a Tier</span> — this tracks your active status and unlocks member perks (like discounted socials). Set a password below.
-                        </p>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold uppercase text-slate-300 mb-1">
-                          Create Password *
-                        </label>
-                        <div className="relative">
-                          <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
-                          <input
-                            type="password"
-                            required
-                            minLength={6}
-                            placeholder="At least 6 characters"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className={`w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none ${theme.focusBorder} transition-colors`}
-                          />
+                      {isRenewingAsLoggedInMember ? (
+                        <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                          <p className="text-[11px] text-emerald-300 leading-relaxed">
+                            Renewing on your logged-in account — no new password needed.
+                          </p>
                         </div>
-                        <p className="text-[10px] text-slate-500 mt-1">Already a member? Enter your existing password to renew.</p>
-                      </div>
+                      ) : (
+                        <>
+                          <div className="p-3 rounded-2xl bg-white/5 border border-white/10">
+                            <p className="text-[11px] text-slate-300 leading-relaxed">
+                              <span className="font-bold text-white">A member account is required to purchase a Tier</span> — this tracks your active status and unlocks member perks (like discounted socials). Set a password below.
+                            </p>
+                          </div>
 
-                      <div>
-                        <label className="block text-xs font-bold uppercase text-slate-300 mb-1">
-                          Confirm Password *
-                        </label>
-                        <div className="relative">
-                          <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
-                          <input
-                            type="password"
-                            required
-                            minLength={6}
-                            placeholder="Re-enter password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            className={`w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none ${theme.focusBorder} transition-colors`}
-                          />
-                        </div>
-                      </div>
+                          <div>
+                            <label className="block text-xs font-bold uppercase text-slate-300 mb-1">
+                              Create Password *
+                            </label>
+                            <div className="relative">
+                              <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                              <input
+                                type="password"
+                                required
+                                minLength={6}
+                                placeholder="At least 6 characters"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className={`w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none ${theme.focusBorder} transition-colors`}
+                              />
+                            </div>
+                            <p className="text-[10px] text-slate-500 mt-1">Already a member? Enter your existing password to renew.</p>
+                          </div>
+
+                          <div>
+                            <label className="block text-xs font-bold uppercase text-slate-300 mb-1">
+                              Confirm Password *
+                            </label>
+                            <div className="relative">
+                              <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                              <input
+                                type="password"
+                                required
+                                minLength={6}
+                                placeholder="Re-enter password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                className={`w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-950/80 border border-white/15 text-white text-xs focus:outline-none ${theme.focusBorder} transition-colors`}
+                              />
+                            </div>
+                          </div>
+                        </>
+                      )}
 
                       {accountError && (
                         <div className="p-3 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-start gap-2">

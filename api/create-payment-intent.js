@@ -62,8 +62,9 @@ export default async function handler(req, res) {
     // against the real database and recomputes the charge from scratch,
     // so nobody can just edit a number in their browser (or hand their
     // login to a friend mid-purchase) to get a discount that wasn't
-    // actually earned. Only applies to the two social events — Locura
-    // and Invasion — not weekly Tiers/drop-ins.
+    // actually earned. Applies to the three ticketed Locura-weekend
+    // events — Invasion, Locura, and Boot Camp — not weekly Tiers/
+    // drop-ins.
     //
     // Two ways to prove membership: a password (manual entry at
     // checkout) or a session token (issued at Member Portal login, so
@@ -72,7 +73,7 @@ export default async function handler(req, res) {
     // itself for this, only the token).
     let finalPriceInCents = realTotalInCents;
     let memberDiscountApplied = false;
-    const isDiscountEligibleEvent = /Locura|Invasion/i.test(passName);
+    const isDiscountEligibleEvent = /Locura|Invasion|Boot Camp/i.test(passName);
 
     if (isDiscountEligibleEvent && memberEmail && (memberPassword || memberSessionToken)) {
       await ensureMembersTable();

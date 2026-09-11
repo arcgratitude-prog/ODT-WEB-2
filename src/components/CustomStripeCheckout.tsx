@@ -22,6 +22,13 @@ const stripePromise = loadStripe(
 interface CustomStripeCheckoutProps {
   passName: string;
   priceInDollars: number;
+  // The undiscounted price, for showing a struck-through "was $X" next to
+  // the real (possibly discounted) total — without this, a discounted
+  // price with nothing to compare it to just looks like "the price," and
+  // a member has no visual confirmation their discount actually did
+  // anything. Only rendered when it's actually higher than what's being
+  // charged.
+  originalPriceInDollars?: number;
   onSuccess: () => void;
   // Booking metadata — rides along on the Stripe PaymentIntent so the
   // webhook (api/stripe-webhook.js) can save a real booking record and
@@ -129,10 +136,11 @@ const cardElementOptions = {
 const InnerCheckoutForm: React.FC<{
   passName: string;
   priceInDollars: number;
+  originalPriceInDollars?: number;
   clientSecret: string;
   onSuccess: () => void;
   theme: CheckoutTheme;
-}> = ({ passName, priceInDollars, clientSecret, onSuccess, theme }) => {
+}> = ({ passName, priceInDollars, originalPriceInDollars, clientSecret, onSuccess, theme }) => {
   const accent = ACCENT_CLASSES[theme];
   const stripe = useStripe();
   const elements = useElements();
@@ -303,8 +311,15 @@ const InnerCheckoutForm: React.FC<{
       >
         {/* Header */}
         <div className="px-6 pt-6 pb-5">
-          <div className="text-3xl font-bold text-white">
-            ${priceInDollars.toFixed(2)}
+          <div className="flex items-baseline gap-2">
+            {typeof originalPriceInDollars === 'number' && originalPriceInDollars > priceInDollars && (
+              <span className="text-base font-bold text-slate-500 line-through">
+                ${originalPriceInDollars.toFixed(2)}
+              </span>
+            )}
+            <div className="text-3xl font-bold text-white">
+              ${priceInDollars.toFixed(2)}
+            </div>
           </div>
           <div className="text-xs font-semibold uppercase tracking-widest text-slate-500 mt-1">
             {passName}
@@ -409,6 +424,7 @@ const InnerCheckoutForm: React.FC<{
 export const CustomStripeCheckout: React.FC<CustomStripeCheckoutProps> = ({
   passName,
   priceInDollars,
+  originalPriceInDollars,
   onSuccess,
   passType,
   customerName,
@@ -505,6 +521,7 @@ export const CustomStripeCheckout: React.FC<CustomStripeCheckoutProps> = ({
       <InnerCheckoutForm
         passName={passName}
         priceInDollars={displayPriceInDollars}
+        originalPriceInDollars={originalPriceInDollars}
         clientSecret={clientSecret}
         onSuccess={onSuccess}
         theme={theme}

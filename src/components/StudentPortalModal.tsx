@@ -390,7 +390,7 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                 className="w-full appearance-none px-4 py-2.5 pr-10 rounded-xl bg-gradient-to-r from-red-950/60 via-slate-900 to-slate-950 border border-red-500/40 text-xs font-extrabold text-white uppercase tracking-wide focus:outline-none focus:border-red-400 cursor-pointer shadow-md"
               >
                 <option value="tickets" className="bg-slate-950 text-white">
-                  🎟️ My Tickets & Purchased Passes ({savedPasses.length} Saved)
+                  🎟️ My Tickets & Purchased Passes ({savedPasses.length} On This Device)
                 </option>
                 <option value="referrals" className="bg-slate-950 text-white">
                   👥 Referral Rewards & Earned Credits ({user.referralCount} Friends)
@@ -598,7 +598,11 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                         <Ticket className="w-4.5 h-4.5 text-red-400" />
                         <span>Purchased Tickets & Digital Entry Passes</span>
                       </h5>
-                      <p className="text-xs text-slate-400">Total Passes Bought: {savedPasses.length}</p>
+                      <p className="text-xs text-slate-400">
+                        {realTickets !== null
+                          ? `Purchases on this account: ${realTickets.length}`
+                          : 'Loading your purchase history…'}
+                      </p>
                     </div>
 
                     <button
