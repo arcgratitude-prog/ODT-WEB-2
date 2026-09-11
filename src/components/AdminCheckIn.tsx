@@ -202,7 +202,7 @@ export const AdminCheckIn: React.FC = () => {
             </div>
           </div>
           <p className="text-[10px] text-teal-400/80 -mt-1">
-            Lab Night is free for active Tier members and current Dance Factory students — no ticket needed. Tap "Members" to verify at the door.
+            Lab Night is free for active Tier members — no ticket needed. Tap "Members" to verify at the door.
           </p>
 
           <div className="grid grid-cols-3 gap-2 text-center">

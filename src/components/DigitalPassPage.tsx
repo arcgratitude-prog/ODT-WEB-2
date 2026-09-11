@@ -131,7 +131,7 @@ function bookingToTicketData(b: RawBooking): TicketData {
     : isBootCamp
     ? ['2 hours of technique, musicality & partnerwork', 'Taught by Albina & Isaac + Xavier & Jairo', 'Same day as Bachata Locura']
     : isLabNight
-    ? ['Open practice floor — Salsa, Bachata, Zouk', 'Potluck — bring a dish to share', 'Board games — bring your favorite', 'Free for current Dance Factory students']
+    ? ['Open practice floor — Salsa, Bachata, Zouk', 'Potluck — bring a dish to share', 'Board games — bring your favorite', 'Free for active Tier members']
     : isX1
     ? ['90 minutes of direct one-on-one coaching', 'Warm Up, Mobility, Isolation, Train, Concept, Movement, Apply', 'Personalized to your goals']
     : ['Structured Urban Bachata curriculum', 'Video recaps after each class', ...(b.classesIncluded ? [`Classes: ${b.classesIncluded}`] : [])];

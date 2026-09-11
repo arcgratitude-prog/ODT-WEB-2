@@ -424,25 +424,21 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
               <div className="p-3 rounded-xl bg-slate-900/60 border border-teal-500/20 text-center">
                 <p className="text-xs font-bold text-white">1. Practice</p>
-                <p className="text-[10px] text-slate-400">Salsa, Bachata, Zouk</p>
               </div>
               <div className="p-3 rounded-xl bg-slate-900/60 border border-teal-500/20 text-center">
                 <p className="text-xs font-bold text-white">2. Connect</p>
-                <p className="text-[10px] text-slate-400">Social Dancing</p>
               </div>
               <div className="p-3 rounded-xl bg-slate-900/60 border border-teal-500/20 text-center">
                 <p className="text-xs font-bold text-white">3. Potluck</p>
-                <p className="text-[10px] text-slate-400">Bring a Dish</p>
               </div>
               <div className="p-3 rounded-xl bg-slate-900/60 border border-teal-500/20 text-center">
                 <p className="text-xs font-bold text-white">4. Play</p>
-                <p className="text-[10px] text-slate-400">Board Games</p>
               </div>
             </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-slate-900/60 border border-teal-500/20">
               <div>
-                <p className="text-sm font-bold text-emerald-400">FREE for Active Tier Members & Current Dance Factory Students</p>
+                <p className="text-sm font-bold text-emerald-400">FREE for Active Tier Members</p>
                 <p className="text-xs text-slate-400">$12 for everyone else · Show your account or ID at the door</p>
               </div>
               <button
