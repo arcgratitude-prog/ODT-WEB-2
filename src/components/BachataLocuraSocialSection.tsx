@@ -417,7 +417,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
               </h3>
               <p className="text-sm text-teal-200 font-bold mt-1">Practice. Connect. Unwind.</p>
               <p className="text-xs text-slate-400 mt-2 max-w-md mx-auto">
-                More than practice — it's community. Friday, September 18th · 6:30 PM – 10:30 PM · Westshore Plaza Mall.
+                More than practice — it's community. Friday, September 18th · 7:00 PM – 10:30 PM · Westshore Plaza Mall.
               </p>
             </div>
 

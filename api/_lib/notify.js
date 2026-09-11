@@ -110,7 +110,7 @@ function buildOrderReceiptEmail(order) {
     dateSmall = 'SUNDAY';
     dj = null;
   } else if (isLabNight) {
-    timeLabel = '6:30–10:30 PM EDT';
+    timeLabel = '7–10:30 PM EDT';
     dateBig = 'SEPT 18';
     dateSmall = 'FRIDAY';
     dj = null;

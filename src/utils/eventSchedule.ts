@@ -52,9 +52,9 @@ export function occurrenceForPassName(passName: string | null | undefined): Even
   if (/Boot Camp/i.test(name)) {
     return { startsAt: new Date(2026, 8, 20, 13, 30, 0), endsAt: new Date(2026, 8, 20, 15, 30, 0) };
   }
-  // Friday, September 18, 2026 — 6:30 PM to 10:30 PM.
+  // Friday, September 18, 2026 — 7:00 PM to 10:30 PM.
   if (/Lab Night/i.test(name)) {
-    return { startsAt: new Date(2026, 8, 18, 18, 30, 0), endsAt: new Date(2026, 8, 18, 22, 30, 0) };
+    return { startsAt: new Date(2026, 8, 18, 19, 0, 0), endsAt: new Date(2026, 8, 18, 22, 30, 0) };
   }
   // Friday, September 11, 2026 — 8:00 PM to 1:00 AM the next day.
   if (/Invasion/i.test(name)) {

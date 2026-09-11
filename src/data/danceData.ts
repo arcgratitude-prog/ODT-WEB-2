@@ -133,7 +133,7 @@ export const LAB_NIGHT_PASS_OPTION: PassOption = {
   id: 'social-labnight',
   name: 'AI Urbano Lab Night',
   price: 12,
-  tagline: 'Friday, September 18th @ Westshore Plaza Mall (6:30 PM - 10:30 PM) — Every 3rd Friday',
+  tagline: 'Friday, September 18th @ Westshore Plaza Mall (7:00 PM - 10:30 PM) — Every 3rd Friday',
   classesCount: 1,
   popular: false,
   features: [

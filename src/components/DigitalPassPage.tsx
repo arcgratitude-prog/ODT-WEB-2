@@ -96,15 +96,15 @@ function bookingToTicketData(b: RawBooking): TicketData {
     ];
   } else if (isLabNight) {
     date = 'Friday, September 18, 2026';
-    time = '6:30 PM – 10:30 PM EDT';
-    doorsOpen = '6:30 PM';
+    time = '7:00 PM – 10:30 PM EDT';
+    doorsOpen = '7:00 PM';
     dj = '';
     subtitle = 'Practice, Connect & Unwind — Every 3rd Friday';
     category = 'Social';
     passColorTheme = 'holographic';
     curriculum = undefined;
     schedule = [
-      { time: '6:30 PM', title: 'Practice — Open Salsa, Bachata & Zouk Floor', description: '' },
+      { time: '7:00 PM', title: 'Practice — Open Salsa, Bachata & Zouk Floor', description: '' },
       { time: '8:00 PM', title: 'Connect — Social Dancing', description: '' },
       { time: '9:00 PM', title: 'Potluck & Board Games', description: 'Bring a dish and your favorite game!' },
       { time: '10:30 PM', title: 'Event Ends', description: '' },

@@ -152,7 +152,7 @@ export default async function handler(req, res) {
     // this order was actually recorded, sending it now risks a duplicate
     // once the DB save succeeds on a later retry. Return 500 so Stripe
     // retries the save on its next attempt.
-    const order = { ...commonFields, ticketIds: ticketRows.map((r) => r.ticketId), quantity, totalAmountCents: paymentIntent.amount, ticketId: baseTicketId };
+    const order = { ...commonFields, ticketIds: ticketRows.map((r) => r.ticketId), quantity, totalAmountCents: paymentIntent.amount_received || paymentIntent.amount, ticketId: baseTicketId };
     await sendBookingAlertEmail(order);
     await sendBookingPushNotification(order);
     return res.status(500).json({ error: 'Database save failed' });
@@ -162,9 +162,30 @@ export default async function handler(req, res) {
     ...commonFields,
     ticketIds: ticketRows.map((r) => r.ticketId),
     quantity,
-    totalAmountCents: paymentIntent.amount,
+    // Prefer amount_received — Stripe's own record of what was actually
+    // collected — over `amount` (the intended charge). For a normal,
+    // fully-captured payment these are always identical, but reading the
+    // "actually received" field directly removes any possible doubt
+    // that this number could ever be anything other than the real
+    // charge, discount included. Falls back to `amount` only if
+    // amount_received is ever missing (shouldn't happen for a
+    // payment_intent.succeeded event, but never let a missing field
+    // silently show $0 on a real receipt).
+    totalAmountCents: paymentIntent.amount_received || paymentIntent.amount,
     ticketId: baseTicketId, // kept for backward-compat fields that expect a single ticketId
   };
+
+  // Diagnostic line for Vercel's function logs — if a customer ever
+  // again reports an email amount that doesn't match what they were
+  // actually charged, this is the log entry to pull up. It shows every
+  // number involved for this exact PaymentIntent side by side, so a
+  // mismatch (if one is ever real) is immediately visible instead of
+  // requiring another round of code archaeology like this one.
+  console.log(
+    `Booking amount check for ${paymentIntent.id}: amount=${paymentIntent.amount}, ` +
+    `amount_received=${paymentIntent.amount_received}, used=${order.totalAmountCents}, ` +
+    `memberDiscountApplied=${metadata.memberDiscountApplied}, discountEventKey=${metadata.discountEventKey || '(none)'}`
+  );
 
   // Membership activation — only for real weekly Tiers (Tier 1/2/3), not
   // drop-ins, not X1 Monthly (a completely separate program that happens

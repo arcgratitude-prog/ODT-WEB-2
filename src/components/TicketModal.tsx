@@ -42,7 +42,7 @@ const getClassesIncludedLabel = (passOption: { id: string; classesCount: number 
 const getEventDateLabel = (passName: string): string => {
   if (/Locura/i.test(passName)) return 'Sunday, September 20th (4:00 PM - 9:00 PM)';
   if (/Boot Camp/i.test(passName)) return 'Sunday, September 20th (1:30 PM - 3:30 PM)';
-  if (/Lab Night/i.test(passName)) return 'Friday, September 18th (6:30 PM - 10:30 PM)';
+  if (/Lab Night/i.test(passName)) return 'Friday, September 18th (7:00 PM - 10:30 PM)';
   if (/Invasion/i.test(passName)) return 'Friday, September 11th (8:00 PM - 1:00 AM)';
   if (/X1/i.test(passName)) return 'Private Session — Scheduled Directly With Albina & Antonio';
   // Weekly Tiers and class drop-ins: recurring, not a single calendar date.
