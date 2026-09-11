@@ -22,6 +22,11 @@
 //   - src/utils/passCalendar.ts       (the .ics calendar-download date)
 //   - src/data/danceData.ts           (marketing copy on the site)
 //   - api/_lib/notify.js              (confirmation email copy)
+//   - api/_lib/discountEvents.js      (the "which occurrence is this"
+//     key that lets a member's discount reset for the next occurrence —
+//     forgetting to bump this specifically means members get wrongly
+//     blocked from a discount they haven't actually used yet this cycle,
+//     not just stale display text)
 // Update this file alongside those whenever a real event date moves.
 //
 // Months are 0-indexed in the Date constructor (8 = September).
