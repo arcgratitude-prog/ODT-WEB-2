@@ -15,6 +15,7 @@
 import Stripe from 'stripe';
 import { ensureBookingsTable, ensureMembersTable, sql } from './_lib/db.js';
 import { sendBookingAlertEmail, sendBookingPushNotification, sendCustomerConfirmationEmail } from './_lib/notify.js';
+import { getRealPriceInCents, isTaxablePass, calculateTaxCents } from './_lib/priceCatalog.js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -75,7 +76,18 @@ export default async function handler(req, res) {
   const quantity = Number.isFinite(rawQuantity) ? Math.min(Math.max(rawQuantity, 1), 10) : 1;
 
   const baseTicketId = metadata.ticketId || `UB-${paymentIntent.id.slice(-8).toUpperCase()}`;
-  const perTicketAmountCents = Math.round(paymentIntent.amount / quantity);
+
+  // The real per-ticket breakdown — NOT a simple equal split of the
+  // order total across tickets. Only ticket #1 is ever discounted (see
+  // api/create-payment-intent.js), so an equal split would misreport
+  // every ticket's real price the moment a discount was involved (e.g.
+  // 1 discounted + 1 full price ticket would both incorrectly show as
+  // the same in-between amount). Falls back to an equal split only if
+  // the pass name is somehow unrecognized, so this can never throw on
+  // unexpected input.
+  const realPricePerTicketCents = getRealPriceInCents(metadata.passName) ?? Math.round(paymentIntent.amount / quantity);
+  const isDiscounted = metadata.memberDiscountApplied === 'true';
+  const passIsTaxable = isTaxablePass(metadata.passName);
 
   const commonFields = {
     customerName: metadata.customerName || 'Unknown',
@@ -98,17 +110,41 @@ export default async function handler(req, res) {
   // only ever discounts one ticket per order) — stamping it here is what
   // lets the NEXT purchase attempt for this event correctly see "this
   // member already used their discount" and decline to grant it again.
+  //
+  // amount_cents per ticket is TAX-INCLUSIVE — base price plus that
+  // ticket's own tax — matching how it's already displayed everywhere
+  // as "what this ticket cost." tax_cents is the breakdown detail on
+  // top, for real bookkeeping (Antonio needs this to know how much
+  // sales tax was actually collected for filing).
   const ticketRows = Array.from({ length: quantity }, (_, i) => {
     const n = i + 1;
+    const baseCents = n === 1 && isDiscounted ? Math.round(realPricePerTicketCents * 0.8) : realPricePerTicketCents;
+    const taxCents = passIsTaxable ? calculateTaxCents(baseCents) : 0;
     return {
       ...commonFields,
       ticketId: n === 1 ? baseTicketId : `${baseTicketId}-${n}`,
       ticketNumber: n,
       ticketCount: quantity,
-      amountCents: perTicketAmountCents,
-      discountEventKey: n === 1 && metadata.memberDiscountApplied === 'true' ? (metadata.discountEventKey || null) : null,
+      amountCents: baseCents + taxCents,
+      taxCents,
+      discountEventKey: n === 1 && isDiscounted ? (metadata.discountEventKey || null) : null,
     };
   });
+
+  // Reconcile any 1-2 cent rounding drift between independently-rounded
+  // per-ticket amounts and the real total Stripe actually collected —
+  // attribute it to the last ticket's tax_cents so the sum across all
+  // tickets always exactly equals the real charge. This matters for real
+  // bookkeeping, not just display: these numbers need to add up exactly
+  // for tax filing, not just look right individually.
+  const realChargedCents = paymentIntent.amount_received || paymentIntent.amount;
+  const currentSumCents = ticketRows.reduce((sum, r) => sum + r.amountCents, 0);
+  const driftCents = realChargedCents - currentSumCents;
+  if (driftCents !== 0 && ticketRows.length > 0) {
+    const last = ticketRows[ticketRows.length - 1];
+    last.amountCents += driftCents;
+    last.taxCents += driftCents;
+  }
 
   let isNewOrder = true;
 
@@ -133,12 +169,12 @@ export default async function handler(req, res) {
             ticket_id, customer_name, customer_email, customer_phone,
             pass_name, pass_type, amount_cents, classes_included,
             referred_by, stripe_payment_intent_id, ticket_number, ticket_count,
-            discount_event_key
+            discount_event_key, tax_cents
           ) VALUES (
             ${row.ticketId}, ${row.customerName}, ${row.customerEmail}, ${row.customerPhone},
             ${row.passName}, ${row.passType}, ${row.amountCents}, ${row.classesIncluded},
             ${row.referredBy}, ${row.stripePaymentIntentId}, ${row.ticketNumber}, ${row.ticketCount},
-            ${row.discountEventKey}
+            ${row.discountEventKey}, ${row.taxCents}
           )
           ON CONFLICT (ticket_id) DO NOTHING;
         `;
@@ -184,7 +220,8 @@ export default async function handler(req, res) {
   console.log(
     `Booking amount check for ${paymentIntent.id}: amount=${paymentIntent.amount}, ` +
     `amount_received=${paymentIntent.amount_received}, used=${order.totalAmountCents}, ` +
-    `memberDiscountApplied=${metadata.memberDiscountApplied}, discountEventKey=${metadata.discountEventKey || '(none)'}`
+    `memberDiscountApplied=${metadata.memberDiscountApplied}, discountEventKey=${metadata.discountEventKey || '(none)'}, ` +
+    `subtotalCents=${metadata.subtotalCents || '(n/a)'}, taxCents=${metadata.taxCents || '(n/a)'}`
   );
 
   // Membership activation — only for real weekly Tiers (Tier 1/2/3), not

@@ -608,7 +608,7 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                     <button
                       onClick={() => {
                         onClose();
-                        onOpenBooking('social-presale');
+                        onOpenBooking('social-locura-door');
                       }}
                       className="px-3.5 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-md"
                     >

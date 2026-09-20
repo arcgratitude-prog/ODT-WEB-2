@@ -28,7 +28,7 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState<'home' | 'social' | 'schedule' | 'review' | 'referral' | 'x1'>('home');
   const [savedPasses, setSavedPasses] = useState<TicketPass[]>([]);
   const [isBookingOpen, setIsBookingOpen] = useState<boolean>(false);
-  const [bookingPassTypeId, setBookingPassTypeId] = useState<string>('social-presale');
+  const [bookingPassTypeId, setBookingPassTypeId] = useState<string>('social-locura-door');
   const [bookingClassTimes, setBookingClassTimes] = useState<string[]>([]);
   const [bookingQuantity, setBookingQuantity] = useState<number>(1);
   const [isSavedPassesOpen, setIsSavedPassesOpen] = useState<boolean>(false);

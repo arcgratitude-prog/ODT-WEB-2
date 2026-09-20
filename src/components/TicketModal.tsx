@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Sparkles, CheckCircle2, Calendar, MapPin, Download, QrCode, Ticket, ShieldCheck, User, Mail, Phone, ArrowRight, Lock, AlertCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { PASS_OPTIONS, SOCIAL_PASS_OPTION, BACHATA_INVASION_PASS_OPTION, BOOT_CAMP_PASS_OPTION, LAB_NIGHT_PASS_OPTION, X1_MONTHLY_PASS_OPTION, X1_DROPIN_PASS_OPTION, STUDIO_INFO } from '../data/danceData';
+import { PASS_OPTIONS, SOCIAL_PASS_OPTION, SOCIAL_PASS_DOOR_OPTION, BACHATA_INVASION_PASS_OPTION, BOOT_CAMP_PASS_OPTION, LAB_NIGHT_PASS_OPTION, X1_MONTHLY_PASS_OPTION, X1_DROPIN_PASS_OPTION, STUDIO_INFO } from '../data/danceData';
 import { TicketPass, CheckoutTheme } from '../types';
 import { getEventEndsAtISO } from '../utils/eventSchedule';
 import { CustomStripeCheckout } from './CustomStripeCheckout';
@@ -52,6 +52,7 @@ const getEventDateLabel = (passName: string): string => {
 const getCheckoutTheme = (passId: string): CheckoutTheme => {
   if (passId.startsWith('social-invasion')) return 'fuchsia'; // Bachata Invasion
   if (passId.startsWith('social-presale')) return 'silver'; // Bachata Locura
+  if (passId.startsWith('social-locura-door')) return 'silver'; // Bachata Locura — regular price
   if (passId.startsWith('x1-')) return 'silver'; // Bachata X1 — closest match to its black/white look
   return 'red'; // weekly tiers, drop-ins, open house, 4-week cycle
 };
@@ -148,11 +149,15 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   // the purchase to it by email regardless. Independent of the discount
   // flow, which additionally requires the pass to be discount-eligible.
   const [loggedInMember, setLoggedInMember] = useState<{ email: string; sessionToken: string } | null>(null);
-  // The REAL total once the server confirms a discount — used to correct
-  // the summary card's price the moment it's known, instead of leaving
-  // it stuck on the undiscounted client-side number while a small banner
-  // underneath says a discount was applied. See handleDiscountResult.
+  // The REAL total once the server confirms it — used to correct the
+  // summary card's price the moment it's known, whether that's because
+  // of a member discount, sales tax, or both. Previously this only got
+  // shown when a discount applied, which meant tax on a NON-discounted
+  // Invasion/Locura purchase never showed up anywhere on screen.
   const [confirmedTotalDollars, setConfirmedTotalDollars] = useState<number | null>(null);
+  // The tax portion specifically, once known — used for the small "+
+  // tax" subheading near the price. 0/null for a non-taxable pass.
+  const [confirmedTaxDollars, setConfirmedTaxDollars] = useState<number | null>(null);
   // Why the discount wasn't applied, when it wasn't — lets the banner
   // below give an accurate reason ("already used for this event") instead
   // of a generic message that would wrongly suggest a wrong password.
@@ -186,6 +191,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
       setMemberSessionToken('');
       setDiscountConfirmed(null);
       setConfirmedTotalDollars(null);
+      setConfirmedTaxDollars(null);
       setDiscountDeniedReason(null);
       setLoggedInMember(null);
 
@@ -230,7 +236,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
 
   if (!isOpen) return null;
 
-  const allAvailablePasses = [BACHATA_INVASION_PASS_OPTION, SOCIAL_PASS_OPTION, BOOT_CAMP_PASS_OPTION, LAB_NIGHT_PASS_OPTION, X1_MONTHLY_PASS_OPTION, X1_DROPIN_PASS_OPTION, ...PASS_OPTIONS];
+  const allAvailablePasses = [BACHATA_INVASION_PASS_OPTION, SOCIAL_PASS_OPTION, SOCIAL_PASS_DOOR_OPTION, BOOT_CAMP_PASS_OPTION, LAB_NIGHT_PASS_OPTION, X1_MONTHLY_PASS_OPTION, X1_DROPIN_PASS_OPTION, ...PASS_OPTIONS];
   const currentPassOption = allAvailablePasses.find(p => p.id === selectedPassId) || PASS_OPTIONS[0];
   const isPaidPass = currentPassOption.price > 0;
   const theme = THEME_CLASSES[getCheckoutTheme(currentPassOption.id)];
@@ -241,7 +247,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   // and now also the weekly tiers — e.g. a couple signing up for the same
   // Tier 2 track together. Drop-ins aren't included here since those
   // already have their own 1/2/3-class-count picker in PricingSection.
-  const QUANTITY_ELIGIBLE_IDS = ['social-invasion-10', 'social-presale', 'track-foundations', 'track-progression', 'track-unlimited', 'x1-dropin', 'x1-monthly'];
+  const QUANTITY_ELIGIBLE_IDS = ['social-invasion-10', 'social-presale', 'social-locura-door', 'track-foundations', 'track-progression', 'track-unlimited', 'x1-dropin', 'x1-monthly'];
   const canPickQuantity = QUANTITY_ELIGIBLE_IDS.includes(currentPassOption.id);
   const effectiveQuantity = canPickQuantity ? quantity : 1;
   const totalPrice = currentPassOption.price * effectiveQuantity;
@@ -251,14 +257,26 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   // price forever — the small "✓ Member discount applied" banner would
   // appear below it, but the dollar amount right above it never moved,
   // which is exactly what looked like "the discount doesn't appear."
-  const displayTotal = discountConfirmed && confirmedTotalDollars !== null ? confirmedTotalDollars : totalPrice;
+  // Once the server has responded (for ANY paid Invasion/Locura
+  // purchase, member or not), confirmedTotalDollars holds the real
+  // total — tax included, discount included if it applied. Previously
+  // this was gated on discountConfirmed being true, which meant a
+  // NON-member buying a taxable pass never saw tax reflected here at
+  // all; the price would sit on the plain pre-tax number forever.
+  const displayTotal = confirmedTotalDollars !== null ? confirmedTotalDollars : totalPrice;
   // Real weekly Tiers only — not drop-ins, not X1 (a separate program
   // that happens to share the same underlying "type" value).
   const isTierPass = ['track-foundations', 'track-progression', 'track-unlimited'].includes(currentPassOption.id);
   // Active-member 20% discount is offered on the three ticketed Locura-
   // weekend events (Invasion, Locura, Boot Camp) — matches the actual
   // server-side check in create-payment-intent.js.
-  const isDiscountEligible = ['social-invasion-10', 'social-presale', 'social-bootcamp'].includes(currentPassOption.id);
+  const isDiscountEligible = ['social-invasion-10', 'social-presale', 'social-locura-door', 'social-bootcamp'].includes(currentPassOption.id);
+  // Florida sales tax — PAUSED as of Sept 20, 2026 (see
+  // api/_lib/priceCatalog.js for why and how to turn it back on for the
+  // next social). This stays false-for-everyone until that file's
+  // TAXABLE_PASS_NAMES set has entries in it again — matches the
+  // server-side source of truth rather than assuming.
+  const isTaxablePass = false;
   // True when the email currently in the form still matches an active
   // logged-in session on this device — used to skip the "create a
   // password" step for a Tier purchase (the account already exists) and
@@ -469,9 +487,10 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                     memberEmail={isClaimingDiscount ? memberEmail : undefined}
                     memberPassword={isClaimingDiscount ? memberPassword : undefined}
                     memberSessionToken={isClaimingDiscount ? memberSessionToken : undefined}
-                    onDiscountResult={(applied, finalTotalDollars, deniedReason) => {
+                    onDiscountResult={(applied, finalTotalDollars, deniedReason, _subtotalDollars, taxDollars) => {
                       setDiscountConfirmed(applied);
                       setConfirmedTotalDollars(typeof finalTotalDollars === 'number' ? finalTotalDollars : null);
+                      setConfirmedTaxDollars(typeof taxDollars === 'number' ? taxDollars : null);
                       setDiscountDeniedReason(deniedReason ?? null);
                     }}
                     classesIncluded={
@@ -607,6 +626,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                                 setIsClaimingDiscount(e.target.checked);
                                 setDiscountConfirmed(null);
                                 setConfirmedTotalDollars(null);
+                                setConfirmedTaxDollars(null);
                                 setDiscountDeniedReason(null);
                               }}
                               className="w-4 h-4 rounded accent-emerald-500"

@@ -29,6 +29,10 @@ interface CustomStripeCheckoutProps {
   // anything. Only rendered when it's actually higher than what's being
   // charged.
   originalPriceInDollars?: number;
+  // The tax portion of priceInDollars, in dollars — shown as a small
+  // caption under the pass name so the price isn't just a number with
+  // no explanation of what's in it. Omit or 0 for a non-taxable pass.
+  taxInDollars?: number;
   onSuccess: () => void;
   // Booking metadata — rides along on the Stripe PaymentIntent so the
   // webhook (api/stripe-webhook.js) can save a real booking record and
@@ -41,7 +45,13 @@ interface CustomStripeCheckoutProps {
   memberEmail?: string;
   memberPassword?: string;
   memberSessionToken?: string;
-  onDiscountResult?: (applied: boolean, finalPriceInDollars?: number, deniedReason?: string | null) => void;
+  onDiscountResult?: (
+    applied: boolean,
+    finalPriceInDollars?: number,
+    deniedReason?: string | null,
+    subtotalInDollars?: number,
+    taxInDollars?: number
+  ) => void;
   classesIncluded?: string;
   ticketId?: string;
   quantity?: number;
@@ -137,10 +147,11 @@ const InnerCheckoutForm: React.FC<{
   passName: string;
   priceInDollars: number;
   originalPriceInDollars?: number;
+  taxInDollars?: number;
   clientSecret: string;
   onSuccess: () => void;
   theme: CheckoutTheme;
-}> = ({ passName, priceInDollars, originalPriceInDollars, clientSecret, onSuccess, theme }) => {
+}> = ({ passName, priceInDollars, originalPriceInDollars, taxInDollars, clientSecret, onSuccess, theme }) => {
   const accent = ACCENT_CLASSES[theme];
   const stripe = useStripe();
   const elements = useElements();
@@ -324,6 +335,11 @@ const InnerCheckoutForm: React.FC<{
           <div className="text-xs font-semibold uppercase tracking-widest text-slate-500 mt-1">
             {passName}
           </div>
+          {typeof taxInDollars === 'number' && taxInDollars > 0 && (
+            <div className="text-[11px] text-slate-500 mt-1">
+              Includes ${taxInDollars.toFixed(2)} FL sales tax
+            </div>
+          )}
         </div>
 
         {/* Payment method rows — wallet (Apple/Google Pay) first, card second */}
@@ -448,6 +464,11 @@ export const CustomStripeCheckout: React.FC<CustomStripeCheckoutProps> = ({
   // the server confirms the real (possibly discounted) total. This is
   // what actually gets displayed, never the raw priceInDollars prop.
   const [displayPriceInDollars, setDisplayPriceInDollars] = useState(priceInDollars);
+  // Tax is only known once the server responds (it depends on the real,
+  // possibly-discounted subtotal) — unlike originalPriceInDollars, which
+  // the parent already knows ahead of time, this can't be passed in as a
+  // prop. Starts at 0 so nothing shows until the server confirms it.
+  const [taxInDollarsState, setTaxInDollarsState] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -489,7 +510,10 @@ export const CustomStripeCheckout: React.FC<CustomStripeCheckoutProps> = ({
             ? data.finalPriceInCents / 100
             : priceInDollars;
           setDisplayPriceInDollars(realDollars);
-          onDiscountResult?.(!!data.memberDiscountApplied, realDollars, data.discountDeniedReason ?? null);
+          const subtotalDollars = typeof data.subtotalCents === 'number' ? data.subtotalCents / 100 : undefined;
+          const taxDollars = typeof data.taxCents === 'number' ? data.taxCents / 100 : undefined;
+          setTaxInDollarsState(taxDollars || 0);
+          onDiscountResult?.(!!data.memberDiscountApplied, realDollars, data.discountDeniedReason ?? null, subtotalDollars, taxDollars);
         } else {
           setLoadError(data.error || 'Could not start checkout.');
         }
@@ -522,6 +546,7 @@ export const CustomStripeCheckout: React.FC<CustomStripeCheckoutProps> = ({
         passName={passName}
         priceInDollars={displayPriceInDollars}
         originalPriceInDollars={originalPriceInDollars}
+        taxInDollars={taxInDollarsState}
         clientSecret={clientSecret}
         onSuccess={onSuccess}
         theme={theme}

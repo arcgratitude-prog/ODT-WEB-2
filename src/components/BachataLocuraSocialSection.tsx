@@ -291,10 +291,11 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
               </div>
             </div>
 
-            {/* Ticket Options — simple round price badges. Pre-Sale is the
-                only one that's clickable/purchasable online, so it's the
-                biggest circle in the middle; Students/At the Door are
-                small door-only info badges on either side. */}
+            {/* Ticket Options — simple round price badges. Pre-sale has
+                ended (closed 9/19, the event is 9/20), so the Regular
+                Price ($20) is now the featured, clickable option in the
+                middle; Pre-Sale is greyed out with an ENDED overlay where
+                the door-only badges sit. */}
             <div className="mb-8">
               <div className="flex items-center justify-center gap-4 sm:gap-6">
 
@@ -307,37 +308,40 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                   <span className="text-[8px] text-slate-500 uppercase tracking-wide -mt-1">Present ID at Door</span>
                 </div>
 
-                {/* Pre-Sale — the featured, purchasable option. Glows/pulses
-                    so it visually reads as the one to tap. */}
+                {/* Regular Price — now the featured, purchasable option
+                    now that pre-sale has closed. Glows/pulses so it
+                    visually reads as the one to tap. */}
                 <button
-                  onClick={() => onOpenBooking('social-presale')}
+                  onClick={() => onOpenBooking('social-locura-door')}
                   className="flex flex-col items-center gap-1.5 group relative"
                 >
-                  {/* Save $5 banner */}
-                  <span className="absolute -top-2 z-10 px-2 py-0.5 rounded-full bg-gradient-to-r from-pink-400 to-fuchsia-400 text-black text-[9px] font-black uppercase tracking-wide shadow-md">
-                    Save $5
-                  </span>
                   {/* Soft ambient pulse ring behind the circle */}
                   <span className="absolute top-0 w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-fuchsia-400/40 blur-md animate-pulse pointer-events-none" />
                   <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-b from-fuchsia-500 via-purple-600 to-slate-900 border-2 border-fuchsia-200/80 shadow-lg shadow-fuchsia-500/50 flex flex-col items-center justify-center transition-all group-hover:border-white group-hover:shadow-fuchsia-400/80 group-hover:shadow-xl group-hover:scale-105 group-active:scale-95">
-                    <span className="text-[9px] font-bold text-fuchsia-100 uppercase tracking-wide">Pre-Sale</span>
-                    <span className="text-xl sm:text-2xl font-black text-white font-mono">$15</span>
+                    <span className="text-[9px] font-bold text-fuchsia-100 uppercase tracking-wide">Regular Price</span>
+                    <span className="text-xl sm:text-2xl font-black text-white font-mono">$20</span>
                   </div>
                   <span className="text-[10px] font-bold text-white uppercase tracking-wide">Tap to Get →</span>
                 </button>
 
-                {/* At the Door — door only */}
-                <div className="flex flex-col items-center gap-1.5 opacity-70">
-                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-zinc-900 border border-white/15 flex items-center justify-center">
-                    <span className="text-sm sm:text-base font-black text-slate-200 font-mono">$20</span>
+                {/* Pre-Sale — ended. Greyed out with an ENDED overlay;
+                    no longer clickable. */}
+                <div className="flex flex-col items-center gap-1.5 opacity-50 grayscale relative">
+                  <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-zinc-900 border border-white/15 flex items-center justify-center">
+                    <span className="text-sm sm:text-base font-black text-slate-400 font-mono line-through">$15</span>
+                    <span className="absolute inset-0 flex items-center justify-center">
+                      <span className="px-1.5 py-0.5 rounded bg-black/80 border border-white/20 text-[7px] font-black uppercase tracking-wide text-white">
+                        Ended
+                      </span>
+                    </span>
                   </div>
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wide">At Door</span>
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Pre-Sale</span>
                 </div>
 
               </div>
 
               <p className="text-center text-[10px] text-slate-500 mt-3">
-                Pre-sale ends 9/19 · Students show ID at the door · At the door, pay in person
+                Pre-sale has ended · Students show ID at the door · Regular price available online or at the door
               </p>
             </div>
 

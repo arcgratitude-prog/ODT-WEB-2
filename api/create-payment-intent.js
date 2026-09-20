@@ -6,7 +6,7 @@
 import Stripe from 'stripe';
 import { sql, ensureMembersTable, ensureBookingsTable } from './_lib/db.js';
 import { verifyPassword } from './_lib/password.js';
-import { getRealPriceInCents } from './_lib/priceCatalog.js';
+import { getRealPriceInCents, isTaxablePass, calculateTaxCents, SALES_TAX_RATE } from './_lib/priceCatalog.js';
 import { getDiscountEventKey } from './_lib/discountEvents.js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -79,7 +79,7 @@ export default async function handler(req, res) {
     // someone already logged in gets the discount automatically without
     // re-typing their password — the frontend never stores the password
     // itself for this, only the token).
-    let finalPriceInCents = realTotalInCents;
+    let subtotalInCents = realTotalInCents;
     let memberDiscountApplied = false;
     // Set only when membership/credentials check out but the discount is
     // still being withheld — lets the frontend show an accurate reason
@@ -118,7 +118,7 @@ export default async function handler(req, res) {
           } else {
             // Recompute from the REAL per-ticket price (never the client's).
             const discountedFirstTicket = Math.round(realPricePerTicketCents * 0.8);
-            finalPriceInCents = discountedFirstTicket + realPricePerTicketCents * (qty - 1);
+            subtotalInCents = discountedFirstTicket + realPricePerTicketCents * (qty - 1);
             memberDiscountApplied = true;
           }
         } else {
@@ -132,6 +132,14 @@ export default async function handler(req, res) {
         discountDeniedReason = 'invalid_credentials';
       }
     }
+
+    // Florida sales tax on admissions (see api/_lib/priceCatalog.js for
+    // the rate and which passes this applies to) — computed on
+    // subtotalInCents, i.e. AFTER any member discount, so a discounted
+    // member correctly pays tax on what they're actually paying, not on
+    // the pre-discount sticker price.
+    const taxCents = isTaxablePass(passName) ? calculateTaxCents(subtotalInCents) : 0;
+    const finalPriceInCents = subtotalInCents + taxCents;
 
     // Look up or create a Stripe Customer so the buyer's name/email shows
     // front-and-center in the Stripe Dashboard (payment list + detail view),
@@ -198,6 +206,11 @@ export default async function handler(req, res) {
         // the webhook stamps onto the discounted ticket's booking row,
         // and what the next purchase attempt checks against.
         discountEventKey: memberDiscountApplied && discountEventKey ? discountEventKey : '',
+        // Tax breakdown, so the webhook can record exactly how much of
+        // this charge was tax (for real bookkeeping/filing) rather than
+        // just the combined total.
+        subtotalCents: String(subtotalInCents),
+        taxCents: String(taxCents),
       },
     });
 
@@ -215,6 +228,13 @@ export default async function handler(req, res) {
       // a price that never actually changed. Sending the real number
       // back lets the frontend show what's actually being charged.
       finalPriceInCents,
+      // Tax breakdown, so the checkout screen can show "Subtotal / Tax /
+      // Total" instead of just one combined number. subtotalCents is
+      // the pre-tax amount (already reflecting any discount); taxCents
+      // is 0 for any non-taxable pass.
+      subtotalCents: subtotalInCents,
+      taxCents,
+      taxRate: SALES_TAX_RATE,
       // Why the discount wasn't applied, when it wasn't — 'already_used'
       // or 'invalid_credentials' — so the frontend can show an accurate
       // reason instead of one generic message for every case. Null when

@@ -53,6 +53,15 @@ export async function ensureBookingsTable() {
   // api/_lib/discountEvents.js for where these keys come from and how
   // they're kept in sync with the real event dates.
   await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS discount_event_key TEXT;`;
+  // The tax portion of this ticket's amount_cents, in cents — so the tax
+  // actually collected is auditable/summable for filing, not just
+  // folded invisibly into the total. amount_cents itself is TAX-
+  // INCLUSIVE (matches how it's already displayed everywhere as "what
+  // this ticket cost"); tax_cents is the breakdown detail on top of
+  // that, not a separate charge. 0 for any non-taxable pass (Tiers,
+  // drop-ins, Boot Camp, Lab Night — see api/_lib/priceCatalog.js for
+  // which passes tax currently applies to).
+  await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS tax_cents INTEGER NOT NULL DEFAULT 0;`;
   await sql`
     CREATE INDEX IF NOT EXISTS idx_bookings_discount_event_key ON bookings (discount_event_key) WHERE discount_event_key IS NOT NULL;
   `;

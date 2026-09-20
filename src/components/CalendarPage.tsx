@@ -47,7 +47,7 @@ export const CalendarPage: React.FC<CalendarPageProps> = ({ onOpenBooking, onNav
       timeStr: '4:00 PM – 9:00 PM',
       category: 'social',
       location: 'Westshore Plaza Mall (334 Westshore Plaza, Unit A10, Tampa, FL)',
-      passTypeId: 'social-presale',
+      passTypeId: 'social-locura-door',
       description: 'Special Tampa Social with Presocial Class by Albina & Isaac (4 PM) and Social Dancing with DJ JR (4-9 PM).',
       badge: '★ SPECIAL SOCIAL',
       color: 'from-slate-200 via-white to-slate-300 text-black',

@@ -24,6 +24,11 @@
 const DISCOUNT_EVENT_KEYS = {
   'Bachata Invasion Social Pass': 'invasion-2026-09-11',
   'Bachata Locura Social Pass': 'locura-2026-09-20',
+  // Same key as above deliberately — this is the SAME real event (just
+  // the regular price instead of the ended pre-sale price), so a member
+  // who already used their discount at one price tier for this event
+  // can't get a second discount at the other tier.
+  'Bachata Locura Social Pass - Regular Price': 'locura-2026-09-20',
   'Bachata Battle Boot Camp': 'bootcamp-2026-09-20',
 };
 

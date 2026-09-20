@@ -112,6 +112,32 @@ export const SOCIAL_PASS_OPTION: PassOption = {
   type: 'drop_in_1'
 };
 
+// The regular ($20) Locura price, sold online — this is what's
+// purchasable now that the $15 pre-sale window has ended (pre-sale
+// closed 9/19; the event itself is 9/20). Same real event as
+// SOCIAL_PASS_OPTION above (same admission, same night) — deliberately
+// keeps "Bachata Locura Social Pass" as a prefix in its own `name` so
+// every place that matches on "contains Locura" (email theming, past-
+// event detection, check-in filtering, etc.) keeps working automatically
+// — see api/_lib/priceCatalog.js and api/_lib/discountEvents.js for the
+// two places that needed an explicit new entry for this exact name
+// (server-side price + the once-per-event discount key).
+export const SOCIAL_PASS_DOOR_OPTION: PassOption = {
+  id: 'social-locura-door',
+  name: 'Bachata Locura Social Pass - Regular Price',
+  price: 20,
+  tagline: 'Sunday, September 20th @ Westshore Plaza Mall (Presocial Class + Social)',
+  classesCount: 1,
+  popular: true,
+  features: [
+    'Presocial Class with Albina & Isaac (4:00 PM)',
+    'Social Dancing with DJ JR (4:00 PM - 9:00 PM)',
+    'Westshore Plaza Mall Venue (334 Westshore Plaza, Unit A10)',
+    'Digital Mobile Pass with Instant Check-In'
+  ],
+  type: 'drop_in_1'
+};
+
 export const BOOT_CAMP_PASS_OPTION: PassOption = {
   id: 'social-bootcamp',
   name: 'Bachata Battle Boot Camp',
