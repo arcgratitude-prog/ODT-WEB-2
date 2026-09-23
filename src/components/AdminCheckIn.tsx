@@ -35,13 +35,15 @@ export const AdminCheckIn: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [passTypeFilter, setPassTypeFilter] = useState('all');
-  // Defaults to showing only the last 7 days — without this, the list
-  // just keeps accumulating every booking ever, and a drop-in class
-  // purchase (which recurs every week with no date of its own attached)
-  // becomes impossible to tell apart from one bought weeks ago. This is
-  // a ROLLING window measured from right now, so it naturally "resets"
-  // itself every time the page loads — no manual reset action needed,
-  // and staff can flip to "All Time" if they ever need older history.
+  // Defaults to showing only what's been purchased since the LAST
+  // Wednesday class — without this, the list just keeps accumulating
+  // every booking ever, and a drop-in class purchase (which recurs
+  // every week with no date of its own attached) becomes impossible to
+  // tell apart from one bought weeks ago that's already been used. See
+  // the cutoff calculation below (anchored to the class cadence, not a
+  // plain rolling week) for why that distinction matters. It naturally
+  // "resets" itself every time the page loads — no manual action
+  // needed — and staff can flip to "All Time" for older history.
   const [thisWeekOnly, setThisWeekOnly] = useState(true);
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
 
@@ -161,14 +163,28 @@ export const AdminCheckIn: React.FC = () => {
     ? bookings
     : bookings.filter((b) => getPassCategory(b.pass_name) === passTypeFilter);
 
-  // "This week" = a rolling 7-day window from right now, not a fixed
-  // calendar week — so it doesn't matter what day staff open this page,
-  // it always shows "the last 7 days" fresh. Applied on top of the
-  // pass-type filter so the two work together (e.g. "Classes, this
-  // week only").
-  const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  // "This week" = since the day AFTER the LAST Wednesday class, through
+  // right now — not a plain rolling 7 days. A plain rolling window has a
+  // real bug: on a Wednesday (today), "the last 7 days" reaches exactly
+  // back to LAST Wednesday too, which is the class that already
+  // happened — so someone who bought same-day for last week's class
+  // (already used, already attended) would still show up today. This
+  // anchors to the actual class cadence instead: it always excludes the
+  // most recent past class day itself, and only shows what's been
+  // purchased since then — the purchases that are actually relevant to
+  // the UPCOMING or CURRENT class, not the one that's already over.
+  const WEDNESDAY = 3; // Date.getDay(): 0=Sun ... 3=Wed ... 6=Sat
+  const today = new Date();
+  let daysSinceLastWednesday = (today.getDay() - WEDNESDAY + 7) % 7;
+  if (daysSinceLastWednesday === 0) daysSinceLastWednesday = 7; // if today IS Wednesday, "last" class was a full week ago, not today
+  const lastClassDay = new Date(today);
+  lastClassDay.setDate(today.getDate() - daysSinceLastWednesday);
+  lastClassDay.setHours(0, 0, 0, 0);
+  const cutoff = new Date(lastClassDay);
+  cutoff.setDate(lastClassDay.getDate() + 1); // start of the day AFTER the last class
+
   const dateFiltered = thisWeekOnly
-    ? passTypeFiltered.filter((b) => new Date(b.created_at) >= weekAgo)
+    ? passTypeFiltered.filter((b) => new Date(b.created_at) >= cutoff)
     : passTypeFiltered;
 
   const query = search.trim().toLowerCase();
@@ -186,7 +202,7 @@ export const AdminCheckIn: React.FC = () => {
   // at the door), not a growing all-time count buried under months of
   // history. Search/pass-type don't affect these, matching how they
   // already didn't before this change — only the week toggle does.
-  const statsBase = thisWeekOnly ? bookings.filter((b) => new Date(b.created_at) >= weekAgo) : bookings;
+  const statsBase = thisWeekOnly ? bookings.filter((b) => new Date(b.created_at) >= cutoff) : bookings;
   const checkedInCount = statsBase.filter((b) => b.checked_in).length;
   const boughtTodayCount = statsBase.filter(
     (b) => /^Tier \d+:/.test(b.pass_name) && new Date(b.created_at).toDateString() === new Date().toDateString()
@@ -312,7 +328,7 @@ export const AdminCheckIn: React.FC = () => {
             {bookings.length === 0
               ? 'No bookings yet.'
               : thisWeekOnly && dateFiltered.length === 0
-              ? 'Nothing in the last 7 days — try "All Time" to see older bookings.'
+              ? 'Nothing since the last class — try "All Time" to see older bookings.'
               : 'No matches.'}
           </p>
         ) : (
