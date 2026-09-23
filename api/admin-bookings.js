@@ -54,6 +54,46 @@ export default async function handler(req, res) {
     return res.status(200).json({ booking: rows[0] });
   }
 
-  res.setHeader('Allow', 'GET, POST');
+  if (req.method === 'PATCH') {
+    // Manual correction to one booking's pass name and/or customer name —
+    // for fixing bad data (e.g. a booking that somehow ended up with the
+    // wrong event name, or a name that got saved as "Unknown"). This is
+    // a deliberate, staff-initiated override, not something the normal
+    // purchase flow ever does — same reasoning as the Members page's
+    // expiration-date editor.
+    const { id, passName, customerName } = req.body || {};
+    if (!id) {
+      return res.status(400).json({ error: 'id is required.' });
+    }
+    if (passName === undefined && customerName === undefined) {
+      return res.status(400).json({ error: 'Nothing to update — provide passName and/or customerName.' });
+    }
+
+    let updated;
+    if (passName !== undefined && customerName !== undefined) {
+      updated = await sql`
+        UPDATE bookings SET pass_name = ${passName}, customer_name = ${customerName}
+        WHERE id = ${id}
+        RETURNING id, ticket_id, pass_name, customer_name;
+      `;
+    } else if (passName !== undefined) {
+      updated = await sql`
+        UPDATE bookings SET pass_name = ${passName} WHERE id = ${id}
+        RETURNING id, ticket_id, pass_name, customer_name;
+      `;
+    } else {
+      updated = await sql`
+        UPDATE bookings SET customer_name = ${customerName} WHERE id = ${id}
+        RETURNING id, ticket_id, pass_name, customer_name;
+      `;
+    }
+
+    if (updated.length === 0) {
+      return res.status(404).json({ error: 'Booking not found.' });
+    }
+    return res.status(200).json({ success: true, booking: updated[0] });
+  }
+
+  res.setHeader('Allow', 'GET, POST, PATCH');
   return res.status(405).json({ error: 'Method not allowed' });
 }

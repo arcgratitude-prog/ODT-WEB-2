@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Search, Check, X, RefreshCw, Users, LogOut } from 'lucide-react';
+import { Search, Check, X, RefreshCw, Users, LogOut, Pencil } from 'lucide-react';
 
 // Private staff check-in page. Not linked anywhere in the public nav —
 // reached directly at /?admin=checkin (see App.tsx). Protected by a shared
@@ -46,6 +46,14 @@ export const AdminCheckIn: React.FC = () => {
   // needed — and staff can flip to "All Time" for older history.
   const [thisWeekOnly, setThisWeekOnly] = useState(true);
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
+  // Inline editor for correcting a booking's pass name / customer name —
+  // for fixing bad data (e.g. one that ended up with the wrong event
+  // name), not something used during normal check-in.
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editPassName, setEditPassName] = useState('');
+  const [editCustomerName, setEditCustomerName] = useState('');
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
 
   const fetchBookings = useCallback(async (pwd: string) => {
     setIsLoading(true);
@@ -93,6 +101,48 @@ export const AdminCheckIn: React.FC = () => {
     setAuthorized(false);
     setPassword('');
     setBookings([]);
+  };
+
+  const startEditing = (booking: Booking) => {
+    setEditingId(booking.id);
+    setEditPassName(booking.pass_name);
+    setEditCustomerName(booking.customer_name);
+    setEditError(null);
+  };
+
+  const cancelEditing = () => {
+    setEditingId(null);
+    setEditError(null);
+  };
+
+  const saveEdit = async (booking: Booking) => {
+    if (!editPassName.trim() || !editCustomerName.trim()) {
+      setEditError('Both fields are required.');
+      return;
+    }
+    setIsSavingEdit(true);
+    setEditError(null);
+    try {
+      const res = await fetch('/api/admin-bookings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
+        body: JSON.stringify({ id: booking.id, passName: editPassName.trim(), customerName: editCustomerName.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setEditError(data.error || 'Could not save.');
+        setIsSavingEdit(false);
+        return;
+      }
+      setBookings((prev) =>
+        prev.map((b) => (b.id === booking.id ? { ...b, pass_name: data.booking.pass_name, customer_name: data.booking.customer_name } : b))
+      );
+      setEditingId(null);
+    } catch {
+      setEditError('Could not reach the server.');
+    } finally {
+      setIsSavingEdit(false);
+    }
   };
 
   const toggleCheckIn = async (booking: Booking) => {
@@ -183,9 +233,26 @@ export const AdminCheckIn: React.FC = () => {
   const cutoff = new Date(lastClassDay);
   cutoff.setDate(lastClassDay.getDate() + 1); // start of the day AFTER the last class
 
-  const dateFiltered = thisWeekOnly
-    ? passTypeFiltered.filter((b) => new Date(b.created_at) >= cutoff)
-    : passTypeFiltered;
+  // A Tier purchase is an ongoing MEMBERSHIP, not a one-time ticket — it
+  // stays real/active for 28 days from the purchase that created or
+  // renewed it (same rule the real membership system uses — see
+  // api/stripe-webhook.js). Someone who paid 3 weeks ago is still a
+  // paying, active member today and should keep showing up at check-in
+  // every week they come to class, not just the one week they happened
+  // to pay. Only non-Tier, one-time tickets (drop-ins, Invasion, Locura,
+  // Boot Camp, Lab Night) get the weekly reset via the class-day cutoff.
+  // Shared by both the visible list and the top stat counts below, so
+  // the two can never disagree about what counts as "this week."
+  const isRelevantThisWeek = (b: Booking) => {
+    if (/^Tier \d+:/.test(b.pass_name)) {
+      const membershipExpiresAt = new Date(b.created_at);
+      membershipExpiresAt.setDate(membershipExpiresAt.getDate() + 28);
+      return membershipExpiresAt >= today;
+    }
+    return new Date(b.created_at) >= cutoff;
+  };
+
+  const dateFiltered = thisWeekOnly ? passTypeFiltered.filter(isRelevantThisWeek) : passTypeFiltered;
 
   const query = search.trim().toLowerCase();
   const filtered = query
@@ -202,7 +269,7 @@ export const AdminCheckIn: React.FC = () => {
   // at the door), not a growing all-time count buried under months of
   // history. Search/pass-type don't affect these, matching how they
   // already didn't before this change — only the week toggle does.
-  const statsBase = thisWeekOnly ? bookings.filter((b) => new Date(b.created_at) >= cutoff) : bookings;
+  const statsBase = thisWeekOnly ? bookings.filter(isRelevantThisWeek) : bookings;
   const checkedInCount = statsBase.filter((b) => b.checked_in).length;
   const boughtTodayCount = statsBase.filter(
     (b) => /^Tier \d+:/.test(b.pass_name) && new Date(b.created_at).toDateString() === new Date().toDateString()
@@ -341,42 +408,93 @@ export const AdminCheckIn: React.FC = () => {
                   : 'bg-white/5 border-white/10'
               }`}
             >
-              <div className="min-w-0">
-                <div className="font-bold text-sm truncate flex items-center gap-2">
-                  {b.customer_name}
-                  {b.ticket_count > 1 && (
-                    <span className="shrink-0 px-1.5 py-0.5 rounded bg-fuchsia-500/20 border border-fuchsia-500/40 text-fuchsia-300 text-[9px] font-bold uppercase tracking-wide">
-                      Ticket {b.ticket_number} of {b.ticket_count}
-                    </span>
-                  )}
-                  {/^Tier \d+:/.test(b.pass_name) && new Date(b.created_at).toDateString() === new Date().toDateString() && (
-                    <span className="shrink-0 px-1.5 py-0.5 rounded bg-amber-500/20 border border-amber-500/40 text-amber-300 text-[9px] font-bold uppercase tracking-wide">
-                      Bought Today
-                    </span>
-                  )}
+              {editingId === b.id ? (
+                <div className="min-w-0 flex-1 space-y-2">
+                  <div>
+                    <label className="block text-[9px] font-bold uppercase text-slate-400 mb-0.5">Customer Name</label>
+                    <input
+                      type="text"
+                      value={editCustomerName}
+                      onChange={(e) => setEditCustomerName(e.target.value)}
+                      className="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-white/15 text-white text-xs focus:outline-none focus:border-red-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[9px] font-bold uppercase text-slate-400 mb-0.5">Pass Name</label>
+                    <input
+                      type="text"
+                      value={editPassName}
+                      onChange={(e) => setEditPassName(e.target.value)}
+                      className="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-white/15 text-white text-xs focus:outline-none focus:border-red-500"
+                    />
+                  </div>
+                  {editError && <p className="text-[10px] text-red-400">{editError}</p>}
+                  <div className="flex items-center gap-2 pt-1">
+                    <button
+                      onClick={() => saveEdit(b)}
+                      disabled={isSavingEdit}
+                      className="px-3 py-1.5 rounded-lg bg-emerald-500 text-black text-[11px] font-bold uppercase flex items-center gap-1 disabled:opacity-50"
+                    >
+                      <Check className="w-3 h-3" /> {isSavingEdit ? 'Saving…' : 'Save'}
+                    </button>
+                    <button
+                      onClick={cancelEditing}
+                      disabled={isSavingEdit}
+                      className="px-3 py-1.5 rounded-lg bg-white/10 text-white text-[11px] font-bold uppercase flex items-center gap-1 disabled:opacity-50"
+                    >
+                      <X className="w-3 h-3" /> Cancel
+                    </button>
+                  </div>
                 </div>
-                <div className="text-xs text-slate-400 truncate">{b.pass_name} · ${(b.amount_cents / 100).toFixed(2)}</div>
-                <div className="text-[10px] text-slate-500">
-                  Purchased {new Date(b.created_at).toLocaleDateString()}
-                </div>
-                {b.classes_included && (
-                  <div className="text-[11px] text-slate-500 truncate">{b.classes_included}</div>
-                )}
-                {b.referred_by && (
-                  <div className="text-[11px] text-emerald-500 truncate">Referred by: {b.referred_by}</div>
-                )}
-              </div>
-              <button
-                onClick={() => toggleCheckIn(b)}
-                className={`shrink-0 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wide flex items-center gap-1.5 transition-colors ${
-                  b.checked_in
-                    ? 'bg-emerald-500 text-black hover:bg-emerald-400'
-                    : 'bg-white/10 text-white hover:bg-white/20'
-                }`}
-              >
-                {b.checked_in ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
-                {b.checked_in ? 'Checked In' : 'Check In'}
-              </button>
+              ) : (
+                <>
+                  <div className="min-w-0">
+                    <div className="font-bold text-sm truncate flex items-center gap-2">
+                      {b.customer_name}
+                      {b.ticket_count > 1 && (
+                        <span className="shrink-0 px-1.5 py-0.5 rounded bg-fuchsia-500/20 border border-fuchsia-500/40 text-fuchsia-300 text-[9px] font-bold uppercase tracking-wide">
+                          Ticket {b.ticket_number} of {b.ticket_count}
+                        </span>
+                      )}
+                      {/^Tier \d+:/.test(b.pass_name) && new Date(b.created_at).toDateString() === new Date().toDateString() && (
+                        <span className="shrink-0 px-1.5 py-0.5 rounded bg-amber-500/20 border border-amber-500/40 text-amber-300 text-[9px] font-bold uppercase tracking-wide">
+                          Bought Today
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-xs text-slate-400 truncate">{b.pass_name} · ${(b.amount_cents / 100).toFixed(2)}</div>
+                    <div className="text-[10px] text-slate-500">
+                      Purchased {new Date(b.created_at).toLocaleDateString()}
+                    </div>
+                    {b.classes_included && (
+                      <div className="text-[11px] text-slate-500 truncate">{b.classes_included}</div>
+                    )}
+                    {b.referred_by && (
+                      <div className="text-[11px] text-emerald-500 truncate">Referred by: {b.referred_by}</div>
+                    )}
+                  </div>
+                  <div className="shrink-0 flex items-center gap-1.5">
+                    <button
+                      onClick={() => startEditing(b)}
+                      className="p-2 rounded-lg bg-white/5 text-slate-400 hover:bg-white/10 hover:text-slate-200 transition-colors"
+                      title="Fix name / pass name"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => toggleCheckIn(b)}
+                      className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wide flex items-center gap-1.5 transition-colors ${
+                        b.checked_in
+                          ? 'bg-emerald-500 text-black hover:bg-emerald-400'
+                          : 'bg-white/10 text-white hover:bg-white/20'
+                      }`}
+                    >
+                      {b.checked_in ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
+                      {b.checked_in ? 'Checked In' : 'Check In'}
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           ))
         )}
