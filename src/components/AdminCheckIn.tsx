@@ -35,6 +35,14 @@ export const AdminCheckIn: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [passTypeFilter, setPassTypeFilter] = useState('all');
+  // Defaults to showing only the last 7 days — without this, the list
+  // just keeps accumulating every booking ever, and a drop-in class
+  // purchase (which recurs every week with no date of its own attached)
+  // becomes impossible to tell apart from one bought weeks ago. This is
+  // a ROLLING window measured from right now, so it naturally "resets"
+  // itself every time the page loads — no manual reset action needed,
+  // and staff can flip to "All Time" if they ever need older history.
+  const [thisWeekOnly, setThisWeekOnly] = useState(true);
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
 
   const fetchBookings = useCallback(async (pwd: string) => {
@@ -137,8 +145,6 @@ export const AdminCheckIn: React.FC = () => {
     );
   }
 
-  const query = search.trim().toLowerCase();
-
   // Groups every pass into one of a small, fixed set of categories for
   // the dropdown below — every individual Tier (1/2/3) and every
   // drop-in size all collapse into a single "Classes" bucket, rather
@@ -155,17 +161,34 @@ export const AdminCheckIn: React.FC = () => {
     ? bookings
     : bookings.filter((b) => getPassCategory(b.pass_name) === passTypeFilter);
 
+  // "This week" = a rolling 7-day window from right now, not a fixed
+  // calendar week — so it doesn't matter what day staff open this page,
+  // it always shows "the last 7 days" fresh. Applied on top of the
+  // pass-type filter so the two work together (e.g. "Classes, this
+  // week only").
+  const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const dateFiltered = thisWeekOnly
+    ? passTypeFiltered.filter((b) => new Date(b.created_at) >= weekAgo)
+    : passTypeFiltered;
+
+  const query = search.trim().toLowerCase();
   const filtered = query
-    ? passTypeFiltered.filter(
+    ? dateFiltered.filter(
         (b) =>
           b.customer_name.toLowerCase().includes(query) ||
           b.customer_email.toLowerCase().includes(query) ||
           b.ticket_id.toLowerCase().includes(query)
       )
-    : passTypeFiltered;
+    : dateFiltered;
 
-  const checkedInCount = bookings.filter((b) => b.checked_in).length;
-  const boughtTodayCount = bookings.filter(
+  // Stats reflect the SAME "this week" scope as the list below, so
+  // "Booked: 12" means 12 this week (the number that's actually useful
+  // at the door), not a growing all-time count buried under months of
+  // history. Search/pass-type don't affect these, matching how they
+  // already didn't before this change — only the week toggle does.
+  const statsBase = thisWeekOnly ? bookings.filter((b) => new Date(b.created_at) >= weekAgo) : bookings;
+  const checkedInCount = statsBase.filter((b) => b.checked_in).length;
+  const boughtTodayCount = statsBase.filter(
     (b) => /^Tier \d+:/.test(b.pass_name) && new Date(b.created_at).toDateString() === new Date().toDateString()
   ).length;
 
@@ -243,6 +266,25 @@ export const AdminCheckIn: React.FC = () => {
             />
           </div>
 
+          <div className="flex gap-1 p-1 bg-white/5 rounded-xl border border-white/10">
+            <button
+              onClick={() => setThisWeekOnly(true)}
+              className={`flex-1 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-colors ${
+                thisWeekOnly ? 'bg-white text-black' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              This Week
+            </button>
+            <button
+              onClick={() => setThisWeekOnly(false)}
+              className={`flex-1 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-colors ${
+                !thisWeekOnly ? 'bg-white text-black' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              All Time
+            </button>
+          </div>
+
           <select
             value={passTypeFilter}
             onChange={(e) => setPassTypeFilter(e.target.value)}
@@ -267,7 +309,11 @@ export const AdminCheckIn: React.FC = () => {
       <div className="max-w-3xl mx-auto p-4 space-y-2">
         {filtered.length === 0 ? (
           <p className="text-center text-sm text-slate-400 py-12">
-            {bookings.length === 0 ? 'No bookings yet.' : 'No matches.'}
+            {bookings.length === 0
+              ? 'No bookings yet.'
+              : thisWeekOnly && dateFiltered.length === 0
+              ? 'Nothing in the last 7 days — try "All Time" to see older bookings.'
+              : 'No matches.'}
           </p>
         ) : (
           filtered.map((b) => (
