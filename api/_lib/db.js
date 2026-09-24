@@ -44,7 +44,7 @@ export async function ensureBookingsTable() {
   await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS ticket_count INTEGER NOT NULL DEFAULT 1;`;
   await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS referred_by TEXT;`;
   // Records WHICH event cycle a discounted ticket belongs to (e.g.
-  // "invasion-2026-09-11"), only set on the one ticket in an order that
+  // "invasion-2026-10-09"), only set on the one ticket in an order that
   // actually got the 20% member discount. This is what lets
   // create-payment-intent.js enforce "one discount per member per event"
   // — checking for a prior booking with this same key blocks someone
@@ -129,6 +129,14 @@ export async function ensureMembersTable() {
   // testing). Defaults to FALSE so every existing and future real member
   // is unaffected.
   await sql`ALTER TABLE members ADD COLUMN IF NOT EXISTS is_test_account BOOLEAN NOT NULL DEFAULT FALSE;`;
+  // When a "your pass is expiring soon" reminder was last sent — lets
+  // the daily reminder job (api/send-renewal-reminders.js) send exactly
+  // ONE reminder per expiration cycle instead of one every single day
+  // the cron runs while someone sits in the reminder window. Compared
+  // against membership_expires_at (not just checked for NULL) so it
+  // correctly re-arms itself the moment someone renews — see that file
+  // for the exact comparison and why.
+  await sql`ALTER TABLE members ADD COLUMN IF NOT EXISTS renewal_reminder_sent_at TIMESTAMPTZ;`;
 }
 
 // Password reset tokens — short-lived, single-use. Kept in their own

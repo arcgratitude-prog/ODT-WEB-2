@@ -22,7 +22,7 @@
 // other files it lists) — otherwise a member could be wrongly blocked
 // from a discount they haven't actually used yet this cycle.
 const DISCOUNT_EVENT_KEYS = {
-  'Bachata Invasion Social Pass': 'invasion-2026-09-11',
+  'Bachata Invasion Social Pass': 'invasion-2026-10-09',
   'Bachata Locura Social Pass': 'locura-2026-09-20',
   // Same key as above deliberately — this is the SAME real event (just
   // the regular price instead of the ended pre-sale price), so a member

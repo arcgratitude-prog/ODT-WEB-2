@@ -8,15 +8,10 @@
 // Same shared-password protection as admin-bookings.js.
 
 import { ensureMembersTable, sql } from './_lib/db.js';
-
-function isAuthorized(req) {
-  const provided = req.headers['x-admin-password'];
-  const expected = process.env.ADMIN_PASSWORD;
-  return expected && provided === expected;
-}
+import { isAdminAuthorized } from './_lib/auth.js';
 
 export default async function handler(req, res) {
-  if (!isAuthorized(req)) {
+  if (!isAdminAuthorized(req)) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 

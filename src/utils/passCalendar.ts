@@ -19,10 +19,10 @@ function resolveEventDateRange(ticket: TicketData): { start: Date; end: Date } |
   }
 
   if (eventLower.includes('invasion')) {
-    // Friday, September 11, 2026 — 8:00 PM to 1:00 AM. Update here
+    // Friday, October 9, 2026 — 8:00 PM to 1:00 AM. Update here
     // alongside BachataLocuraSocialSection.tsx if the date ever changes.
-    const start = new Date(2026, 8, 11, 20, 0, 0);
-    const end = new Date(2026, 8, 12, 1, 0, 0);
+    const start = new Date(2026, 9, 9, 20, 0, 0);
+    const end = new Date(2026, 9, 10, 1, 0, 0);
     return { start, end };
   }
 

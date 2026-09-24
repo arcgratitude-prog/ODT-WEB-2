@@ -116,7 +116,7 @@ function buildOrderReceiptEmail(order) {
     dj = null;
   } else if (isInvasion) {
     timeLabel = '8 PM–1 AM EDT';
-    dateBig = 'SEPT 11';
+    dateBig = 'OCT 9';
     dateSmall = 'FRIDAY';
     dj = 'DJ JR';
   } else if (isX1) {
@@ -358,4 +358,66 @@ function escapeHtml(str) {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+// "Your pass is expiring soon" reminder — sent to an active member a few
+// days before their Tier membership lapses, so they have a chance to
+// renew before losing access. Triggered by the daily cron job in
+// api/send-renewal-reminders.js, never by a customer action, so a
+// missing config here just means reminders quietly don't go out (same
+// fail-open pattern as the other emails in this file) rather than
+// breaking anything.
+export async function sendMembershipRenewalReminder(member) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.warn('Skipping renewal reminder email — RESEND_API_KEY not set.');
+    return;
+  }
+
+  const resend = new Resend(apiKey);
+  const name = escapeHtml(member.name || 'there');
+  const passName = escapeHtml(member.last_pass_name || 'your membership');
+  const expiresDate = new Date(member.membership_expires_at).toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  const html = `
+    <div style="font-family: -apple-system, sans-serif; max-width: 480px; margin: 0 auto; background:#0b0d12; color:#e5e7eb; border-radius:16px; overflow:hidden; border:1px solid #23262f;">
+      <div style="background: linear-gradient(135deg,#dc2626,#7f1d1d); padding: 20px 24px;">
+        <div style="color:#fff; font-size:16px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em;">Your Pass Is Expiring Soon</div>
+      </div>
+      <div style="padding: 24px;">
+        <p style="margin:0 0 16px; font-size:14px; line-height:1.6; color:#cbd5e1;">
+          Hey ${name},
+        </p>
+        <p style="margin:0 0 16px; font-size:14px; line-height:1.6; color:#cbd5e1;">
+          Your <strong style="color:#fff;">${passName}</strong> membership expires on
+          <strong style="color:#fff;">${expiresDate}</strong>. Grab another one before then to keep your
+          weekly classes and member perks (like 20% off socials) without any gap.
+        </p>
+        <div style="text-align:center; margin: 24px 0 8px;">
+          <a href="https://officialdancetheory.com" style="display:inline-block; background:#dc2626; color:#fff; text-decoration:none; font-weight:800; font-size:13px; text-transform:uppercase; letter-spacing:0.03em; padding:14px 28px; border-radius:999px;">
+            Renew My Pass
+          </a>
+        </div>
+      </div>
+      <div style="padding: 16px 24px; border-top:1px solid #23262f; text-align:center;">
+        <p style="margin:0; font-size:11px; color:#64748b;">Official Dance Theory · officialdancetheory.com</p>
+      </div>
+    </div>
+  `;
+
+  try {
+    await resend.emails.send({
+      from: 'Official Dance Theory <tickets@officialdancetheory.com>',
+      to: member.email,
+      subject: `Your pass expires ${expiresDate} — renew to keep your spot`,
+      html,
+    });
+  } catch (err) {
+    console.error(`Failed to send renewal reminder to ${member.email}:`, err);
+    throw err;
+  }
 }

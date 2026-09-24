@@ -18,9 +18,13 @@
 // past-event detection. These are still duplicated elsewhere for other
 // purposes and must be kept in sync BY HAND when an event's date changes:
 //   - src/components/TicketModal.tsx  (getEventDateLabel — the human
-//     "Friday, September 11th…" label shown on the ticket)
+//     "Friday, October 9th…" label shown on the ticket)
 //   - src/utils/passCalendar.ts       (the .ics calendar-download date)
 //   - src/data/danceData.ts           (marketing copy on the site)
+//   - src/components/CalendarPage.tsx (the calendar grid's own event
+//     markers — these are separate Date objects for rendering the
+//     calendar UI, not sourced from this file, so they need their own
+//     manual update too)
 //   - api/_lib/notify.js              (confirmation email copy)
 //   - api/_lib/discountEvents.js      (the "which occurrence is this"
 //     key that lets a member's discount reset for the next occurrence —
@@ -56,9 +60,9 @@ export function occurrenceForPassName(passName: string | null | undefined): Even
   if (/Lab Night/i.test(name)) {
     return { startsAt: new Date(2026, 8, 18, 19, 0, 0), endsAt: new Date(2026, 8, 18, 22, 30, 0) };
   }
-  // Friday, September 11, 2026 — 8:00 PM to 1:00 AM the next day.
+  // Friday, October 9, 2026 — 8:00 PM to 1:00 AM the next day.
   if (/Invasion/i.test(name)) {
-    return { startsAt: new Date(2026, 8, 11, 20, 0, 0), endsAt: new Date(2026, 8, 12, 1, 0, 0) };
+    return { startsAt: new Date(2026, 9, 9, 20, 0, 0), endsAt: new Date(2026, 9, 10, 1, 0, 0) };
   }
 
   // Tiers, drop-ins, X1 — no single date.

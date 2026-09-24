@@ -16,18 +16,11 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
 }) => {
   const [activeTab, setActiveTab] = useState<'invasion' | 'locura' | 'labnight'>('invasion');
   const [copiedInvasionAddress, setCopiedInvasionAddress] = useState(false);
-  const [copiedLocuraAddress, setCopiedLocuraAddress] = useState(false);
 
   const handleCopyInvasionAddress = () => {
     navigator.clipboard.writeText("334 Westshore Plaza Unit A10, Tampa, FL 33609");
     setCopiedInvasionAddress(true);
     setTimeout(() => setCopiedInvasionAddress(false), 2000);
-  };
-
-  const handleCopyLocuraAddress = () => {
-    navigator.clipboard.writeText("334 Westshore Plaza, Unit A10, Tampa, FL 33609");
-    setCopiedLocuraAddress(true);
-    setTimeout(() => setCopiedLocuraAddress(false), 2000);
   };
 
   return (
@@ -56,7 +49,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                 : 'bg-slate-900 text-pink-300 border border-pink-500/30'
             }`}>
               <Calendar className="w-2.5 h-2.5 text-pink-300" />
-              <span>Fri • Sept 11</span>
+              <span>Fri • Oct 9</span>
             </span>
             <div className="flex items-center gap-1.5">
               <Flame className="w-4 h-4 text-pink-400 shrink-0" />
@@ -79,7 +72,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                 : 'bg-slate-900 text-amber-300 border border-amber-500/30'
             }`}>
               <Calendar className="w-2.5 h-2.5 text-amber-400" />
-              <span>Sun • Sept 20</span>
+              <span>Date TBA</span>
             </span>
             <div className="flex items-center gap-1.5">
               <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
@@ -141,7 +134,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                 Bachata <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-fuchsia-400 to-purple-400">Invasion</span>
               </h2>
               <p className="text-sm text-purple-100">
-                Friday, September 11th · 8 PM–1 AM · <span className="font-bold text-white">$12</span>
+                Friday, October 9th · 8 PM–1 AM · <span className="font-bold text-white">$12</span>
               </p>
               <p className="text-xs text-purple-300">
                 8–9 PM Class with <span className="text-white font-semibold">Albina & Isaac</span> · Social Dancing with <span className="text-white font-semibold">DJ JR</span>
@@ -240,167 +233,55 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
 
           <div className="rounded-3xl p-6 sm:p-10 border border-slate-300/40 bg-gradient-to-br from-[#121318] via-[#0d0e12] to-[#08080a] shadow-[0_0_50px_rgba(255,255,255,0.08)] relative overflow-hidden">
 
-            {/* Flyer — the visual centerpiece. Framed and glowing in the
-                card's own palette, with a soft fade at the bottom so it
-                reads as part of the page rather than a pasted image. */}
-            <div className="max-w-sm mx-auto mb-8">
-              <div className="relative rounded-2xl overflow-hidden border border-slate-300/50 shadow-[0_0_45px_rgba(255,255,255,0.15)]">
-                <img
-                  src={locuraFlyer}
-                  alt="Bachata Locura — Tropical Midnight Edition, September 20th"
-                  className="w-full h-auto block"
-                />
-                <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#08080a] via-transparent to-transparent" />
-                <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-white/10 rounded-2xl" />
-              </div>
-            </div>
-
-            {/* Readable summary — same info as the flyer, spelled out so no
-                one has to zoom in to read it */}
-            <div className="max-w-sm mx-auto mb-8 text-center space-y-1">
-              <h2 className="text-2xl sm:text-3xl font-black uppercase font-sans tracking-tight text-white">
-                Bachata <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-100 via-slate-300 to-slate-500">Locura</span>
-              </h2>
-              <p className="text-sm text-slate-300">
-                Sunday, September 20th · 4–9 PM · Dress: Pink & Purple
-              </p>
-              <p className="text-xs text-slate-400">
-                Presocial Class at 4 PM with <span className="text-white font-semibold">Albina & Isaac</span> · Music by <span className="text-white font-semibold">DJ JR</span>
-              </p>
-              <p className="text-xs text-slate-500">
-                Westshore Plaza Mall · 334 Westshore Plaza, Unit A10, Tampa, FL 33609
-              </p>
-            </div>
-
-            {/* Essentials — schedule in one row */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 max-w-2xl mx-auto">
-              <div className="p-4 rounded-2xl bg-black/40 border border-white/10 text-center">
-                <span className="text-[10px] text-slate-400 font-mono uppercase tracking-widest block mb-1">4 PM</span>
-                <span className="text-sm text-white font-bold block">Presocial Class</span>
-                <span className="text-xs text-slate-400 mt-0.5 block">Albina & Isaac</span>
-              </div>
-              <div className="p-4 rounded-2xl bg-black/40 border border-white/10 text-center">
-                <span className="text-[10px] text-slate-400 font-mono uppercase tracking-widest block mb-1">4–9 PM</span>
-                <span className="text-sm text-white font-bold block">Social Dancing</span>
-                <span className="text-xs text-slate-400 mt-0.5 block">DJ JR</span>
-              </div>
-              <div className="p-4 rounded-2xl bg-white/5 border border-slate-300/30 text-center">
-                <span className="text-[10px] text-slate-400 font-mono uppercase tracking-widest block mb-1">Venue</span>
-                <span className="text-sm text-white font-bold block">Westshore Plaza Mall</span>
-                <span className="text-xs text-slate-400 mt-0.5 block">Tampa, FL</span>
-              </div>
-            </div>
-
-            {/* Ticket Options — simple round price badges. Pre-sale has
-                ended (closed 9/19, the event is 9/20), so the Regular
-                Price ($20) is now the featured, clickable option in the
-                middle; Pre-Sale is greyed out with an ENDED overlay where
-                the door-only badges sit. */}
-            <div className="mb-8">
-              <div className="flex items-center justify-center gap-4 sm:gap-6">
-
-                {/* Students — door only */}
-                <div className="flex flex-col items-center gap-1.5 opacity-70">
-                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-zinc-900 border border-white/15 flex items-center justify-center">
-                    <span className="text-sm sm:text-base font-black text-emerald-400 font-mono">$15</span>
-                  </div>
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Student</span>
-                  <span className="text-[8px] text-slate-500 uppercase tracking-wide -mt-1">Present ID at Door</span>
-                </div>
-
-                {/* Regular Price — now the featured, purchasable option
-                    now that pre-sale has closed. Glows/pulses so it
-                    visually reads as the one to tap. */}
-                <button
-                  onClick={() => onOpenBooking('social-locura-door')}
-                  className="flex flex-col items-center gap-1.5 group relative"
-                >
-                  {/* Soft ambient pulse ring behind the circle */}
-                  <span className="absolute top-0 w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-fuchsia-400/40 blur-md animate-pulse pointer-events-none" />
-                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-b from-fuchsia-500 via-purple-600 to-slate-900 border-2 border-fuchsia-200/80 shadow-lg shadow-fuchsia-500/50 flex flex-col items-center justify-center transition-all group-hover:border-white group-hover:shadow-fuchsia-400/80 group-hover:shadow-xl group-hover:scale-105 group-active:scale-95">
-                    <span className="text-[9px] font-bold text-fuchsia-100 uppercase tracking-wide">Regular Price</span>
-                    <span className="text-xl sm:text-2xl font-black text-white font-mono">$20</span>
-                  </div>
-                  <span className="text-[10px] font-bold text-white uppercase tracking-wide">Tap to Get →</span>
-                </button>
-
-                {/* Pre-Sale — ended. Greyed out with an ENDED overlay;
-                    no longer clickable. */}
-                <div className="flex flex-col items-center gap-1.5 opacity-50 grayscale relative">
-                  <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-zinc-900 border border-white/15 flex items-center justify-center">
-                    <span className="text-sm sm:text-base font-black text-slate-400 font-mono line-through">$15</span>
-                    <span className="absolute inset-0 flex items-center justify-center">
-                      <span className="px-1.5 py-0.5 rounded bg-black/80 border border-white/20 text-[7px] font-black uppercase tracking-wide text-white">
-                        Ended
-                      </span>
-                    </span>
-                  </div>
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Pre-Sale</span>
-                </div>
-
-              </div>
-
-              <p className="text-center text-[10px] text-slate-500 mt-3">
-                Pre-sale has ended · Students show ID at the door · Regular price available online or at the door
-              </p>
-            </div>
-
-            {/* Boot Camp Add-On — same day, before Bachata Locura */}
-            <div className="mt-6 p-4 rounded-2xl bg-gradient-to-br from-rose-950/60 to-slate-950 border border-rose-500/30">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="px-2 py-0.5 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300 text-[9px] font-black uppercase tracking-wider">
-                  Same Day — Before Locura
-                </span>
-              </div>
-              <h4 className="text-lg font-black text-white uppercase mb-1">Bachata Battle Boot Camp</h4>
-              <p className="text-xs text-slate-300 mb-3">
-                1:30 PM – 3:30 PM · Albina & Isaac + Xavier & Jairo · Includes Bachata Locura social after
-              </p>
-              <div className="flex items-center justify-between">
-                <span className="text-2xl font-black text-rose-300">$45</span>
-                <button
-                  onClick={() => onOpenBooking('social-bootcamp')}
-                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white font-black text-xs uppercase tracking-wide shadow-lg transition-all"
-                >
-                  Get Boot Camp Pass
-                </button>
-              </div>
-            </div>
-
-            {/* Location & Directions */}
-            <div className="mt-6 p-5 rounded-2xl bg-black/60 border border-white/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-              <div className="flex items-start gap-3">
-                <div className="p-3 rounded-xl bg-slate-800 text-slate-200 border border-slate-600 shrink-0 mt-0.5">
-                  <MapPin className="w-5 h-5" />
-                </div>
-                <div>
-                  <h5 className="text-sm font-bold text-white">
-                    Westshore Plaza Mall
-                  </h5>
-                  <p className="text-xs text-slate-300 font-mono">
-                    334 Westshore Plaza, Unit A10, Tampa, FL 33609
-                  </p>
+            {/* The Sept 20 Locura has already happened and no next date
+                is set yet — the whole card reads as "ended" (greyscale +
+                dimmed) rather than showing stale September info or,
+                worse, letting anyone tap through to buy a ticket for an
+                event that isn't scheduled. Nothing in this block is
+                clickable/purchasable. Restore the normal (non-greyed)
+                version — with the flyer, schedule grid, ticket circles,
+                and Boot Camp add-on all live again — once a real next
+                date is set. */}
+            <div className="grayscale opacity-50 pointer-events-none select-none">
+              {/* Flyer */}
+              <div className="max-w-sm mx-auto mb-8">
+                <div className="relative rounded-2xl overflow-hidden border border-slate-300/50 shadow-[0_0_45px_rgba(255,255,255,0.15)]">
+                  <img
+                    src={locuraFlyer}
+                    alt="Bachata Locura — Tropical Midnight Edition"
+                    className="w-full h-auto block"
+                  />
+                  <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#08080a] via-transparent to-transparent" />
+                  <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-white/10 rounded-2xl" />
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
-                <button
-                  onClick={handleCopyLocuraAddress}
-                  className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-bold flex items-center gap-1.5 border border-white/10 transition-all"
-                >
-                  {copiedLocuraAddress ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                  <span>{copiedLocuraAddress ? 'Address Copied!' : 'Copy Address'}</span>
-                </button>
+              <div className="max-w-sm mx-auto mb-8 text-center space-y-1">
+                <h2 className="text-2xl sm:text-3xl font-black uppercase font-sans tracking-tight text-white">
+                  Bachata <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-100 via-slate-300 to-slate-500">Locura</span>
+                </h2>
+                <p className="text-xs text-slate-500">
+                  Westshore Plaza Mall · 334 Westshore Plaza, Unit A10, Tampa, FL 33609
+                </p>
+              </div>
 
-                <a
-                  href={STUDIO_INFO.googleMapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold flex items-center gap-1.5 border border-slate-600 transition-all"
-                >
-                  <ExternalLink className="w-3.5 h-3.5" />
-                  <span>Get Directions</span>
-                </a>
+              {/* Boot Camp happens the same day, right before Locura —
+                  with no next Locura date set, Boot Camp's next date
+                  isn't set either, so it's dimmed here along with
+                  everything else rather than shown as if it's still for
+                  sale. */}
+              <div className="max-w-md mx-auto p-4 rounded-2xl bg-black/40 border border-white/10">
+                <h4 className="text-sm font-black text-white uppercase mb-1">Bachata Battle Boot Camp</h4>
+                <p className="text-xs text-slate-400">Same day as Bachata Locura</p>
+              </div>
+            </div>
+
+            {/* Front and center, NOT dimmed — this is the actual message
+                for anyone on this tab right now. */}
+            <div className="max-w-sm mx-auto -mt-4 mb-2 text-center">
+              <div className="inline-block px-5 py-3 rounded-2xl bg-slate-900 border border-slate-500/40">
+                <p className="text-sm font-black text-white uppercase tracking-wide">Next One: Date TBA</p>
+                <p className="text-xs text-slate-400 mt-1">Check back soon — tickets aren't on sale yet</p>
               </div>
             </div>
 

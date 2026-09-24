@@ -54,7 +54,7 @@ function bookingToTicketData(b: RawBooking): TicketData {
       { time: '9:00 PM', title: 'Event Ends', description: '' },
     ];
   } else if (isInvasion) {
-    date = 'Friday, September 11, 2026';
+    date = 'Friday, October 9, 2026';
     time = '8:00 PM – 1:00 AM EDT';
     doorsOpen = '8:00 PM';
     dj = 'DJ JR';
