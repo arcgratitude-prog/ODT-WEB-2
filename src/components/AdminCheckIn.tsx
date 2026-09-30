@@ -59,6 +59,20 @@ export const AdminCheckIn: React.FC = () => {
   // needed — and staff can flip to "All Time" for older history.
   const [thisWeekOnly, setThisWeekOnly] = useState(true);
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
+  // The header (title, stats, search, filters) is sticky so it's always
+  // reachable, but the stats grid and the two explainer notes alone eat
+  // up close to a third of a phone screen — fine at the top, wasteful
+  // once you're scrolled down into a long list. Past a small scroll
+  // threshold, those parts collapse away and only a compact bar (title +
+  // search + the two filters, which staff still need while browsing)
+  // stays stuck to the top.
+  const [isScrolled, setIsScrolled] = useState(false);
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 24);
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   // Inline editor for correcting a booking's pass name / customer name,
   // or adding a short staff note (e.g. "Used same day") — for fixing bad
   // data or flagging a special case, not something used during normal
@@ -330,7 +344,7 @@ export const AdminCheckIn: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white pb-16">
-      <div className="sticky top-0 z-10 bg-slate-950/95 backdrop-blur border-b border-white/10 p-4">
+      <div className={`sticky top-0 z-10 bg-slate-950/95 backdrop-blur border-b border-white/10 transition-[padding] duration-200 ${isScrolled ? 'p-2.5' : 'p-4'}`}>
         <div className="max-w-3xl mx-auto space-y-3">
           <div className="flex items-center justify-between">
             <h1 className="text-lg font-black uppercase">Check-In</h1>
@@ -360,36 +374,44 @@ export const AdminCheckIn: React.FC = () => {
               </button>
             </div>
           </div>
-          <p className="text-[10px] text-teal-400/80 -mt-1">
-            Lab Night is free for active Tier members — no ticket needed. Tap "Members" to verify at the door.
-          </p>
 
-          <div className="grid grid-cols-3 gap-2 text-center">
-            <div className="bg-white/5 rounded-xl p-2.5 border border-white/10">
-              <div className="text-lg font-black">{bookings.length}</div>
-              <div className="text-[10px] text-slate-400 uppercase flex items-center justify-center gap-1">
-                <Users className="w-3 h-3" /> Booked
-              </div>
-            </div>
-            <div className="bg-emerald-500/10 rounded-xl p-2.5 border border-emerald-500/30">
-              <div className="text-lg font-black text-emerald-400">{checkedInCount}</div>
-              <div className="text-[10px] text-slate-400 uppercase flex items-center justify-center gap-1">
-                <Check className="w-3 h-3" /> Checked In
-              </div>
-            </div>
-            <div className="bg-amber-500/10 rounded-xl p-2.5 border border-amber-500/30">
-              <div className="text-lg font-black text-amber-400">{boughtTodayCount}</div>
-              <div className="text-[10px] text-slate-400 uppercase flex items-center justify-center gap-1 leading-tight">
-                Bought Today
-              </div>
-            </div>
-          </div>
-
-          {boughtTodayCount > 0 && (
-            <p className="text-[10px] text-amber-400/80 text-center -mt-1">
-              "Bought Today" = a Tier purchased same-day — their membership is already active, so let them into tonight's class if it's a Wednesday.
+          {/* Collapses away once scrolled — see isScrolled above. */}
+          <div
+            className={`overflow-hidden transition-all duration-200 space-y-3 ${
+              isScrolled ? 'max-h-0 opacity-0' : 'max-h-[500px] opacity-100'
+            }`}
+          >
+            <p className="text-[10px] text-teal-400/80">
+              Lab Night is free for active Tier members — no ticket needed. Tap "Members" to verify at the door.
             </p>
-          )}
+
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <div className="bg-white/5 rounded-xl p-2.5 border border-white/10">
+                <div className="text-lg font-black">{bookings.length}</div>
+                <div className="text-[10px] text-slate-400 uppercase flex items-center justify-center gap-1">
+                  <Users className="w-3 h-3" /> Booked
+                </div>
+              </div>
+              <div className="bg-emerald-500/10 rounded-xl p-2.5 border border-emerald-500/30">
+                <div className="text-lg font-black text-emerald-400">{checkedInCount}</div>
+                <div className="text-[10px] text-slate-400 uppercase flex items-center justify-center gap-1">
+                  <Check className="w-3 h-3" /> Checked In
+                </div>
+              </div>
+              <div className="bg-amber-500/10 rounded-xl p-2.5 border border-amber-500/30">
+                <div className="text-lg font-black text-amber-400">{boughtTodayCount}</div>
+                <div className="text-[10px] text-slate-400 uppercase flex items-center justify-center gap-1 leading-tight">
+                  Bought Today
+                </div>
+              </div>
+            </div>
+
+            {boughtTodayCount > 0 && (
+              <p className="text-[10px] text-amber-400/80 text-center">
+                "Bought Today" = a Tier purchased same-day — their membership is already active, so let them into tonight's class if it's a Wednesday.
+              </p>
+            )}
+          </div>
 
           <div className="relative">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
@@ -434,7 +456,7 @@ export const AdminCheckIn: React.FC = () => {
             <option value="AI Urbano Lab Night" className="bg-slate-950 text-white">AI Urbano Lab Night</option>
           </select>
 
-          {lastRefreshed && (
+          {lastRefreshed && !isScrolled && (
             <p className="text-[10px] text-slate-500 text-center">
               Last updated {lastRefreshed.toLocaleTimeString()}
             </p>
