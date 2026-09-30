@@ -34,7 +34,11 @@ export const AdminCheckIn: React.FC = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState('');
-  const [passTypeFilter, setPassTypeFilter] = useState('all');
+  // Defaults to "Classes" (Tiers & Drop-Ins) — that's the door every
+  // Wednesday, so it should be what the teacher sees the instant the page
+  // loads, with no filter to touch. They can still switch to a social
+  // from the dropdown on an event night.
+  const [passTypeFilter, setPassTypeFilter] = useState('Classes');
   // Defaults to showing only what's been purchased since the LAST
   // Wednesday class — without this, the list just keeps accumulating
   // every booking ever, and a drop-in class purchase (which recurs
@@ -381,12 +385,12 @@ export const AdminCheckIn: React.FC = () => {
             onChange={(e) => setPassTypeFilter(e.target.value)}
             className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white text-xs font-bold uppercase tracking-wide focus:outline-none focus:border-red-500"
           >
+            <option value="Classes" className="bg-slate-950 text-white">Classes (Tiers & Drop-Ins)</option>
             <option value="all" className="bg-slate-950 text-white">All Socials & Classes</option>
             <option value="Bachata Invasion" className="bg-slate-950 text-white">Bachata Invasion</option>
             <option value="Bachata Locura" className="bg-slate-950 text-white">Bachata Locura</option>
             <option value="Bachata Battle Boot Camp" className="bg-slate-950 text-white">Bachata Battle Boot Camp</option>
             <option value="AI Urbano Lab Night" className="bg-slate-950 text-white">AI Urbano Lab Night</option>
-            <option value="Classes" className="bg-slate-950 text-white">Classes (Tiers & Drop-Ins)</option>
           </select>
 
           {lastRefreshed && (
