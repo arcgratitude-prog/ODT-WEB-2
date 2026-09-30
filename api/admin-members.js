@@ -18,59 +18,54 @@ export default async function handler(req, res) {
   await ensureMembersTable();
 
   if (req.method === 'PATCH') {
-    // Two independent manual corrections live on this one endpoint:
+    // Three independent manual corrections live on this one endpoint:
     //   - newExpiresAt: fixing a member's expiration date for a real
     //     edge case (e.g. someone bought right after that day's class
     //     already happened, so their real 4-week window should be
     //     counted differently than a pure "purchase timestamp + 28
-    //     days" would give them).
+    //     days" would give them; or a comp member activated by hand).
     //   - isTestAccount: flagging/unflagging an account as a test
     //     account, so it can be told apart from real members in the
     //     list and excluded from the real member counts — without
     //     changing how the account actually behaves anywhere else.
-    // Either can be sent alone, or both together; at least one is
-    // required.
-    const { memberId, newExpiresAt, isTestAccount } = req.body || {};
+    //   - staffNote: a short freeform note shown as "*note" on the
+    //     member's card — e.g. which classes a manually-activated comp
+    //     member is actually attending, since there's no real booking
+    //     (and therefore no classes_included) behind their membership.
+    // Any combination can be sent together; at least one is required.
+    const { memberId, newExpiresAt, isTestAccount, staffNote } = req.body || {};
     if (!memberId) {
       return res.status(400).json({ error: 'memberId is required.' });
     }
-    if (newExpiresAt === undefined && isTestAccount === undefined) {
-      return res.status(400).json({ error: 'Nothing to update — provide newExpiresAt and/or isTestAccount.' });
+    if (newExpiresAt === undefined && isTestAccount === undefined && staffNote === undefined) {
+      return res.status(400).json({ error: 'Nothing to update — provide newExpiresAt, isTestAccount, and/or staffNote.' });
     }
 
-    let parsedDate = null;
+    const existingRows = await sql`SELECT membership_expires_at, is_test_account, staff_note FROM members WHERE id = ${memberId};`;
+    if (existingRows.length === 0) {
+      return res.status(404).json({ error: 'No member found with that id.' });
+    }
+    const existing = existingRows[0];
+
+    let newExpiresAtIso = existing.membership_expires_at;
     if (newExpiresAt !== undefined) {
-      parsedDate = new Date(newExpiresAt);
+      const parsedDate = new Date(newExpiresAt);
       if (isNaN(parsedDate.getTime())) {
         return res.status(400).json({ error: 'newExpiresAt is not a valid date.' });
       }
+      newExpiresAtIso = parsedDate.toISOString();
     }
+    const newIsTestAccount = isTestAccount !== undefined ? !!isTestAccount : existing.is_test_account;
+    // Empty string clears the note back to NULL rather than saving "".
+    const newStaffNote = staffNote !== undefined ? (staffNote.trim() === '' ? null : staffNote.trim()) : existing.staff_note;
 
-    let updated;
-    if (parsedDate !== null && isTestAccount !== undefined) {
-      updated = await sql`
-        UPDATE members
-        SET membership_expires_at = ${parsedDate.toISOString()}, is_test_account = ${!!isTestAccount}, updated_at = NOW()
-        WHERE id = ${memberId}
-        RETURNING id, name, email, membership_expires_at, is_test_account;
-      `;
-    } else if (parsedDate !== null) {
-      updated = await sql`
-        UPDATE members SET membership_expires_at = ${parsedDate.toISOString()}, updated_at = NOW()
-        WHERE id = ${memberId}
-        RETURNING id, name, email, membership_expires_at, is_test_account;
-      `;
-    } else {
-      updated = await sql`
-        UPDATE members SET is_test_account = ${!!isTestAccount}, updated_at = NOW()
-        WHERE id = ${memberId}
-        RETURNING id, name, email, membership_expires_at, is_test_account;
-      `;
-    }
+    const updated = await sql`
+      UPDATE members
+      SET membership_expires_at = ${newExpiresAtIso}, is_test_account = ${newIsTestAccount}, staff_note = ${newStaffNote}, updated_at = NOW()
+      WHERE id = ${memberId}
+      RETURNING id, name, email, membership_expires_at, is_test_account, staff_note;
+    `;
 
-    if (updated.length === 0) {
-      return res.status(404).json({ error: 'No member found with that id.' });
-    }
     return res.status(200).json({ success: true, member: updated[0] });
   }
 
@@ -140,7 +135,7 @@ export default async function handler(req, res) {
 
   const rows = await sql`
     SELECT id, email, name, phone, last_pass_name, last_ticket_id,
-           membership_expires_at, created_at, is_test_account
+           membership_expires_at, created_at, is_test_account, staff_note
     FROM members
     ORDER BY membership_expires_at DESC
     LIMIT 500;

@@ -22,6 +22,11 @@ interface Member {
   // filtering aid — see api/_lib/db.js for what it does and doesn't
   // affect.
   is_test_account: boolean;
+  // Short staff-written aside shown as "*note" on the card — e.g. which
+  // classes a manually-activated comp member actually attends, since
+  // there's no real booking (and so no classes_included) behind a
+  // membership that was turned on by hand rather than a real purchase.
+  staff_note: string | null;
 }
 
 const PASSWORD_STORAGE_KEY = 'ai_urbano_admin_password';
@@ -42,6 +47,7 @@ export const AdminMembers: React.FC = () => {
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
   const [editingMemberId, setEditingMemberId] = useState<number | null>(null);
   const [editDateValue, setEditDateValue] = useState('');
+  const [editStaffNote, setEditStaffNote] = useState('');
   const [isSavingEdit, setIsSavingEdit] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
   // Delete-a-member flow (for clearing out test/duplicate accounts).
@@ -95,6 +101,7 @@ export const AdminMembers: React.FC = () => {
     // Pre-fill with the current expiration date in YYYY-MM-DD form for
     // the native date input.
     setEditDateValue(new Date(m.membership_expires_at).toISOString().slice(0, 10));
+    setEditStaffNote(m.staff_note || '');
     setEditError(null);
   };
 
@@ -109,7 +116,7 @@ export const AdminMembers: React.FC = () => {
       const res = await fetch('/api/admin-members', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
-        body: JSON.stringify({ memberId, newExpiresAt }),
+        body: JSON.stringify({ memberId, newExpiresAt, staffNote: editStaffNote }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -398,6 +405,9 @@ export const AdminMembers: React.FC = () => {
                   {m.last_pass_name && (
                     <div className="text-[11px] text-slate-500 truncate">{m.last_pass_name}</div>
                   )}
+                  {m.staff_note && (
+                    <div className="text-[11px] text-amber-400/90 italic truncate">*{m.staff_note}</div>
+                  )}
                 </div>
                 <div className="shrink-0 text-right">
                   {editingMemberId === m.id ? (
@@ -407,6 +417,13 @@ export const AdminMembers: React.FC = () => {
                         value={editDateValue}
                         onChange={(e) => setEditDateValue(e.target.value)}
                         className="px-2 py-1 rounded-lg bg-slate-950 border border-white/20 text-white text-xs"
+                      />
+                      <input
+                        type="text"
+                        value={editStaffNote}
+                        onChange={(e) => setEditStaffNote(e.target.value)}
+                        placeholder="Note, e.g. Wed 7-8pm classes"
+                        className="w-[160px] px-2 py-1 rounded-lg bg-slate-950 border border-white/20 text-white text-[11px]"
                       />
                       {editError && <p className="text-[9px] text-red-400 max-w-[140px] text-right">{editError}</p>}
                       <div className="flex items-center gap-1">
@@ -435,7 +452,7 @@ export const AdminMembers: React.FC = () => {
                       <button
                         onClick={() => handleStartEdit(m)}
                         className="group flex items-center gap-1 hover:opacity-80"
-                        title="Manually correct this member's expiration date"
+                        title="Manually correct this member's expiration date or note"
                       >
                         <span className={`text-xs font-bold ${m.isActive ? 'text-emerald-400' : 'text-red-400'}`}>
                           {expiresDate.toLocaleDateString()}

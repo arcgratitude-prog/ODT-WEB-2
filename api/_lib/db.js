@@ -122,6 +122,12 @@ export async function ensureMembersTable() {
   // double-counted.
   await sql`ALTER TABLE members ADD COLUMN IF NOT EXISTS referral_code TEXT;`;
   await sql`ALTER TABLE members ADD COLUMN IF NOT EXISTS referred_by_member_id INTEGER REFERENCES members(id);`;
+  // Short staff-written note shown on the /members admin page as a "*"
+  // aside — for a one-off situation that doesn't fit any other field
+  // (e.g. "Comp — paid via [third party], Wed 7-8pm Bachata Foundation"
+  // on a member whose expiration was set by hand rather than a real
+  // Stripe purchase). NULL for the overwhelming majority of members.
+  await sql`ALTER TABLE members ADD COLUMN IF NOT EXISTS staff_note TEXT;`;
   await sql`
     CREATE UNIQUE INDEX IF NOT EXISTS idx_members_referral_code ON members (referral_code) WHERE referral_code IS NOT NULL;
   `;
