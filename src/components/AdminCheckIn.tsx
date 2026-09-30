@@ -233,23 +233,31 @@ export const AdminCheckIn: React.FC = () => {
   const cutoff = new Date(lastClassDay);
   cutoff.setDate(lastClassDay.getDate() + 1); // start of the day AFTER the last class
 
-  // A Tier purchase is an ongoing MEMBERSHIP, not a one-time ticket — it
-  // stays real/active for 28 days from the purchase that created or
-  // renewed it (same rule the real membership system uses — see
-  // api/stripe-webhook.js). Someone who paid 3 weeks ago is still a
-  // paying, active member today and should keep showing up at check-in
-  // every week they come to class, not just the one week they happened
-  // to pay. Only non-Tier, one-time tickets (drop-ins, Invasion, Locura,
-  // Boot Camp, Lab Night) get the weekly reset via the class-day cutoff.
-  // Shared by both the visible list and the top stat counts below, so
-  // the two can never disagree about what counts as "this week."
+  // A Tier purchase is an ongoing MEMBERSHIP, not a one-time ticket, so it
+  // never gets swept away by the weekly reset the way a drop-in or social
+  // ticket does — staff need to be able to find a member at the door
+  // whenever they show up, not just the week they happened to pay. That
+  // means EVERY Tier booking stays in the "This Week" list regardless of
+  // when it was purchased or whether it's still active; isTierExpired
+  // (below) is what tells the card to render as expired/red instead of
+  // silently dropping it. Only non-Tier, one-time tickets (drop-ins,
+  // Invasion, Locura, Boot Camp, Lab Night) get the weekly reset via the
+  // class-day cutoff. Shared by both the visible list and the top stat
+  // counts below, so the two can never disagree about what counts as
+  // "this week."
   const isRelevantThisWeek = (b: Booking) => {
-    if (/^Tier \d+:/.test(b.pass_name)) {
-      const membershipExpiresAt = new Date(b.created_at);
-      membershipExpiresAt.setDate(membershipExpiresAt.getDate() + 28);
-      return membershipExpiresAt >= today;
-    }
+    if (/^Tier \d+:/.test(b.pass_name)) return true;
     return new Date(b.created_at) >= cutoff;
+  };
+
+  // Whether a Tier booking's 28-day membership window has run out (same
+  // rule the real membership system uses — see api/stripe-webhook.js).
+  // Non-Tier bookings are one-time tickets and don't expire this way.
+  const isTierExpired = (b: Booking) => {
+    if (!/^Tier \d+:/.test(b.pass_name)) return false;
+    const membershipExpiresAt = new Date(b.created_at);
+    membershipExpiresAt.setDate(membershipExpiresAt.getDate() + 28);
+    return membershipExpiresAt < today;
   };
 
   const dateFiltered = thisWeekOnly ? passTypeFiltered.filter(isRelevantThisWeek) : passTypeFiltered;
@@ -403,7 +411,9 @@ export const AdminCheckIn: React.FC = () => {
             <div
               key={b.id}
               className={`rounded-2xl p-4 border flex items-center justify-between gap-3 transition-colors ${
-                b.checked_in
+                isTierExpired(b)
+                  ? 'bg-red-500/10 border-red-500/30'
+                  : b.checked_in
                   ? 'bg-emerald-500/10 border-emerald-500/30'
                   : 'bg-white/5 border-white/10'
               }`}
@@ -461,9 +471,14 @@ export const AdminCheckIn: React.FC = () => {
                           Bought Today
                         </span>
                       )}
+                      {isTierExpired(b) && (
+                        <span className="shrink-0 px-1.5 py-0.5 rounded bg-red-500/20 border border-red-500/40 text-red-300 text-[9px] font-bold uppercase tracking-wide">
+                          Expired
+                        </span>
+                      )}
                     </div>
                     <div className="text-xs text-slate-400 truncate">{b.pass_name} · ${(b.amount_cents / 100).toFixed(2)}</div>
-                    <div className="text-[10px] text-slate-500">
+                    <div className={`text-[10px] ${isTierExpired(b) ? 'text-red-400/80' : 'text-slate-500'}`}>
                       Purchased {new Date(b.created_at).toLocaleDateString()}
                     </div>
                     {b.classes_included && (
