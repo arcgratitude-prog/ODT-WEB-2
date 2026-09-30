@@ -417,6 +417,8 @@ export const AdminCheckIn: React.FC = () => {
               className={`rounded-2xl p-4 border flex items-center justify-between gap-3 transition-colors ${
                 isTierExpired(b)
                   ? 'bg-red-500/10 border-red-500/30'
+                  : /^Tier \d+:/.test(b.pass_name)
+                  ? 'bg-emerald-500/10 border-emerald-500/30'
                   : b.checked_in
                   ? 'bg-emerald-500/10 border-emerald-500/30'
                   : 'bg-white/5 border-white/10'
@@ -475,11 +477,15 @@ export const AdminCheckIn: React.FC = () => {
                           Bought Today
                         </span>
                       )}
-                      {isTierExpired(b) && (
+                      {isTierExpired(b) ? (
                         <span className="shrink-0 px-1.5 py-0.5 rounded bg-red-500/20 border border-red-500/40 text-red-300 text-[9px] font-bold uppercase tracking-wide">
                           Expired
                         </span>
-                      )}
+                      ) : /^Tier \d+:/.test(b.pass_name) ? (
+                        <span className="shrink-0 px-1.5 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-[9px] font-bold uppercase tracking-wide">
+                          Active
+                        </span>
+                      ) : null}
                     </div>
                     <div className="text-xs text-slate-400 truncate">{b.pass_name} · ${(b.amount_cents / 100).toFixed(2)}</div>
                     <div className={`text-[10px] ${isTierExpired(b) ? 'text-red-400/80' : 'text-slate-500'}`}>
