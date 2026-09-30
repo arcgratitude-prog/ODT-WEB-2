@@ -31,7 +31,7 @@ export default async function handler(req, res) {
       SELECT b.id, b.ticket_id, b.customer_name, b.customer_email, b.customer_phone,
              b.pass_name, b.pass_type, b.amount_cents, b.classes_included,
              b.ticket_number, b.ticket_count, b.referred_by,
-             b.checked_in, b.checked_in_at, b.created_at,
+             b.checked_in, b.checked_in_at, b.created_at, b.staff_note,
              m.membership_expires_at
       FROM bookings b
       LEFT JOIN members m ON LOWER(m.email) = LOWER(b.customer_email)
@@ -64,42 +64,38 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'PATCH') {
-    // Manual correction to one booking's pass name and/or customer name —
-    // for fixing bad data (e.g. a booking that somehow ended up with the
-    // wrong event name, or a name that got saved as "Unknown"). This is
-    // a deliberate, staff-initiated override, not something the normal
-    // purchase flow ever does — same reasoning as the Members page's
-    // expiration-date editor.
-    const { id, passName, customerName } = req.body || {};
+    // Manual correction to one booking's pass name, customer name, and/or
+    // staff note — for fixing bad data (e.g. a booking that somehow ended
+    // up with the wrong event name, or a name that got saved as
+    // "Unknown"), or flagging a real-world special case (e.g. "Used same
+    // day"). This is a deliberate, staff-initiated override, not
+    // something the normal purchase flow ever does — same reasoning as
+    // the Members page's expiration-date editor.
+    const { id, passName, customerName, staffNote } = req.body || {};
     if (!id) {
       return res.status(400).json({ error: 'id is required.' });
     }
-    if (passName === undefined && customerName === undefined) {
-      return res.status(400).json({ error: 'Nothing to update — provide passName and/or customerName.' });
+    if (passName === undefined && customerName === undefined && staffNote === undefined) {
+      return res.status(400).json({ error: 'Nothing to update — provide passName, customerName, and/or staffNote.' });
     }
 
-    let updated;
-    if (passName !== undefined && customerName !== undefined) {
-      updated = await sql`
-        UPDATE bookings SET pass_name = ${passName}, customer_name = ${customerName}
-        WHERE id = ${id}
-        RETURNING id, ticket_id, pass_name, customer_name;
-      `;
-    } else if (passName !== undefined) {
-      updated = await sql`
-        UPDATE bookings SET pass_name = ${passName} WHERE id = ${id}
-        RETURNING id, ticket_id, pass_name, customer_name;
-      `;
-    } else {
-      updated = await sql`
-        UPDATE bookings SET customer_name = ${customerName} WHERE id = ${id}
-        RETURNING id, ticket_id, pass_name, customer_name;
-      `;
-    }
-
-    if (updated.length === 0) {
+    const existingRows = await sql`SELECT pass_name, customer_name, staff_note FROM bookings WHERE id = ${id};`;
+    if (existingRows.length === 0) {
       return res.status(404).json({ error: 'Booking not found.' });
     }
+    const existing = existingRows[0];
+    const newPassName = passName !== undefined ? passName : existing.pass_name;
+    const newCustomerName = customerName !== undefined ? customerName : existing.customer_name;
+    // Empty string clears the note back to NULL rather than saving "".
+    const newStaffNote = staffNote !== undefined ? (staffNote.trim() === '' ? null : staffNote.trim()) : existing.staff_note;
+
+    const updated = await sql`
+      UPDATE bookings
+      SET pass_name = ${newPassName}, customer_name = ${newCustomerName}, staff_note = ${newStaffNote}
+      WHERE id = ${id}
+      RETURNING id, ticket_id, pass_name, customer_name, staff_note;
+    `;
+
     return res.status(200).json({ success: true, booking: updated[0] });
   }
 

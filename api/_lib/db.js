@@ -62,6 +62,14 @@ export async function ensureBookingsTable() {
   // drop-ins, Boot Camp, Lab Night — see api/_lib/priceCatalog.js for
   // which passes tax currently applies to).
   await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS tax_cents INTEGER NOT NULL DEFAULT 0;`;
+  // A short staff-written note shown on the check-in page as a "*" aside
+  // under a booking — for flagging a real-world special case that isn't
+  // captured by any other field (e.g. "*Used same day" on a Tier
+  // purchase, explaining why its expiration was manually corrected on
+  // the Members page to a date earlier than the usual purchase+28-days
+  // estimate would give). NULL for the overwhelming majority of bookings
+  // that don't need one.
+  await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS staff_note TEXT;`;
   await sql`
     CREATE INDEX IF NOT EXISTS idx_bookings_discount_event_key ON bookings (discount_event_key) WHERE discount_event_key IS NOT NULL;
   `;

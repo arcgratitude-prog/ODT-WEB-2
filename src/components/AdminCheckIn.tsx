@@ -28,6 +28,10 @@ interface Booking {
   // portal/discount system relies on) — null if no matching member
   // record was found (e.g. an old booking from before accounts existed).
   membership_expires_at: string | null;
+  // Short staff-written aside shown as a "*" note under a booking, for
+  // flagging a real-world special case (e.g. "Used same day") that isn't
+  // captured by any other field. Null for almost every booking.
+  staff_note: string | null;
 }
 
 const PASSWORD_STORAGE_KEY = 'ai_urbano_admin_password';
@@ -55,12 +59,14 @@ export const AdminCheckIn: React.FC = () => {
   // needed — and staff can flip to "All Time" for older history.
   const [thisWeekOnly, setThisWeekOnly] = useState(true);
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
-  // Inline editor for correcting a booking's pass name / customer name —
-  // for fixing bad data (e.g. one that ended up with the wrong event
-  // name), not something used during normal check-in.
+  // Inline editor for correcting a booking's pass name / customer name,
+  // or adding a short staff note (e.g. "Used same day") — for fixing bad
+  // data or flagging a special case, not something used during normal
+  // check-in.
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editPassName, setEditPassName] = useState('');
   const [editCustomerName, setEditCustomerName] = useState('');
+  const [editStaffNote, setEditStaffNote] = useState('');
   const [isSavingEdit, setIsSavingEdit] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
 
@@ -116,6 +122,7 @@ export const AdminCheckIn: React.FC = () => {
     setEditingId(booking.id);
     setEditPassName(booking.pass_name);
     setEditCustomerName(booking.customer_name);
+    setEditStaffNote(booking.staff_note || '');
     setEditError(null);
   };
 
@@ -135,7 +142,12 @@ export const AdminCheckIn: React.FC = () => {
       const res = await fetch('/api/admin-bookings', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
-        body: JSON.stringify({ id: booking.id, passName: editPassName.trim(), customerName: editCustomerName.trim() }),
+        body: JSON.stringify({
+          id: booking.id,
+          passName: editPassName.trim(),
+          customerName: editCustomerName.trim(),
+          staffNote: editStaffNote,
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -144,7 +156,11 @@ export const AdminCheckIn: React.FC = () => {
         return;
       }
       setBookings((prev) =>
-        prev.map((b) => (b.id === booking.id ? { ...b, pass_name: data.booking.pass_name, customer_name: data.booking.customer_name } : b))
+        prev.map((b) =>
+          b.id === booking.id
+            ? { ...b, pass_name: data.booking.pass_name, customer_name: data.booking.customer_name, staff_note: data.booking.staff_note }
+            : b
+        )
       );
       setEditingId(null);
     } catch {
@@ -285,7 +301,7 @@ export const AdminCheckIn: React.FC = () => {
   const dateFiltered = thisWeekOnly ? passTypeFiltered.filter(isRelevantThisWeek) : passTypeFiltered;
 
   const query = search.trim().toLowerCase();
-  const filtered = query
+  const searched = query
     ? dateFiltered.filter(
         (b) =>
           b.customer_name.toLowerCase().includes(query) ||
@@ -293,6 +309,13 @@ export const AdminCheckIn: React.FC = () => {
           b.ticket_id.toLowerCase().includes(query)
       )
     : dateFiltered;
+
+  // Expired Tier members sink to the bottom of the list — still visible
+  // (per the change above), just out of the way so the people who are
+  // actually good to let in aren't buried under ones who need to renew.
+  // A stable sort, so everything within the same group (expired / not)
+  // keeps its normal most-recent-first order.
+  const filtered = [...searched].sort((a, b) => Number(isTierExpired(a)) - Number(isTierExpired(b)));
 
   // Stats reflect the SAME "this week" scope as the list below, so
   // "Booked: 12" means 12 this week (the number that's actually useful
@@ -462,6 +485,16 @@ export const AdminCheckIn: React.FC = () => {
                       className="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-white/15 text-white text-xs focus:outline-none focus:border-red-500"
                     />
                   </div>
+                  <div>
+                    <label className="block text-[9px] font-bold uppercase text-slate-400 mb-0.5">Note (optional — shown as *note)</label>
+                    <input
+                      type="text"
+                      value={editStaffNote}
+                      onChange={(e) => setEditStaffNote(e.target.value)}
+                      placeholder="e.g. Used same day"
+                      className="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-white/15 text-white text-xs focus:outline-none focus:border-red-500"
+                    />
+                  </div>
                   {editError && <p className="text-[10px] text-red-400">{editError}</p>}
                   <div className="flex items-center gap-2 pt-1">
                     <button
@@ -509,6 +542,9 @@ export const AdminCheckIn: React.FC = () => {
                     <div className={`text-[10px] ${isTierExpired(b) ? 'text-red-400/80' : 'text-slate-500'}`}>
                       Purchased {new Date(b.created_at).toLocaleDateString()}
                     </div>
+                    {b.staff_note && (
+                      <div className="text-[11px] text-amber-400/90 italic truncate">*{b.staff_note}</div>
+                    )}
                     {b.classes_included && (
                       <div className="text-[11px] text-slate-500 truncate">{b.classes_included}</div>
                     )}
