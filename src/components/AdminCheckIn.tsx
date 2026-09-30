@@ -23,6 +23,11 @@ interface Booking {
   checked_in: boolean;
   checked_in_at: string | null;
   created_at: string;
+  // The real, authoritative expiration date from this customer's member
+  // account (same field the /members admin page edits and the member
+  // portal/discount system relies on) — null if no matching member
+  // record was found (e.g. an old booking from before accounts existed).
+  membership_expires_at: string | null;
 }
 
 const PASSWORD_STORAGE_KEY = 'ai_urbano_admin_password';
@@ -254,11 +259,24 @@ export const AdminCheckIn: React.FC = () => {
     return new Date(b.created_at) >= cutoff;
   };
 
-  // Whether a Tier booking's 28-day membership window has run out (same
-  // rule the real membership system uses — see api/stripe-webhook.js).
-  // Non-Tier bookings are one-time tickets and don't expire this way.
+  // Whether a Tier booking's membership has run out. Uses the customer's
+  // REAL membership_expires_at from the members table (joined in by
+  // api/admin-bookings.js) whenever it's available — the same date the
+  // /members admin page's editor sets and the member portal/discount
+  // system relies on. That matters because the standard "purchase + 28
+  // days" math doesn't always match reality: someone who buys a Tier and
+  // uses it THAT SAME DAY has really only got 3 more weeks left, not 4,
+  // versus someone who buys ahead and doesn't start until the following
+  // week. That distinction isn't something this page can know on its
+  // own — it has to be corrected by staff on the Members page when they
+  // know it happened, and this just makes sure check-in reflects it
+  // once they do. Only falls back to the purchase-based estimate for the
+  // rare booking with no matching member record at all.
   const isTierExpired = (b: Booking) => {
     if (!/^Tier \d+:/.test(b.pass_name)) return false;
+    if (b.membership_expires_at) {
+      return new Date(b.membership_expires_at) < today;
+    }
     const membershipExpiresAt = new Date(b.created_at);
     membershipExpiresAt.setDate(membershipExpiresAt.getDate() + 28);
     return membershipExpiresAt < today;

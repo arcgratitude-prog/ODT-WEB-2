@@ -3,7 +3,7 @@
 // in the "x-admin-password" header — simple, no user accounts to manage,
 // good enough for a small team sharing one door-check device.
 
-import { ensureBookingsTable, sql } from './_lib/db.js';
+import { ensureBookingsTable, ensureMembersTable, sql } from './_lib/db.js';
 import { isAdminAuthorized } from './_lib/auth.js';
 
 export default async function handler(req, res) {
@@ -12,16 +12,30 @@ export default async function handler(req, res) {
   }
 
   await ensureBookingsTable();
+  await ensureMembersTable();
 
   if (req.method === 'GET') {
     // Return the most recent 200 bookings — enough for any single event day.
+    // LEFT JOINed against members (matched by lowercased email) to also
+    // return each customer's REAL membership_expires_at — the same
+    // authoritative date the member portal, discount system, and the
+    // /members admin page's expiration editor all use. The check-in page
+    // uses this (rather than re-deriving its own guess from this Tier
+    // booking's created_at) so that a manual correction made on the
+    // Members page for a real-world edge case — e.g. someone who used
+    // their Tier the same day they bought it, versus someone who bought
+    // ahead and started the following week — shows up correctly at
+    // check-in too, instead of two different "expires" dates existing
+    // in two different places.
     const rows = await sql`
-      SELECT id, ticket_id, customer_name, customer_email, customer_phone,
-             pass_name, pass_type, amount_cents, classes_included,
-             ticket_number, ticket_count, referred_by,
-             checked_in, checked_in_at, created_at
-      FROM bookings
-      ORDER BY created_at DESC
+      SELECT b.id, b.ticket_id, b.customer_name, b.customer_email, b.customer_phone,
+             b.pass_name, b.pass_type, b.amount_cents, b.classes_included,
+             b.ticket_number, b.ticket_count, b.referred_by,
+             b.checked_in, b.checked_in_at, b.created_at,
+             m.membership_expires_at
+      FROM bookings b
+      LEFT JOIN members m ON LOWER(m.email) = LOWER(b.customer_email)
+      ORDER BY b.created_at DESC
       LIMIT 200;
     `;
     return res.status(200).json({ bookings: rows });
