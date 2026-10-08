@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Search, RefreshCw, Users, UserCheck, LogOut, Mail, Phone, Ticket, Pencil, Check, X, Trash2, AlertTriangle, FlaskConical } from 'lucide-react';
+import { Search, RefreshCw, Users, UserCheck, LogOut, Mail, Phone, Ticket, Pencil, Check, X, Trash2, AlertTriangle, FlaskConical, GitMerge } from 'lucide-react';
 
 // Private staff page for tracking Tier members. Not linked anywhere in
 // the public nav — reached directly at /?admin=members (see App.tsx).
@@ -56,6 +56,15 @@ export const AdminMembers: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deleteSuccess, setDeleteSuccess] = useState<string | null>(null);
+  // Merge-duplicate-accounts flow (e.g. the same person checked out with
+  // two different emails and ended up with two disconnected accounts).
+  // mergingId is the account being folded away; the typed email is the
+  // account to keep everything under.
+  const [mergingId, setMergingId] = useState<number | null>(null);
+  const [mergeTargetEmail, setMergeTargetEmail] = useState('');
+  const [isMerging, setIsMerging] = useState(false);
+  const [mergeError, setMergeError] = useState<string | null>(null);
+  const [mergeSuccess, setMergeSuccess] = useState<string | null>(null);
 
   const fetchMembers = useCallback(async (pwd: string) => {
     setIsLoading(true);
@@ -103,6 +112,7 @@ export const AdminMembers: React.FC = () => {
     setEditDateValue(new Date(m.membership_expires_at).toISOString().slice(0, 10));
     setEditStaffNote(m.staff_note || '');
     setEditError(null);
+    setMergingId(null);
   };
 
   const handleSaveEdit = async (memberId: number) => {
@@ -191,6 +201,62 @@ export const AdminMembers: React.FC = () => {
     } catch {
       setDeleteError('Could not reach the server.');
       setIsDeleting(false);
+    }
+  };
+
+  const startMerge = (m: Member) => {
+    setMergingId(m.id);
+    setMergeTargetEmail('');
+    setMergeError(null);
+    setEditingMemberId(null);
+  };
+
+  const cancelMerge = () => {
+    setMergingId(null);
+    setMergeError(null);
+  };
+
+  const handleMerge = async (mergeAwayMember: Member) => {
+    const targetEmail = mergeTargetEmail.trim().toLowerCase();
+    if (!targetEmail) return;
+    // Resolved against the full members list already loaded (not the
+    // filtered/visible rows), so this works even if the account to keep
+    // is currently hidden by a filter.
+    const keepMember = members.find((m) => m.email.toLowerCase() === targetEmail);
+    if (!keepMember) {
+      setMergeError('No member found with that email.');
+      return;
+    }
+    if (keepMember.id === mergeAwayMember.id) {
+      setMergeError("That's the same account.");
+      return;
+    }
+    setIsMerging(true);
+    setMergeError(null);
+    try {
+      const res = await fetch('/api/admin-members', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
+        body: JSON.stringify({ keepMemberId: keepMember.id, mergeMemberId: mergeAwayMember.id }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setMergeError(data.error || 'Could not merge.');
+        setIsMerging(false);
+        return;
+      }
+      setMergingId(null);
+      setIsMerging(false);
+      setMergeSuccess(
+        `Merged ${mergeAwayMember.email} into ${keepMember.email}` +
+          (data.bookingsMoved > 0 ? ` — ${data.bookingsMoved} booking${data.bookingsMoved === 1 ? '' : 's'} moved over` : '') +
+          '.'
+      );
+      fetchMembers(password);
+      setTimeout(() => setMergeSuccess(null), 8000);
+    } catch {
+      setMergeError('Could not reach the server.');
+      setIsMerging(false);
     }
   };
 
@@ -359,6 +425,11 @@ export const AdminMembers: React.FC = () => {
             {deleteSuccess}
           </div>
         )}
+        {mergeSuccess && (
+          <div className="bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs font-semibold rounded-xl px-3 py-2 text-center">
+            {mergeSuccess}
+          </div>
+        )}
         {filtered.length === 0 ? (
           <p className="text-center text-sm text-slate-400 py-12">
             {members.length === 0
@@ -473,28 +544,67 @@ export const AdminMembers: React.FC = () => {
                     </>
                   )}
                 </div>
-                {editingMemberId !== m.id && (
-                  <div className="shrink-0 flex flex-col items-center gap-1.5">
-                    <button
-                      onClick={() => handleToggleTestAccount(m)}
-                      disabled={togglingTestId === m.id}
-                      className={`p-2 rounded-lg transition-colors disabled:opacity-50 ${
-                        m.is_test_account
-                          ? 'bg-amber-500/20 text-amber-300 hover:bg-amber-500/30'
-                          : 'bg-white/5 text-slate-500 hover:bg-white/10 hover:text-slate-300'
-                      }`}
-                      title={m.is_test_account ? 'Unmark as test account' : 'Mark as test account'}
-                    >
-                      <FlaskConical className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => openDeleteConfirm(m)}
-                      className="p-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
-                      title="Remove this member"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                {mergingId === m.id ? (
+                  <div className="shrink-0 flex flex-col items-end gap-1.5 w-[170px]">
+                    <input
+                      type="email"
+                      value={mergeTargetEmail}
+                      onChange={(e) => setMergeTargetEmail(e.target.value)}
+                      placeholder="Keep account's email"
+                      autoFocus
+                      className="w-full px-2 py-1 rounded-lg bg-slate-950 border border-white/20 text-white text-[11px]"
+                    />
+                    {mergeError && <p className="text-[9px] text-red-400 text-right">{mergeError}</p>}
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => handleMerge(m)}
+                        disabled={isMerging || !mergeTargetEmail.trim()}
+                        className="px-2 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold uppercase disabled:opacity-50"
+                        title="Merge this account into the one above, and remove this one"
+                      >
+                        {isMerging ? 'Merging…' : 'Merge'}
+                      </button>
+                      <button
+                        onClick={cancelMerge}
+                        disabled={isMerging}
+                        className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 disabled:opacity-50"
+                        title="Cancel"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
                   </div>
+                ) : (
+                  editingMemberId !== m.id && (
+                    <div className="shrink-0 flex flex-col items-center gap-1.5">
+                      <button
+                        onClick={() => startMerge(m)}
+                        className="p-2 rounded-lg bg-white/5 text-slate-500 hover:bg-white/10 hover:text-slate-300 transition-colors"
+                        title="Merge this duplicate into another account"
+                      >
+                        <GitMerge className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleToggleTestAccount(m)}
+                        disabled={togglingTestId === m.id}
+                        className={`p-2 rounded-lg transition-colors disabled:opacity-50 ${
+                          m.is_test_account
+                            ? 'bg-amber-500/20 text-amber-300 hover:bg-amber-500/30'
+                            : 'bg-white/5 text-slate-500 hover:bg-white/10 hover:text-slate-300'
+                        }`}
+                        title={m.is_test_account ? 'Unmark as test account' : 'Mark as test account'}
+                      >
+                        <FlaskConical className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => openDeleteConfirm(m)}
+                        className="p-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
+                        title="Remove this member"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )
                 )}
               </div>
             );

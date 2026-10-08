@@ -7,7 +7,7 @@
 // functions and this is the same underlying resource anyway.
 // Same shared-password protection as admin-bookings.js.
 
-import { ensureMembersTable, sql } from './_lib/db.js';
+import { ensureMembersTable, ensureBookingsTable, sql } from './_lib/db.js';
 import { isAdminAuthorized } from './_lib/auth.js';
 
 export default async function handler(req, res) {
@@ -16,6 +16,7 @@ export default async function handler(req, res) {
   }
 
   await ensureMembersTable();
+  await ensureBookingsTable();
 
   if (req.method === 'PATCH') {
     // Three independent manual corrections live on this one endpoint:
@@ -128,8 +129,75 @@ export default async function handler(req, res) {
     });
   }
 
+  if (req.method === 'POST') {
+    // Merges two member accounts into one — for exactly the "same
+    // person checked out with two different emails" situation: rather
+    // than them having two disconnected records (say, one correctly
+    // expired and one freshly active from today's purchase), this folds
+    // everything onto whichever account you choose to KEEP and
+    // permanently removes the other. Whichever of the two has the LATER
+    // expiration date wins (so the merge never shortens anyone's real
+    // paid time), all of the removed account's bookings get re-attached
+    // under the kept account's email (so purchase history and check-in
+    // both show under one identity from now on — this is also what
+    // stops the "same person, two rows" display problem at check-in),
+    // and any referral relationship that pointed at the removed account
+    // gets repointed at the kept one instead of silently breaking.
+    const { keepMemberId, mergeMemberId } = req.body || {};
+    if (!keepMemberId || !mergeMemberId) {
+      return res.status(400).json({ error: 'keepMemberId and mergeMemberId are required.' });
+    }
+    if (keepMemberId === mergeMemberId) {
+      return res.status(400).json({ error: 'Pick two different accounts to merge.' });
+    }
+
+    const rows = await sql`
+      SELECT id, email, name, phone, last_pass_name, last_ticket_id, membership_expires_at
+      FROM members WHERE id IN (${keepMemberId}, ${mergeMemberId});
+    `;
+    const keep = rows.find((r) => r.id === keepMemberId);
+    const mergeAway = rows.find((r) => r.id === mergeMemberId);
+    if (!keep || !mergeAway) {
+      return res.status(404).json({ error: 'One or both member accounts were not found.' });
+    }
+
+    const mergeAwayIsNewer = new Date(mergeAway.membership_expires_at) > new Date(keep.membership_expires_at);
+    const mergedExpiresAt = mergeAwayIsNewer ? mergeAway.membership_expires_at : keep.membership_expires_at;
+    const mergedPhone = keep.phone || mergeAway.phone || null;
+    const mergedLastPassName = mergeAwayIsNewer ? mergeAway.last_pass_name : keep.last_pass_name;
+    const mergedLastTicketId = mergeAwayIsNewer ? mergeAway.last_ticket_id : keep.last_ticket_id;
+    const mergeAwayEmailLower = (mergeAway.email || '').toLowerCase();
+
+    // One transaction, so a partial merge (e.g. bookings moved but the
+    // old account not actually removed) can never happen.
+    const statements = [
+      sql`UPDATE bookings SET customer_email = ${keep.email} WHERE LOWER(customer_email) = ${mergeAwayEmailLower} RETURNING id`,
+      sql`UPDATE members SET referred_by_member_id = ${keep.id} WHERE referred_by_member_id = ${mergeAway.id} RETURNING id`,
+      sql`DELETE FROM password_resets WHERE member_id = ${mergeAway.id} RETURNING id`,
+      sql`DELETE FROM members WHERE id = ${mergeAway.id} RETURNING id`,
+      sql`
+        UPDATE members
+        SET membership_expires_at = ${mergedExpiresAt}, phone = ${mergedPhone},
+            last_pass_name = ${mergedLastPassName}, last_ticket_id = ${mergedLastTicketId}, updated_at = NOW()
+        WHERE id = ${keep.id}
+        RETURNING id, name, email, membership_expires_at, phone, last_pass_name, is_test_account, staff_note;
+      `,
+    ];
+
+    const results = await sql.transaction(statements);
+    const bookingsMoved = results[0].length;
+    const finalMember = results[4][0];
+
+    return res.status(200).json({
+      success: true,
+      member: finalMember,
+      bookingsMoved,
+      removedEmail: mergeAway.email,
+    });
+  }
+
   if (req.method !== 'GET') {
-    res.setHeader('Allow', 'GET, PATCH, DELETE');
+    res.setHeader('Allow', 'GET, PATCH, POST, DELETE');
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
