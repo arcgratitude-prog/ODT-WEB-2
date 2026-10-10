@@ -90,11 +90,11 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
       ping: 'bg-fuchsia-400/50',
     },
     locura: {
-      passId: 'social-locura-door',
+      passId: 'social-presale',
       title: 'Bachata Locura',
       shortTitle: 'Locura',
       detail: 'Sun, Nov 22 · 4–9 PM',
-      price: '$20',
+      price: '$15',
       cta: 'Get Tickets',
       gradient: 'from-fuchsia-500 via-purple-600 to-indigo-600',
       glow: 'shadow-[0_0_30px_rgba(168,85,247,0.55)]',
@@ -385,31 +385,21 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
             </div>
 
             {/* Ticket Options — simple round price badges. Regular Price
-                ($20) is the featured, clickable option in the middle;
-                Students ($15) is door-only. */}
+                Pre-Sale ($15) is the one featured, clickable option. */}
             <div className="mb-8">
               <div className="flex items-center justify-center gap-4 sm:gap-6">
-
-                {/* Students — door only */}
-                <div className="flex flex-col items-center gap-1.5 opacity-70">
-                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-zinc-900 border border-white/15 flex items-center justify-center">
-                    <span className="text-sm sm:text-base font-black text-emerald-400 font-mono">$15</span>
-                  </div>
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Student</span>
-                  <span className="text-[8px] text-slate-500 uppercase tracking-wide -mt-1">Present ID at Door</span>
-                </div>
 
                 {/* Regular Price — the featured, purchasable option.
                     Glows/pulses so it visually reads as the one to tap. */}
                 <button
-                  onClick={() => onOpenBooking('social-locura-door')}
+                  onClick={() => onOpenBooking('social-presale')}
                   className="flex flex-col items-center gap-1.5 group relative"
                 >
                   {/* Soft ambient pulse ring behind the circle */}
                   <span className="absolute top-0 w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-fuchsia-400/40 blur-md animate-pulse pointer-events-none" />
                   <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-b from-fuchsia-500 via-purple-600 to-slate-900 border-2 border-fuchsia-200/80 shadow-lg shadow-fuchsia-500/50 flex flex-col items-center justify-center transition-all group-hover:border-white group-hover:shadow-fuchsia-400/80 group-hover:shadow-xl group-hover:scale-105 group-active:scale-95">
-                    <span className="text-[9px] font-bold text-fuchsia-100 uppercase tracking-wide">Regular Price</span>
-                    <span className="text-xl sm:text-2xl font-black text-white font-mono">$20</span>
+                    <span className="text-[9px] font-bold text-fuchsia-100 uppercase tracking-wide">Pre-Sale</span>
+                    <span className="text-xl sm:text-2xl font-black text-white font-mono">$15</span>
                   </div>
                   <span className="text-[10px] font-bold text-white uppercase tracking-wide">Tap to Get →</span>
                 </button>
@@ -418,7 +408,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
               </div>
 
               <p className="text-center text-[10px] text-slate-500 mt-3">
-                Students show ID at the door · Regular price available online or at the door
+                Pre-sale price · $20 at the door
               </p>
             </div>
 

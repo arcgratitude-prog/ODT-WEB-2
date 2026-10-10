@@ -69,8 +69,8 @@ export const InstagramStoryModal: React.FC<InstagramStoryModalProps> = ({
       location: 'Westshore Plaza Mall, Tampa',
       timeAgo: '4h ago',
       badge: 'SPECIAL EDITION',
-      ctaText: 'Get Locura Pass ($20)',
-      passId: 'social-locura-door'
+      ctaText: 'Get Locura Pass ($15)',
+      passId: 'social-presale'
     },
     {
       id: 4,
