@@ -101,12 +101,12 @@ function buildOrderReceiptEmail(order) {
   let timeLabel, dateBig, dateSmall, dj;
   if (isLocura) {
     timeLabel = '4–9 PM EDT';
-    dateBig = 'SEPT 20';
+    dateBig = 'NOV 22';
     dateSmall = 'SUNDAY';
     dj = 'DJ JR';
   } else if (isBootCamp) {
     timeLabel = '1:30–3:30 PM EDT';
-    dateBig = 'SEPT 20';
+    dateBig = 'NOV 22';
     dateSmall = 'SUNDAY';
     dj = null;
   } else if (isLabNight) {
@@ -116,7 +116,7 @@ function buildOrderReceiptEmail(order) {
     dj = null;
   } else if (isInvasion) {
     timeLabel = '8 PM–1 AM EDT';
-    dateBig = 'OCT 9';
+    dateBig = 'NOV 6';
     dateSmall = 'FRIDAY';
     dj = 'DJ JR';
   } else if (isX1) {

@@ -39,11 +39,11 @@ export const CalendarPage: React.FC<CalendarPageProps> = ({ onOpenBooking, onNav
   const generateEvents = (): CalendarEvent[] => {
     const events: CalendarEvent[] = [];
 
-    // 1. Featured Social Event: Sunday, September 20, 2026
+    // 1. Featured Social Event: Sunday, November 22, 2026
     events.push({
-      id: 'locura-sept20',
+      id: 'locura-nov22',
       title: 'Bachata Locura Social @ Westshore Plaza Mall',
-      date: new Date(2026, 8, 20),
+      date: new Date(2026, 10, 22),
       timeStr: '4:00 PM – 9:00 PM',
       category: 'social',
       location: 'Westshore Plaza Mall (334 Westshore Plaza, Unit A10, Tampa, FL)',
@@ -56,9 +56,9 @@ export const CalendarPage: React.FC<CalendarPageProps> = ({ onOpenBooking, onNav
 
     // 1b. Bachata Battle Boot Camp — same day, before Bachata Locura
     events.push({
-      id: 'bootcamp-sept20',
+      id: 'bootcamp-nov22',
       title: 'Bachata Battle Boot Camp @ Dance Factory Tampa',
-      date: new Date(2026, 8, 20),
+      date: new Date(2026, 10, 22),
       timeStr: '1:30 PM – 3:30 PM',
       category: 'social',
       location: 'Dance Factory Tampa (334 Westshore Plaza, Unit A10, Tampa, FL)',

@@ -11,18 +11,18 @@ function resolveEventDateRange(ticket: TicketData): { start: Date; end: Date } |
   const eventLower = ticket.eventName.toLowerCase();
 
   if (eventLower.includes('locura')) {
-    // Sunday, September 20, 2026 — 4:00 PM to 9:00 PM. Update here
+    // Sunday, November 22, 2026 — 4:00 PM to 9:00 PM. Update here
     // alongside BachataLocuraSocialSection.tsx if the date ever changes.
-    const start = new Date(2026, 8, 20, 16, 0, 0); // month is 0-indexed: 8 = September
-    const end = new Date(2026, 8, 20, 21, 0, 0);
+    const start = new Date(2026, 10, 22, 16, 0, 0); // month is 0-indexed: 10 = November
+    const end = new Date(2026, 10, 22, 21, 0, 0);
     return { start, end };
   }
 
   if (eventLower.includes('invasion')) {
-    // Friday, October 9, 2026 — 8:00 PM to 1:00 AM. Update here
+    // Friday, November 6, 2026 — 8:00 PM to 1:00 AM. Update here
     // alongside BachataLocuraSocialSection.tsx if the date ever changes.
-    const start = new Date(2026, 9, 9, 20, 0, 0);
-    const end = new Date(2026, 9, 10, 1, 0, 0);
+    const start = new Date(2026, 10, 6, 20, 0, 0);
+    const end = new Date(2026, 10, 7, 1, 0, 0);
     return { start, end };
   }
 

@@ -18,7 +18,7 @@
 // past-event detection. These are still duplicated elsewhere for other
 // purposes and must be kept in sync BY HAND when an event's date changes:
 //   - src/components/TicketModal.tsx  (getEventDateLabel — the human
-//     "Friday, October 9th…" label shown on the ticket)
+//     "Friday, November 6th…" label shown on the ticket)
 //   - src/utils/passCalendar.ts       (the .ics calendar-download date)
 //   - src/data/danceData.ts           (marketing copy on the site)
 //   - src/components/CalendarPage.tsx (the calendar grid's own event
@@ -48,21 +48,21 @@ export interface EventOccurrence {
 export function occurrenceForPassName(passName: string | null | undefined): EventOccurrence | null {
   const name = passName || '';
 
-  // Sunday, September 20, 2026 — 4:00 PM to 9:00 PM.
+  // Sunday, November 22, 2026 — 4:00 PM to 9:00 PM.
   if (/Locura/i.test(name)) {
-    return { startsAt: new Date(2026, 8, 20, 16, 0, 0), endsAt: new Date(2026, 8, 20, 21, 0, 0) };
+    return { startsAt: new Date(2026, 10, 22, 16, 0, 0), endsAt: new Date(2026, 10, 22, 21, 0, 0) };
   }
-  // Sunday, September 20, 2026 — 1:30 PM to 3:30 PM (before Locura).
+  // Sunday, November 22, 2026 — 1:30 PM to 3:30 PM (before Locura).
   if (/Boot Camp/i.test(name)) {
-    return { startsAt: new Date(2026, 8, 20, 13, 30, 0), endsAt: new Date(2026, 8, 20, 15, 30, 0) };
+    return { startsAt: new Date(2026, 10, 22, 13, 30, 0), endsAt: new Date(2026, 10, 22, 15, 30, 0) };
   }
   // Friday, September 18, 2026 — 7:00 PM to 10:30 PM.
   if (/Lab Night/i.test(name)) {
     return { startsAt: new Date(2026, 8, 18, 19, 0, 0), endsAt: new Date(2026, 8, 18, 22, 30, 0) };
   }
-  // Friday, October 9, 2026 — 8:00 PM to 1:00 AM the next day.
+  // Friday, November 6, 2026 — 8:00 PM to 1:00 AM the next day.
   if (/Invasion/i.test(name)) {
-    return { startsAt: new Date(2026, 9, 9, 20, 0, 0), endsAt: new Date(2026, 9, 10, 1, 0, 0) };
+    return { startsAt: new Date(2026, 10, 6, 20, 0, 0), endsAt: new Date(2026, 10, 7, 1, 0, 0) };
   }
 
   // Tiers, drop-ins, X1 — no single date.

@@ -44,7 +44,7 @@ export async function ensureBookingsTable() {
   await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS ticket_count INTEGER NOT NULL DEFAULT 1;`;
   await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS referred_by TEXT;`;
   // Records WHICH event cycle a discounted ticket belongs to (e.g.
-  // "invasion-2026-10-09"), only set on the one ticket in an order that
+  // "invasion-2026-11-06"), only set on the one ticket in an order that
   // actually got the 20% member discount. This is what lets
   // create-payment-intent.js enforce "one discount per member per event"
   // — checking for a prior booking with this same key blocks someone

@@ -81,7 +81,7 @@ export const BACHATA_INVASION_PASS_OPTION: PassOption = {
   id: 'social-invasion-10',
   name: 'Bachata Invasion Social Pass',
   price: 12,
-  tagline: 'Friday, October 9th @ Dance Factory Tampa (8:00 PM - 1:00 AM)',
+  tagline: 'Friday, November 6th @ Dance Factory Tampa (8:00 PM - 1:00 AM)',
   classesCount: 1,
   popular: true,
   features: [
@@ -98,7 +98,7 @@ export const SOCIAL_PASS_OPTION: PassOption = {
   id: 'social-presale',
   name: 'Bachata Locura Social Pass',
   price: 15,
-  tagline: 'Sunday, September 20th @ Westshore Plaza Mall (Presocial Class + Social)',
+  tagline: 'Sunday, November 22nd @ Westshore Plaza Mall (Presocial Class + Social)',
   classesCount: 1,
   popular: true,
   features: [
@@ -124,7 +124,7 @@ export const SOCIAL_PASS_DOOR_OPTION: PassOption = {
   id: 'social-locura-door',
   name: 'Bachata Locura Social Pass - Regular Price',
   price: 20,
-  tagline: 'Sunday, September 20th @ Westshore Plaza Mall (Presocial Class + Social)',
+  tagline: 'Sunday, November 22nd @ Westshore Plaza Mall (Presocial Class + Social)',
   classesCount: 1,
   popular: true,
   features: [
@@ -140,7 +140,7 @@ export const BOOT_CAMP_PASS_OPTION: PassOption = {
   id: 'social-bootcamp',
   name: 'Bachata Battle Boot Camp',
   price: 45,
-  tagline: 'Sunday, September 20th @ Dance Factory Tampa (1:30 PM - 3:30 PM) — Before Bachata Locura',
+  tagline: 'Sunday, November 22nd @ Dance Factory Tampa (1:30 PM - 3:30 PM) — Before Bachata Locura',
   classesCount: 1,
   popular: false,
   features: [

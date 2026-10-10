@@ -40,7 +40,7 @@ function bookingToTicketData(b: RawBooking): TicketData {
   let date: string, time: string, doorsOpen: string, schedule: TicketData['schedule'], dj: string, subtitle: string, category: TicketData['category'], passColorTheme: TicketData['passColorTheme'], curriculum: string[] | undefined;
 
   if (isLocura) {
-    date = 'Sunday, September 20, 2026';
+    date = 'Sunday, November 22, 2026';
     time = '4:00 PM – 9:00 PM EDT';
     doorsOpen = '4:00 PM';
     dj = 'DJ JR';
@@ -54,7 +54,7 @@ function bookingToTicketData(b: RawBooking): TicketData {
       { time: '9:00 PM', title: 'Event Ends', description: '' },
     ];
   } else if (isInvasion) {
-    date = 'Friday, October 9, 2026';
+    date = 'Friday, November 6, 2026';
     time = '8:00 PM – 1:00 AM EDT';
     doorsOpen = '8:00 PM';
     dj = 'DJ JR';
@@ -82,7 +82,7 @@ function bookingToTicketData(b: RawBooking): TicketData {
       { time: '90 min', title: 'Private Session with Albina & Antonio', description: 'Dance Factory Tampa' },
     ];
   } else if (isBootCamp) {
-    date = 'Sunday, September 20, 2026';
+    date = 'Sunday, November 22, 2026';
     time = '1:30 PM – 3:30 PM EDT';
     doorsOpen = '1:30 PM';
     dj = '';
@@ -125,7 +125,7 @@ function bookingToTicketData(b: RawBooking): TicketData {
   }
 
   const perks = isLocura
-    ? ['4 PM presocial class with Albina & Isaac', 'Full night of social dancing, 4–9 PM', 'Music by DJ JR', 'Pink & Purple dress theme']
+    ? ['4 PM presocial class with Albina & Isaac', 'Full night of social dancing, 4–9 PM', 'Music by DJ JR', 'Velvet After Dark dress theme']
     : isInvasion
     ? ['8–9 PM class with Albina & Isaac', 'Social dancing 9 PM–1 AM', 'Music by DJ JR']
     : isBootCamp
