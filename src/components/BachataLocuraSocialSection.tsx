@@ -96,9 +96,9 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
       detail: 'Sun, Nov 22 · 4–9 PM',
       price: '$15',
       cta: 'Get Tickets',
-      gradient: 'from-fuchsia-500 via-purple-600 to-indigo-600',
-      glow: 'shadow-[0_0_30px_rgba(168,85,247,0.55)]',
-      ping: 'bg-purple-400/50',
+      gradient: 'from-red-900 via-red-700 to-rose-800',
+      glow: 'shadow-[0_0_30px_rgba(185,28,28,0.6)]',
+      ping: 'bg-red-600/50',
     },
     labnight: {
       passId: 'social-labnight',
@@ -242,11 +242,6 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
 
             <BigBuyButton containerRef={setInlineBuyEl} config={buyConfig} onClick={() => onOpenBooking(buyConfig.passId)} />
 
-            {/* Price — plain text (the big buy button above is the CTA) */}
-            <div className="mb-8 text-center">
-              <span className="text-3xl font-black text-white font-mono">$12</span>
-            </div>
-
             {/* Location & Directions */}
             <div className="p-5 rounded-2xl bg-black/60 border border-fuchsia-500/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div className="flex items-start gap-3">
@@ -329,6 +324,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
             </div>
 
             <BigBuyButton containerRef={setInlineBuyEl} config={buyConfig} onClick={() => onOpenBooking(buyConfig.passId)} />
+            <p className="text-center text-[11px] text-slate-400 -mt-4 mb-8">*$20 at the door</p>
 
             {/* Essentials — schedule in one row */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 max-w-2xl mx-auto">
@@ -349,12 +345,6 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
               </div>
             </div>
 
-            {/* Price — plain text (the big buy button above is the CTA) */}
-            <div className="mb-8 text-center">
-              <span className="text-3xl font-black text-white font-mono">$15</span>
-              <p className="text-[11px] text-slate-400 mt-1">*$20 at the door</p>
-            </div>
-
             {/* Boot Camp Add-On — same day, before Bachata Locura */}
             <div className="mt-6 p-4 rounded-2xl bg-gradient-to-br from-rose-950/60 to-slate-950 border border-rose-500/30">
               <div className="flex items-center gap-2 mb-2">
@@ -370,7 +360,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                 <span className="text-2xl font-black text-rose-300">$45</span>
                 <button
                   onClick={() => onOpenBooking('social-bootcamp')}
-                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white font-black text-xs uppercase tracking-wide shadow-lg transition-all"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-red-800 to-red-600 hover:from-red-700 hover:to-red-500 text-white font-black text-xs uppercase tracking-wide shadow-lg transition-all"
                 >
                   Get Boot Camp Pass
                 </button>
