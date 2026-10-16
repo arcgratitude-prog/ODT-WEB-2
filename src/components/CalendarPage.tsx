@@ -70,9 +70,9 @@ export const CalendarPage: React.FC<CalendarPageProps> = ({ onOpenBooking, onNav
 
     // 1c. AI Urbano Lab Night — every 3rd Friday of the month
     events.push({
-      id: 'labnight-sept18',
+      id: 'labnight-oct16',
       title: 'AI Urbano Lab Night @ Westshore Plaza Mall',
-      date: new Date(2026, 8, 18),
+      date: new Date(2026, 9, 16),
       timeStr: '7:00 PM – 10:30 PM',
       category: 'social',
       location: 'Westshore Plaza Mall (334 Westshore Plaza, Unit A10, Tampa, FL)',

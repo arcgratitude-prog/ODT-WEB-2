@@ -95,7 +95,7 @@ function bookingToTicketData(b: RawBooking): TicketData {
       { time: '3:30 PM', title: 'Boot Camp Ends', description: 'Bachata Locura begins later that evening at 4:00 PM.' },
     ];
   } else if (isLabNight) {
-    date = 'Friday, September 18, 2026';
+    date = 'Friday, October 16, 2026';
     time = '7:00 PM – 10:30 PM EDT';
     doorsOpen = '7:00 PM';
     dj = '';
