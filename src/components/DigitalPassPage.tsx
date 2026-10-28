@@ -125,7 +125,7 @@ function bookingToTicketData(b: RawBooking): TicketData {
   }
 
   const perks = isLocura
-    ? ['4 PM presocial class with Albina & Isaac', 'Full night of social dancing, 4–9 PM', 'Music by DJ JR', 'Velvet After Dark dress theme']
+    ? ['4 PM presocial class with Albina & Isaac', 'Full night of social dancing, 4–9 PM', 'Music by DJ JR', 'Dress code: burgundy, black, elegant attire — masks welcome']
     : isInvasion
     ? ['8–9 PM class with Albina & Isaac', 'Social dancing 9 PM–1 AM', 'Music by DJ JR']
     : isBootCamp

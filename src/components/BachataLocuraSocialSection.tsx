@@ -3,6 +3,7 @@ import { Sparkles, Calendar, MapPin, ExternalLink, Flame, Copy, Check } from 'lu
 import { STUDIO_INFO } from '../data/danceData';
 import invasionFlyer from '../assets/images/bachata_invasion_flyer.jpg';
 import locuraFlyer from '../assets/images/bachata_locura_flyer.jpg';
+import labNightFlyer from '../assets/images/lab_night_flyer.jpg';
 // BachataLocuraSocialSection component
 
 interface BachataLocuraSocialSectionProps {
@@ -324,7 +325,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
             </div>
 
             <BigBuyButton containerRef={setInlineBuyEl} config={buyConfig} onClick={() => onOpenBooking(buyConfig.passId)} />
-            <p className="text-center text-[11px] text-slate-400 -mt-4 mb-8">*$20 at the door</p>
+            <p className="text-center text-[11px] text-slate-400 -mt-4 mb-8">*$20 at the door · Pre-sale ends 11/21 · College students $15 with ID at the door</p>
 
             {/* Essentials — schedule in one row */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 max-w-2xl mx-auto">
@@ -423,6 +424,14 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
               <p className="text-xs text-slate-400 mt-2 max-w-md mx-auto">
                 More than practice — it's community. Friday, October 16th · 7:00 PM – 10:30 PM · Westshore Plaza Mall.
               </p>
+            </div>
+
+            <div className="max-w-sm mx-auto mb-6 rounded-2xl overflow-hidden border border-teal-500/30 shadow-lg shadow-teal-500/10">
+              <img
+                src={labNightFlyer}
+                alt="AI Urbano Lab Night — Practice. Connect. Unwind. Every third Friday at Dance Factory"
+                className="w-full h-auto block"
+              />
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">

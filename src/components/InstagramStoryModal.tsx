@@ -65,7 +65,7 @@ export const InstagramStoryModal: React.FC<InstagramStoryModalProps> = ({
       image: studioHeroImg,
       tagline: 'SPECIALTY SUNDAY EVENT',
       title: 'Bachata Locura ($15)',
-      subtitle: 'Sunday, Nov 22nd @ Westshore Plaza Mall • Velvet After Dark Theme • Presocial Class & DJ JR!',
+      subtitle: 'Sunday, Nov 22nd @ Westshore Plaza Mall • Burgundy & Black Dress Code • Presocial Class & DJ JR!',
       location: 'Westshore Plaza Mall, Tampa',
       timeAgo: '4h ago',
       badge: 'SPECIAL EDITION',
