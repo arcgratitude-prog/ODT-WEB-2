@@ -111,8 +111,8 @@ function buildOrderReceiptEmail(order) {
     dj = null;
   } else if (isLabNight) {
     timeLabel = '7–10:30 PM EDT';
-    dateBig = 'OCT 16';
-    dateSmall = 'FRIDAY';
+    dateBig = '3RD FRI';
+    dateSmall = 'EVERY MONTH';
     dj = null;
   } else if (isInvasion) {
     timeLabel = '8 PM–1 AM EDT';

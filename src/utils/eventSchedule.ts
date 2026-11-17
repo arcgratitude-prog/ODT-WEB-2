@@ -40,6 +40,28 @@ export interface EventOccurrence {
   endsAt: Date;
 }
 
+// The 3rd Friday of a given month (month is 0-indexed).
+export function thirdFridayOf(year: number, month: number): Date {
+  const firstDow = new Date(year, month, 1).getDay(); // 5 = Friday
+  const firstFriday = 1 + ((5 - firstDow + 7) % 7);
+  return new Date(year, month, firstFriday + 14);
+}
+
+// The Lab Night occurrence a ticket bought right now is for: the next 3rd
+// Friday (7:00-10:30 PM) that hasn't finished yet. During the event itself
+// that's still tonight's, so a door purchase counts for tonight.
+export function nextLabNightOccurrence(now: Date = new Date()): EventOccurrence {
+  for (let i = 0; i < 14; i++) {
+    const d = thirdFridayOf(now.getFullYear(), now.getMonth() + i);
+    const startsAt = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 19, 0, 0);
+    const endsAt = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 22, 30, 0);
+    if (endsAt >= now) return { startsAt, endsAt };
+  }
+  // Unreachable in practice; satisfies the type checker.
+  const d = thirdFridayOf(now.getFullYear() + 1, 0);
+  return { startsAt: new Date(d.getFullYear(), d.getMonth(), d.getDate(), 19), endsAt: new Date(d.getFullYear(), d.getMonth(), d.getDate(), 22, 30) };
+}
+
 // Returns the real start/end for whatever dated event a pass name refers
 // to, or null for passes that AREN'T tied to a single calendar date
 // (weekly Tiers, class drop-ins, and the private X1 sessions). Those
@@ -56,9 +78,11 @@ export function occurrenceForPassName(passName: string | null | undefined): Even
   if (/Boot Camp/i.test(name)) {
     return { startsAt: new Date(2026, 10, 22, 13, 30, 0), endsAt: new Date(2026, 10, 22, 15, 30, 0) };
   }
-  // Friday, October 16, 2026 — 7:00 PM to 10:30 PM.
+  // Lab Night — every 3rd Friday of the month, 7:00 PM to 10:30 PM. Not a
+  // fixed date: this resolves to the NEXT (or currently-running) 3rd
+  // Friday, so nothing here ever needs hand-updating month to month.
   if (/Lab Night/i.test(name)) {
-    return { startsAt: new Date(2026, 9, 16, 19, 0, 0), endsAt: new Date(2026, 9, 16, 22, 30, 0) };
+    return nextLabNightOccurrence();
   }
   // Friday, November 6, 2026 — 8:00 PM to 1:00 AM the next day.
   if (/Invasion/i.test(name)) {

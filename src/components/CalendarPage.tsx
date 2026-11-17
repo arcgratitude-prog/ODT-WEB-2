@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { thirdFridayOf } from '../utils/eventSchedule';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Filter, Sparkles, Flame, Ticket, MapPin, Clock, ExternalLink, ArrowRight, Radio, CheckCircle, Share2 } from 'lucide-react';
 import { STUDIO_INFO, CLASSES_DATA } from '../data/danceData';
 
@@ -68,19 +69,23 @@ export const CalendarPage: React.FC<CalendarPageProps> = ({ onOpenBooking, onNav
       color: 'from-rose-600 to-pink-700 text-white'
     });
 
-    // 1c. AI Urbano Lab Night — every 3rd Friday of the month
-    events.push({
-      id: 'labnight-oct16',
-      title: 'AI Urbano Lab Night @ Westshore Plaza Mall',
-      date: new Date(2026, 9, 16),
-      timeStr: '7:00 PM – 10:30 PM',
-      category: 'social',
-      location: 'Westshore Plaza Mall (334 Westshore Plaza, Unit A10, Tampa, FL)',
-      passTypeId: 'social-labnight',
-      description: 'Practice, Connect, Potluck & Board Games. Free for active Tier members, $12 for everyone else.',
-      badge: 'EVERY 3RD FRIDAY',
-      color: 'from-teal-500 to-cyan-600 text-white'
-    });
+    // 1c. AI Urbano Lab Night — every 3rd Friday of the month. Generated
+    // for the next 12 months so no date ever needs hand-updating.
+    for (let i = 0; i < 12; i++) {
+      const labDate = thirdFridayOf(today.getFullYear(), today.getMonth() + i);
+      events.push({
+        id: `labnight-${labDate.getFullYear()}-${labDate.getMonth() + 1}`,
+        title: 'AI Urbano Lab Night @ Westshore Plaza Mall',
+        date: labDate,
+        timeStr: '7:00 PM – 10:30 PM',
+        category: 'social',
+        location: 'Westshore Plaza Mall (334 Westshore Plaza, Unit A10, Tampa, FL)',
+        passTypeId: 'social-labnight',
+        description: 'Practice, Connect, Potluck & Board Games. Free for active Tier members, $12 for everyone else.',
+        badge: 'EVERY 3RD FRIDAY',
+        color: 'from-teal-500 to-cyan-600 text-white'
+      });
+    }
 
     // 2. Wednesday Classes (every Wednesday in Aug & Sept)
     const wednesdayDatesInAug = [5, 12, 19, 26];
@@ -174,7 +179,10 @@ export const CalendarPage: React.FC<CalendarPageProps> = ({ onOpenBooking, onNav
     let isoStart = `${yyyy}${mm}${dd}T190000`;
     let isoEnd = `${yyyy}${mm}${dd}T220000`;
 
-    if (evt.category === 'social') {
+    if (evt.id.startsWith('labnight-')) {
+      isoStart = `${yyyy}${mm}${dd}T190000`;
+      isoEnd = `${yyyy}${mm}${dd}T223000`;
+    } else if (evt.category === 'social') {
       isoStart = `${yyyy}${mm}${dd}T160000`;
       isoEnd = `${yyyy}${mm}${dd}T210000`;
     }
