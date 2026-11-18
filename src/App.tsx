@@ -186,7 +186,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0c] text-slate-100 relative selection:bg-red-600 selection:text-white overflow-x-hidden pb-24 md:pb-0">
+    <div className="min-h-screen bg-[#0a0a0c] text-slate-100 relative selection:bg-red-600 selection:text-white overflow-x-hidden">
       
       {/* Immersive Background Atmosphere (Red & Black) */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">

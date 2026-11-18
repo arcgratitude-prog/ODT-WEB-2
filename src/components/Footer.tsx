@@ -9,7 +9,7 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ onOpenPolicy }) => {
   return (
-    <footer className="relative z-10 border-t border-white/10 bg-[#0a0a0c]/90 backdrop-blur-xl pt-12 pb-28 md:pb-12 px-4 sm:px-6 lg:px-8">
+    <footer className="relative z-10 border-t border-white/10 bg-[#0a0a0c]/90 backdrop-blur-xl pt-12 pb-12 px-4 sm:px-6 lg:px-8">
       
       {/* Top Metrics Row */}
       <div className="max-w-7xl mx-auto pb-8 mb-8 border-b border-white/10 flex flex-wrap justify-between items-center gap-6">

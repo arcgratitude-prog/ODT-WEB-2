@@ -475,7 +475,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
           however far someone has scrolled. Steps aside while the big
           inline button is already on screen; see showBuyBar above. */}
       <div
-        className={`fixed left-0 right-0 bottom-[5.5rem] md:bottom-4 z-40 px-4 transition-all duration-300 ${
+        className={`fixed left-0 right-0 bottom-4 z-40 px-4 transition-all duration-300 ${
           showBuyBar ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0 pointer-events-none'
         }`}
         aria-hidden={!showBuyBar}
