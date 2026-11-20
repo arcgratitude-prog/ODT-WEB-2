@@ -7,15 +7,17 @@ import labNightFlyer from '../assets/images/lab_night_flyer.jpg';
 // BachataLocuraSocialSection component
 
 interface BachataLocuraSocialSectionProps {
+  initialTab?: 'invasion' | 'locura' | 'labnight';
   onOpenBooking: (passTypeId?: string, quantity?: number) => void;
   onNavigateToHome?: () => void;
 }
 
 export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProps> = ({ 
+  initialTab,
   onOpenBooking,
   onNavigateToHome 
 }) => {
-  const [activeTab, setActiveTab] = useState<'invasion' | 'locura' | 'labnight'>('invasion');
+  const [activeTab, setActiveTab] = useState<'invasion' | 'locura' | 'labnight'>(initialTab ?? 'invasion');
   const [copiedInvasionAddress, setCopiedInvasionAddress] = useState(false);
 
   const [copiedLocuraAddress, setCopiedLocuraAddress] = useState(false);

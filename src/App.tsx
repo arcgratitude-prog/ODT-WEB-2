@@ -25,7 +25,19 @@ import { DigitalPassPage } from './components/DigitalPassPage';
 import { TicketPass } from './types';
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<'home' | 'social' | 'schedule' | 'review' | 'referral' | 'x1'>('home');
+  // Direct links to a specific social event: officialdancetheory.com/locura
+  // (also /invasion and /labnight, or ?event=locura). Opens the Socials
+  // page already on that event's tab — handy for Instagram bios, stories,
+  // flyers and QR codes. Anything else opens the normal home page.
+  const [deepLinkTab] = useState<'invasion' | 'locura' | 'labnight' | null>(() => {
+    if (typeof window === 'undefined') return null;
+    const path = window.location.pathname.replace(/\/+$/, '').toLowerCase().slice(1);
+    const param = (new URLSearchParams(window.location.search).get('event') || '').toLowerCase();
+    const key = path || param;
+    if (key === 'locura' || key === 'invasion' || key === 'labnight') return key;
+    return null;
+  });
+  const [currentPage, setCurrentPage] = useState<'home' | 'social' | 'schedule' | 'review' | 'referral' | 'x1'>(deepLinkTab ? 'social' : 'home');
   const [savedPasses, setSavedPasses] = useState<TicketPass[]>([]);
   const [isBookingOpen, setIsBookingOpen] = useState<boolean>(false);
   const [bookingPassTypeId, setBookingPassTypeId] = useState<string>('social-presale');
@@ -211,6 +223,7 @@ export default function App() {
         {currentPage === 'social' ? (
           <div className="pt-20 sm:pt-24 min-h-[80vh]">
             <BachataLocuraSocialSection
+              initialTab={deepLinkTab ?? undefined}
               onOpenBooking={handleOpenBooking}
               onNavigateToHome={() => handleNavigate('home')}
             />
