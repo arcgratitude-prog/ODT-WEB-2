@@ -43,7 +43,7 @@ const getEventDateLabel = (passName: string): string => {
   if (/Locura/i.test(passName)) return 'Sunday, November 22nd (4:00 PM - 9:00 PM)';
   if (/Boot Camp/i.test(passName)) return 'Sunday, November 22nd (1:30 PM - 3:30 PM)';
   if (/Lab Night/i.test(passName)) return 'Every 3rd Friday of the Month (7:00 PM - 10:30 PM)';
-  if (/Invasion/i.test(passName)) return 'Friday, November 6th (8:00 PM - 1:00 AM)';
+  if (/Invasion/i.test(passName)) return 'Friday, December 11th (8:00 PM - 1:00 AM)';
   if (/X1/i.test(passName)) return 'Private Session — Scheduled Directly With Albina & Antonio';
   // Weekly Tiers and class drop-ins: recurring, not a single calendar date.
   return 'Every Wednesday (See Your Selected Class Time Below)';

@@ -64,7 +64,7 @@ export const CalendarPage: React.FC<CalendarPageProps> = ({ onOpenBooking, onNav
       category: 'social',
       location: 'Dance Factory Tampa (334 Westshore Plaza, Unit A10, Tampa, FL)',
       passTypeId: 'social-bootcamp',
-      description: 'Technique, Musicality & Partnerwork workshop with Albina & Isaac + Xavier & Jairo. Before Bachata Locura that evening.',
+      description: 'Technique, Musicality & Partnerwork workshop with Albina & Isaac. Before Bachata Locura that evening.',
       badge: 'WORKSHOP',
       color: 'from-rose-600 to-pink-700 text-white'
     });

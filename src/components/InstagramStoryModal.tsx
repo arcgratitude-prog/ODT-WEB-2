@@ -53,10 +53,10 @@ export const InstagramStoryModal: React.FC<InstagramStoryModalProps> = ({
       image: albinaIsaacImg,
       tagline: 'NOVEMBER SOCIAL NIGHT',
       title: 'Bachata Invasion ($12)',
-      subtitle: 'Friday, November 6th @ Dance Factory Tampa • 8 PM Class by Albina & Isaac + 9 PM - 1 AM Social!',
+      subtitle: 'Friday, December 11th @ Dance Factory Tampa • 8 PM Class by Albina & Isaac + 9 PM - 1 AM Social!',
       location: 'Dance Factory Tampa',
       timeAgo: '2h ago',
-      badge: 'ONLY FOR NOVEMBER',
+      badge: 'FRI • DEC 11',
       ctaText: 'Get $12 Social Pass',
       passId: 'social-invasion-10'
     },

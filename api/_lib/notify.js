@@ -116,7 +116,7 @@ function buildOrderReceiptEmail(order) {
     dj = null;
   } else if (isInvasion) {
     timeLabel = '8 PM–1 AM EDT';
-    dateBig = 'NOV 6';
+    dateBig = 'DEC 11';
     dateSmall = 'FRIDAY';
     dj = 'DJ JR';
   } else if (isX1) {
@@ -132,7 +132,7 @@ function buildOrderReceiptEmail(order) {
   }
 
   const eventTitle = isLocura ? 'Bachata Locura' : isInvasion ? 'Bachata Invasion' : isBootCamp ? 'Bachata Battle Boot Camp' : isLabNight ? 'AI Urbano Lab Night' : order.passName;
-  const instructors = isX1 ? 'Albina & Antonio' : isBootCamp ? 'Albina & Isaac + Xavier & Jairo' : 'Albina & Isaac';
+  const instructors = isX1 ? 'Albina & Antonio' : 'Albina & Isaac';
 
   // Accent colors, made deliberately bold and distinct per category:
   //   Invasion  → neon purple

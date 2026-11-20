@@ -85,7 +85,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
       passId: 'social-invasion-10',
       title: 'Bachata Invasion',
       shortTitle: 'Invasion',
-      detail: 'Fri, Nov 6 · 8 PM–1 AM',
+      detail: 'Fri, Dec 11 · 8 PM–1 AM',
       price: '$12',
       cta: 'Get Tickets',
       gradient: 'from-pink-500 via-fuchsia-500 to-purple-600',
@@ -148,7 +148,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                 : 'bg-slate-900 text-pink-300 border border-pink-500/30'
             }`}>
               <Calendar className="w-2.5 h-2.5 text-pink-300" />
-              <span>Fri • Nov 6</span>
+              <span>Fri • Dec 11</span>
             </span>
             <div className="flex items-center gap-1.5">
               <Flame className="w-4 h-4 text-pink-400 shrink-0" />
@@ -218,7 +218,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
               <div className="relative rounded-2xl overflow-hidden border border-fuchsia-400/50 shadow-[0_0_45px_rgba(236,72,153,0.35)]">
                 <img
                   src={invasionFlyer}
-                  alt="Bachata Invasion — Friday, November 6th at Dance Factory (November only)"
+                  alt="Bachata Invasion — Friday, December 11th at Dance Factory"
                   className="w-full h-auto block"
                 />
                 <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#0a0310] via-transparent to-transparent" />
@@ -233,7 +233,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
                 Bachata <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-fuchsia-400 to-purple-400">Invasion</span>
               </h2>
               <p className="text-sm text-purple-100">
-                Friday, November 6th · 8 PM–1 AM · <span className="font-bold text-white">$12</span>
+                Friday, December 11th · 8 PM–1 AM · <span className="font-bold text-white">$12</span>
               </p>
               <p className="text-xs text-purple-300">
                 8–9 PM Class with <span className="text-white font-semibold">Albina & Isaac</span> · Social Dancing with <span className="text-white font-semibold">DJ JR</span>
@@ -348,6 +348,19 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
               </div>
             </div>
 
+            {/* Live performances */}
+            <div className="mt-6 p-4 rounded-2xl bg-black/40 border border-white/10">
+              <span className="text-[10px] text-slate-400 font-mono uppercase tracking-widest block mb-3 text-center">Live Performances</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="p-3 rounded-xl bg-white/5 border border-red-500/30 text-center">
+                  <span className="text-sm text-white font-bold block">Xavier & Jairo</span>
+                </div>
+                <div className="p-3 rounded-xl bg-white/5 border border-red-500/30 text-center">
+                  <span className="text-sm text-white font-bold block">Victoria & Shane</span>
+                </div>
+              </div>
+            </div>
+
             {/* Boot Camp Add-On — same day, before Bachata Locura */}
             <div className="mt-6 p-4 rounded-2xl bg-gradient-to-br from-rose-950/60 to-slate-950 border border-rose-500/30">
               <div className="flex items-center gap-2 mb-2">
@@ -357,7 +370,7 @@ export const BachataLocuraSocialSection: React.FC<BachataLocuraSocialSectionProp
               </div>
               <h4 className="text-lg font-black text-white uppercase mb-1">Bachata Battle Boot Camp</h4>
               <p className="text-xs text-slate-300 mb-3">
-                1:30 PM – 3:30 PM · Albina & Isaac + Xavier & Jairo · Includes Bachata Locura social after
+                1:30 PM – 3:30 PM · Albina & Isaac · Includes Bachata Locura social after
               </p>
               <div className="flex items-center justify-between">
                 <span className="text-2xl font-black text-rose-300">$45</span>

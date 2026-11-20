@@ -54,7 +54,7 @@ function bookingToTicketData(b: RawBooking): TicketData {
       { time: '9:00 PM', title: 'Event Ends', description: '' },
     ];
   } else if (isInvasion) {
-    date = 'Friday, November 6, 2026';
+    date = 'Friday, December 11, 2026';
     time = '8:00 PM – 1:00 AM EDT';
     doorsOpen = '8:00 PM';
     dj = 'DJ JR';
@@ -91,7 +91,7 @@ function bookingToTicketData(b: RawBooking): TicketData {
     passColorTheme = 'ruby';
     curriculum = ['Technique', 'Musicality', 'Partnerwork'];
     schedule = [
-      { time: '1:30 PM', title: 'Boot Camp Begins', description: 'Albina & Isaac + Xavier & Jairo (AI.Urbano x La Calle Dance Co.)' },
+      { time: '1:30 PM', title: 'Boot Camp Begins', description: 'Albina & Isaac' },
       { time: '3:30 PM', title: 'Boot Camp Ends', description: 'Bachata Locura begins later that evening at 4:00 PM.' },
     ];
   } else if (isLabNight) {
@@ -129,7 +129,7 @@ function bookingToTicketData(b: RawBooking): TicketData {
     : isInvasion
     ? ['8–9 PM class with Albina & Isaac', 'Social dancing 9 PM–1 AM', 'Music by DJ JR']
     : isBootCamp
-    ? ['2 hours of technique, musicality & partnerwork', 'Taught by Albina & Isaac + Xavier & Jairo', 'Same day as Bachata Locura']
+    ? ['2 hours of technique, musicality & partnerwork', 'Taught by Albina & Isaac', 'Same day as Bachata Locura']
     : isLabNight
     ? ['Open practice floor — Salsa, Bachata, Zouk', 'Potluck — bring a dish to share', 'Board games — bring your favorite', 'Free for active Tier members']
     : isX1

@@ -81,7 +81,7 @@ export const BACHATA_INVASION_PASS_OPTION: PassOption = {
   id: 'social-invasion-10',
   name: 'Bachata Invasion Social Pass',
   price: 12,
-  tagline: 'Friday, November 6th @ Dance Factory Tampa (8:00 PM - 1:00 AM)',
+  tagline: 'Friday, December 11th @ Dance Factory Tampa (8:00 PM - 1:00 AM)',
   classesCount: 1,
   popular: true,
   features: [
@@ -145,7 +145,7 @@ export const BOOT_CAMP_PASS_OPTION: PassOption = {
   popular: false,
   features: [
     'Technique, Musicality & Partnerwork Workshop',
-    'Taught by Albina & Isaac + Xavier & Jairo (AI.Urbano x La Calle Dance Co.)',
+    'Taught by Albina & Isaac',
     'Full Day Pass — Same Day as Bachata Locura',
     'Dance Factory Tampa (334 Westshore Plaza, Unit A10)',
     'Digital Mobile Pass with Instant Check-In'
